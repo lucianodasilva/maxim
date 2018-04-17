@@ -13,7 +13,7 @@ add_library(
 		src/maxim.cpp
 		src/maxim.tui.character.cpp
 		src/maxim.tui.driver_xterm.cpp
-		include/maxim.tui.driver.hpp include/maxim.tui.character_change_set.hpp)
+		include/maxim.tui.driver.hpp include/maxim.tui.character_change_set.hpp src/maxim.tui.device.cpp)
 
 target_include_directories(maxim_core 
 	PUBLIC

@@ -3,10 +3,11 @@
 
 int main(int arg_c, char ** arg_v)
 {
+    using namespace maxim::tui;
 
-    maxim::tui::device <> tui_device;
+    maxim::tui::device tui_device (std::make_unique <driver_xterm>());
 
-    tui_device.set_fullscreen(true);
+    tui_device.fullscreen(true);
     tui_device.enable_cursor(false);
 
     tui_device.draw_solid_box(maxim::tui::colors::green, {5, 5}, {5, 5});
@@ -32,7 +33,7 @@ int main(int arg_c, char ** arg_v)
     std::cin >> i;
 
     tui_device.enable_cursor(true);
-    tui_device.set_fullscreen(false);
+    tui_device.fullscreen(false);
 
     return 0;
 }
