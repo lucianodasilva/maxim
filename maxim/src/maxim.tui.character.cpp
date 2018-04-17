@@ -3,14 +3,14 @@
 namespace maxim {
     namespace tui {
 
-        std::vector < character_span > character_buffer::calculate_changes (
+        character_change_set character_buffer::calculate_change_set (
                 character_buffer const & buffer
         ) const {
 
             if (_size != buffer._size)
                 throw std::runtime_error ("changes between different sized buffers not supported");
 
-            std::vector < character_span > changes;
+            character_change_set changes;
 
             for (uint32_t y = 0; y < _size.y; ++y) {
                 uint32_t

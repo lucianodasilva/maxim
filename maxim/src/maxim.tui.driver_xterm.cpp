@@ -7,12 +7,7 @@
 namespace maxim {
     namespace tui {
 
-        void out_stream::flush() {
-            flush(reinterpret_cast < uint8_t * > (_buffer.data()), _buffer.size());
-            _buffer.resize(0);
-        }
-
-        void out_stream::flush(uint8_t const *buffer, size_t size) {
+        void driver_xterm::xterm_flush_policy::flush(uint8_t const *buffer, size_t size) {
             ::write(STDOUT_FILENO, buffer, size);
         }
 
@@ -42,39 +37,23 @@ namespace maxim {
                 xterm_color_background []           = "48;5;",
                 xterm_color_suffix []               = "m";
 
-        bool driver_xterm::alternate_buffer(bool value) {
-            _alternate_buffer = value;
-
+        void driver_xterm::set_alternate_buffer(bool value) {
             if (value)
                 _stream.immediate_write(xterm_alternate_buffer_enable);
             else
                 _stream.immediate_write(xterm_alternate_buffer_disable);
-
-            return _alternate_buffer;
         }
 
-        bool driver_xterm::alternate_buffer() const {
-            return _alternate_buffer;
-        }
-
-        bool driver_xterm::enable_cursor(bool value) {
-            _enable_cursor = value;
-
+        void driver_xterm::set_cursor_enabled (bool value) {
             if (value)
                 _stream.immediate_write(xterm_cursor_enable);
             else
                 _stream.immediate_write(xterm_cursor_disable);
-
-            return _enable_cursor;
         }
 
-        bool driver_xterm::enable_cursor() const {
-            return _enable_cursor;
-        }
-
-        void driver_xterm::encode_changes(
-                const maxim::tui::character_buffer &buffer,
-                const std::vector<maxim::tui::character_span> &changes
+        void driver_xterm::encode_and_send(
+                character_buffer const & buffer,
+                character_change_set const & changes
         ) {
             if (changes.size() == 0)
                 return;
@@ -121,22 +100,6 @@ namespace maxim {
                     .write(xterm_move_suffix);
         }
 
-        void driver_xterm::encode_attributes(character_flags const & current) {
-
-            _stream
-                    .write(xterm_attr_prefix)
-                    .optional_write(!current.bold, xterm_attr_disable_prefix)
-                    .write(xterm_attr_bold)
-                    .optional_write(!current.underlined,xterm_attr_disable_prefix)
-                    .write(xterm_attr_underline)
-                    .optional_write(!current.blink, xterm_attr_disable_prefix)
-                    .write(xterm_attr_blink)
-                    .optional_write(!current.reversed, xterm_attr_disable_prefix)
-                    .write(xterm_attr_reversed)
-
-                    .write(xterm_attr_suffix);
-        }
-
         void driver_xterm::encode_attribute_reset () {
             _stream.write(xterm_attr_reset);
         }
@@ -175,17 +138,6 @@ namespace maxim {
             }
 
             _stream.write(xterm_attr_suffix);
-        }
-
-        void driver_xterm::encode_color(character const & current) {
-            _stream
-                .write(xterm_color_prefix)
-                .write(xterm_color_background)
-                .write(as_integer(current.backcolor))
-                .write(";")
-                .write(xterm_color_foreground)
-                .write(as_integer(current.forecolor))
-                .write(xterm_color_suffix);
         }
 
         void driver_xterm::encode_color_diff(character const & current, character const & past) {

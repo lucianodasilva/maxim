@@ -15,11 +15,11 @@ namespace maxim {
         public:
 
             inline void set_fullscreen(bool value) {
-                _driver.alternate_buffer(value);
+                _driver.set_alternate_buffer(value);
             }
 
             inline void enable_cursor (bool value) {
-                _driver.enable_cursor (value);
+                _driver.set_cursor_enabled (value);
             }
 
             inline void clear() {
@@ -78,9 +78,9 @@ namespace maxim {
                     _front_buffer.resize(_size);
                 }
 
-                _driver.encode_changes (
+                _driver.encode_and_send (
                     _back_buffer,
-                    _back_buffer.calculate_changes(_front_buffer)
+                    _back_buffer.calculate_change_set(_front_buffer)
                 );
 
                 // swap buffers

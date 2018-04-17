@@ -6,6 +6,8 @@
 #include <vector>
 #include <tuple>
 
+#include "maxim.tui.character_change_set.hpp"
+
 namespace maxim {
     namespace tui {
 
@@ -70,10 +72,6 @@ namespace maxim {
                 c1.forecolor == c2.forecolor;
         }
 
-        struct character_span {
-            uint32_t begin, end;
-        };
-
         struct character_buffer {
         public:
 
@@ -121,7 +119,7 @@ namespace maxim {
                 _size = size;
             }
 
-            std::vector < character_span > calculate_changes (
+            character_change_set calculate_change_set (
                     character_buffer const & buffer
             ) const;
 
