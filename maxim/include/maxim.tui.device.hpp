@@ -15,7 +15,7 @@ namespace maxim {
 
             point const & get_size () const;
 
-            character_buffer const & back_buffer () const;
+            character_buffer & back_buffer ();
 
             device (std::unique_ptr < driver_base > driver);
 
@@ -25,10 +25,12 @@ namespace maxim {
 
             void clear();
 
-            void draw_solid_box (
-                    color_t color,
+            void draw_box (
                     point const & position,
-                    point const & size
+                    point const & size,
+                    color_t color,
+                    bool solid = true,
+                    color_t backcolor = colors::black
             );
 
             void draw_text (
@@ -37,6 +39,22 @@ namespace maxim {
                     color_t color = colors::white,
                     color_t back_color = colors::black,
                     character_flags const & flags = {}
+            );
+
+            void draw_v_line (
+                    point const & position,
+                    int32_t length,
+                    color_t color,
+                    bool solid = true,
+                    color_t backcolor = colors::black
+            );
+
+            void draw_h_line(
+                    point const & position,
+                    int32_t length,
+                    color_t color,
+                    bool solid = true,
+                    color_t backcolor = colors::black
             );
 
             void present ();
@@ -50,6 +68,8 @@ namespace maxim {
             character_buffer
                         _back_buffer    { _size },
                         _front_buffer   { _size };
+
+
 
         };
 

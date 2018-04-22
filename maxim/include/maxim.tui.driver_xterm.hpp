@@ -4,6 +4,7 @@
 
 #include "maxim.tui.character.hpp"
 #include "maxim.tui.driver.hpp"
+#include "maxim.tui.term_stream.hpp"
 
 #include <limits>
 #include <vector>
@@ -19,6 +20,8 @@ namespace maxim {
 
             void set_cursor_enabled (bool value) override;
 
+            graph_chars const & get_graph_chars () const override;
+
             void encode_and_send(
                     character_buffer const & buffer,
                     character_change_set const & changes
@@ -32,7 +35,7 @@ namespace maxim {
                 static void flush(uint8_t const * buffer, size_t length);
             };
 
-            out_stream < xterm_flush_policy >
+            term_stream < xterm_flush_policy >
                     _stream;
 
             void encode_move(point const & p);

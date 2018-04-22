@@ -18,29 +18,28 @@ namespace maxim {
                         begin_index = line_index,
                         ending_index = begin_index;
 
+                bool has_changes = false;
+
                 for (uint32_t x = 0; x < _size.x; ++x) {
+                    ending_index = line_index + x;
 
-                    bool is_same = at(line_index + x) == buffer.at(line_index + x);
+                    bool is_same = at(ending_index) == buffer.at(ending_index);
 
-                    if (begin_index == ending_index) {
-                        ++ending_index;
-
-                        if (is_same) {
-                            ++begin_index;
-                        }
+                    if (!has_changes && is_same) {
+                        begin_index = ending_index;
                     } else {
-                        ++ending_index;
+                        has_changes = true;
 
                         if (is_same) {
-                            changes.push_back({begin_index, ending_index});
+                            changes.push_back({begin_index + 1, ending_index});
                             begin_index = ending_index;
+                            has_changes = false;
                         }
-                    }
-
-                    if (begin_index != ending_index) {
-                        changes.push_back({begin_index, ending_index});
                     }
                 }
+
+                if (has_changes)
+                    changes.push_back({begin_index + 1, ending_index + 1});
             }
 
             return changes;

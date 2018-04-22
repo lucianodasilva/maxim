@@ -14,12 +14,12 @@ namespace maxim {
         struct point {
             int32_t x, y;
 
-            inline point operator + (point const & v) const { return { x + v.x, x + v.y }; }
-            inline point operator - (point const & v) const { return { x - v.x, x - v.y }; }
-            inline point operator * (point const & v) const { return { x * v.x, x * v.y }; }
-            inline point operator * (int32_t s) const { return { x * s, x * s }; }
-            inline point operator / (point const & v) const { return { x / v.x, x / v.y }; }
-            inline point operator / (int32_t s) const { return { x / s, x / s }; }
+            inline point operator + (point const & v) const { return { x + v.x, y + v.y }; }
+            inline point operator - (point const & v) const { return { x - v.x, y - v.y }; }
+            inline point operator * (point const & v) const { return { x * v.x, y * v.y }; }
+            inline point operator * (int32_t s) const { return { x * s, y * s }; }
+            inline point operator / (point const & v) const { return { x / v.x, y / v.y }; }
+            inline point operator / (int32_t s) const { return { x / s, y / s }; }
             inline bool operator == (point const & p) const { return x == p.x && y == p.y; }
             inline bool operator != (point const & p) const { return !operator==(p); }
         };
@@ -52,6 +52,7 @@ namespace maxim {
                 bool underlined : 1;
                 bool blink      : 1;
                 bool reversed   : 1;
+                bool is_graph   : 1;
                 int             : 0; // fill to next byte
             };
             uint8_t data = {};
@@ -62,6 +63,21 @@ namespace maxim {
             character_flags flags   = {};
             color_t backcolor       = colors::black;
             color_t forecolor       = colors::white;
+        };
+
+        struct graph_chars {
+            char
+                    line_vertical,
+                    line_horizontal,
+                    cross_lines,
+                    corner_up_left,
+                    corner_up_right,
+                    corner_down_left,
+                    corner_down_right,
+                    vertical_left,
+                    vertical_right,
+                    horizontal_up,
+                    horizontal_down;
         };
 
         inline bool operator == (character const & c1, character const & c2) {

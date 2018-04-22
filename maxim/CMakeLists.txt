@@ -7,13 +7,14 @@ add_library(
 	STATIC
 		include/maxim.hpp
 		include/maxim.tui.character.hpp
+		include/maxim.tui.character_change_set.hpp
 		include/maxim.tui.device.hpp
+		include/maxim.tui.driver.hpp
 		include/maxim.tui.driver_xterm.hpp
-		include/maxim.tui.renderer.hpp
 		src/maxim.cpp
 		src/maxim.tui.character.cpp
 		src/maxim.tui.driver_xterm.cpp
-		include/maxim.tui.driver.hpp include/maxim.tui.character_change_set.hpp src/maxim.tui.device.cpp)
+		src/maxim.tui.device.cpp include/maxim.tui.term_stream.hpp)
 
 target_include_directories(maxim_core 
 	PUBLIC

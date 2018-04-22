@@ -32,10 +32,27 @@ namespace maxim {
                 xterm_attr_blink []                 = "5",
                 xterm_attr_reversed []              = "7",
                 xterm_attr_disable_prefix []        = "2",
+                xterm_attr_enable_graph []          = "\033(0",
+                xterm_attr_disable_graph []         = "\033(B",
                 xterm_color_prefix []               = "\033[",
                 xterm_color_foreground []           = "38;5;",
                 xterm_color_background []           = "48;5;",
                 xterm_color_suffix []               = "m";
+
+
+        constexpr graph_chars xterm_graph_chars = {
+                'x', // line_vertical
+                'q', // line_horizontal
+                'n', // cross_lines
+                'k', // corner_up_left
+                'l', // corner_up_right
+                'j', // corner_down_left
+                'm', // corner_down_right
+                'u', // vertical_left
+                't', // vertical_right
+                'v', // horizontal_up
+                'w', // horizontal_down
+        };
 
         void driver_xterm::set_alternate_buffer(bool value) {
             if (value)
@@ -51,11 +68,15 @@ namespace maxim {
                 _stream.immediate_write(xterm_cursor_disable);
         }
 
+        graph_chars const & driver_xterm::get_graph_chars() const {
+            return xterm_graph_chars;
+        }
+
         void driver_xterm::encode_and_send(
                 character_buffer const & buffer,
                 character_change_set const & changes
         ) {
-            if (changes.size() == 0)
+            if (changes.empty())
                 return;
 
             encode_attribute_reset();
@@ -78,11 +99,16 @@ namespace maxim {
                 }
             }
 
+            // after all changes commited reset attributes to avoid
+            // terminal corruption on crash
+            _stream.write(xterm_attr_reset);
+            _stream.write(xterm_attr_disable_graph);
+
             _stream.flush();
         }
 
         point driver_xterm::get_size() const {
-            struct winsize w;
+            winsize w = {};
             ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
             return {
@@ -135,6 +161,13 @@ namespace maxim {
                 _stream
                         .optional_write (!current.reversed, xterm_attr_disable_prefix)
                         .write(xterm_attr_reversed);
+            }
+
+            if (current.is_graph != past.is_graph) {
+                if (current.is_graph)
+                    _stream.write(xterm_attr_enable_graph);
+                else
+                    _stream.write(xterm_attr_disable_graph);
             }
 
             _stream.write(xterm_attr_suffix);
