@@ -3,4 +3,7 @@
 #include "maxim.tui.character_change_set.hpp"
 #include "maxim.tui.device.hpp"
 #include "maxim.tui.driver.hpp"
-#include "maxim.tui.driver_xterm.hpp"
+#include "maxim.tui.encoding.hpp"
+#include "maxim.tui.graphics.hpp"
+#include "maxim.tui.point.hpp"
+#include "maxim.tui.stream.hpp"

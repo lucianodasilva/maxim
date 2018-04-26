@@ -7,13 +7,13 @@ int main(int arg_c, char ** arg_v)
 
     int i;
 
-    device tui_device (std::make_unique <driver_xterm>());
+    device tui_device;
 
     tui_device.fullscreen(true);
     tui_device.enable_cursor(false);
 
-    tui_device.draw_box({10,10}, {25, 10}, colors::yellow, false);
-    tui_device.draw_h_line({10, 35}, 30, colors::dark_red, false);
+    tui_device.graphics().draw_box({10,10}, {25, 10}, colors::yellow, false);
+    tui_device.graphics().draw_h_line({10, 35}, 30, colors::dark_red, false);
     tui_device.present();
 
     std::cin >> i;

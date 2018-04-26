@@ -6,6 +6,8 @@
 
 #include "maxim.tui.character.hpp"
 #include "maxim.tui.driver.hpp"
+#include "maxim.tui.graphics.hpp"
+#include "maxim.tui.stream.hpp"
 
 namespace maxim {
     namespace tui {
@@ -15,61 +17,25 @@ namespace maxim {
 
             point const & get_size () const;
 
-            character_buffer & back_buffer ();
-
-            device (std::unique_ptr < driver_base > driver);
+			maxim::tui::graphics graphics();
 
             void fullscreen(bool value);
 
             void enable_cursor (bool value);
 
-            void clear();
-
-            void draw_box (
-                    point const & position,
-                    point const & size,
-                    color_t color,
-                    bool solid = true,
-                    color_t backcolor = colors::black
-            );
-
-            void draw_text (
-                    std::string const & text,
-                    point const & position,
-                    color_t color = colors::white,
-                    color_t back_color = colors::black,
-                    character_flags const & flags = {}
-            );
-
-            void draw_v_line (
-                    point const & position,
-                    int32_t length,
-                    color_t color,
-                    bool solid = true,
-                    color_t backcolor = colors::black
-            );
-
-            void draw_h_line(
-                    point const & position,
-                    int32_t length,
-                    color_t color,
-                    bool solid = true,
-                    color_t backcolor = colors::black
-            );
-
+			void clear();
             void present ();
 
         private:
 
-            std::unique_ptr <driver_base>
-                        _driver;
-            point       _size           { _driver->get_size() };
+            driver		_driver;
+            point       _size           { _driver.get_size() };
 
             character_buffer
                         _back_buffer    { _size },
                         _front_buffer   { _size };
 
-
+			stream		_stream;
 
         };
 

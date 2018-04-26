@@ -7,22 +7,10 @@
 #include <tuple>
 
 #include "maxim.tui.character_change_set.hpp"
+#include "maxim.tui.point.hpp"
 
 namespace maxim {
     namespace tui {
-
-        struct point {
-            int32_t x, y;
-
-            inline point operator + (point const & v) const { return { x + v.x, y + v.y }; }
-            inline point operator - (point const & v) const { return { x - v.x, y - v.y }; }
-            inline point operator * (point const & v) const { return { x * v.x, y * v.y }; }
-            inline point operator * (int32_t s) const { return { x * s, y * s }; }
-            inline point operator / (point const & v) const { return { x / v.x, y / v.y }; }
-            inline point operator / (int32_t s) const { return { x / s, y / s }; }
-            inline bool operator == (point const & p) const { return x == p.x && y == p.y; }
-            inline bool operator != (point const & p) const { return !operator==(p); }
-        };
 
         using color_t = uint8_t;
 
@@ -112,18 +100,12 @@ namespace maxim {
                 return _buffer[index];
             }
 
-            inline uint32_t width () const {
-                return _size.x;
-            }
-
-            inline uint32_t height () const {
-                return _size.y;
-            }
+			inline point const & size() const { return _size; }
 
             inline void resize (point const & size) {
                 std::vector < character > resized (size.x * size.y);
 
-                for (uint32_t i = 0; i < size.y; ++i) {
+                for (int32_t i = 0; i < size.y; ++i) {
                     std::copy(
                             _buffer.begin() += (size.x * i),
                             _buffer.begin() += ((size.x * i) + size.x),

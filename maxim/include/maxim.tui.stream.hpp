@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _MAXIM_TUI_TERM_STREAM_HPP_
-#define _MAXIM_TUI_TERM_STREAM_HPP_
+#ifndef _MAXIM_TUI_STREAM_HPP_
+#define _MAXIM_TUI_STREAM_HPP_
 
 #include <iterator>
 #include <limits>
@@ -10,19 +10,21 @@
 namespace maxim {
     namespace tui {
 
-        template < class _flush_policy_t >
-        struct term_stream {
+        struct stream {
         public:
 
-            term_stream & write (char v) {
+            inline stream & write (char v) {
                 _buffer.push_back(v);
                 return *this;
             }
 
             template < class _t >
             inline std::enable_if_t <
-                    !(std::is_same<std::remove_all_extents_t <_t>, char >::value) && std::numeric_limits<_t>::is_integer,
-                    term_stream &
+                    !(std::is_same<
+						std::remove_all_extents_t <_t>, 
+						char 
+					>::value) && std::numeric_limits<_t>::is_integer,
+                    stream &
             > write (_t v) {
                 auto count = digit_count(v);
 
@@ -43,7 +45,7 @@ namespace maxim {
             }
 
             template < size_t n >
-            term_stream & write (char const (&str)[n]) {
+            inline stream & write (char const (&str)[n]) {
                 _buffer.insert(
                         std::end(_buffer),
                         std::begin(str),
@@ -54,31 +56,30 @@ namespace maxim {
             }
 
             template < class _t >
-            term_stream & optional_write(bool enabled, _t && v) {
+            inline stream & optional_write(bool enabled, _t && v) {
                 if (enabled)
                     write(v);
 
                 return *this;
             }
 
-            template < size_t n >
-            term_stream & immediate_write(char const (&str)[n]) {
-                _flush_policy_t::flush(reinterpret_cast <const uint8_t * >(+str), n - 1);
-                return *this;
-            }
+			inline void reset() {
+				_buffer.resize(0);
+			}
 
-            inline void flush () {
-                _flush_policy_t::flush(
-                        reinterpret_cast<uint8_t *>(_buffer.data()),
-                        _buffer.size()
-                );
-            }
+			inline char * data() {
+				return _buffer.data();
+			}
 
-            private:
+			inline size_t size() const {
+				return _buffer.size();
+			}
+
+        private:
 
             template < class _t >
             static inline std::enable_if_t <std::numeric_limits<_t>::is_integer, size_t >
-            digit_count (_t v)
+				digit_count (_t v)
             {
                 size_t digits = 0;
 
@@ -99,4 +100,4 @@ namespace maxim {
     }
 }
 
-#endif //_MAXIM_TUI_TERM_STREAM_HPP_
+#endif //_MAXIM_TUI_STREAM_HPP_
