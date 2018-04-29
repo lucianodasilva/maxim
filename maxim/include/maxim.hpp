@@ -5,5 +5,5 @@
 #include "maxim.tui.driver.hpp"
 #include "maxim.tui.encoding.hpp"
 #include "maxim.tui.graphics.hpp"
-#include "maxim.tui.point.hpp"
+#include "maxim.tui.structures.hpp"
 #include "maxim.tui.stream.hpp"

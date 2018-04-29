@@ -7,7 +7,7 @@
 #include <tuple>
 
 #include "maxim.tui.character_change_set.hpp"
-#include "maxim.tui.point.hpp"
+#include "maxim.tui.structures.hpp"
 
 namespace maxim {
     namespace tui {
@@ -79,8 +79,8 @@ namespace maxim {
         struct character_buffer {
         public:
 
-            inline character_buffer (point const & size) :
-                    _buffer { static_cast < long unsigned int > (size.x * size.y) },
+            inline character_buffer (maxim::tui::size const & size) :
+                    _buffer { static_cast < size_t > (size.width * size.height) },
                     _size { size }
             {}
 
@@ -92,24 +92,25 @@ namespace maxim {
                 return _buffer [coords_to_index(p)];
             }
 
-            inline character & at (uint32_t index) {
+            inline character & at (size_t index) {
                 return _buffer[index];
             }
 
-            inline character const & at (uint32_t index) const {
+            inline character const & at (size_t index) const {
                 return _buffer[index];
             }
 
-			inline point const & size() const { return _size; }
+			inline maxim::tui::size const & size() const { return _size; }
 
-            inline void resize (point const & size) {
-                std::vector < character > resized (size.x * size.y);
+            inline void resize (maxim::tui::size const & size) {
+                std::vector < character > resized (
+                        static_cast <size_t>(size.width * size.height));
 
-                for (int32_t i = 0; i < size.y; ++i) {
+                for (int32_t i = 0; i < size.height; ++i) {
                     std::copy(
-                            _buffer.begin() += (size.x * i),
-                            _buffer.begin() += ((size.x * i) + size.x),
-                            resized.begin() += (size.x * i)
+                            _buffer.begin() += (size.width * i),
+                            _buffer.begin() += ((size.width * i) + size.width),
+                            resized.begin() += (size.width * i)
                     );
                 }
 
@@ -121,14 +122,14 @@ namespace maxim {
                     character_buffer const & buffer
             ) const;
 
-            inline uint32_t coords_to_index (point const & p) const {
-                return p.y * _size.x + p.x;
+            inline int32_t coords_to_index (point const & p) const {
+                return p.y * _size.width + p.x;
             }
 
-            inline point index_to_coords (uint32_t index) const {
+            inline point index_to_coords (int32_t index) const {
                 return {
-                        static_cast < int32_t > (index % _size.x),
-                        static_cast < int32_t > (index / _size.x)
+                        static_cast < int32_t > (index % _size.width),
+                        static_cast < int32_t > (index / _size.width)
                 };
             }
 
@@ -137,7 +138,8 @@ namespace maxim {
             std::vector < character >
                     _buffer;
 
-            point   _size;
+            maxim::tui::size
+                    _size;
 
         };
 

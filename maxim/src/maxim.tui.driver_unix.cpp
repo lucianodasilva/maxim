@@ -12,7 +12,7 @@ namespace maxim {
 
         driver::driver() {}
 
-        point driver::get_size() const {
+        size driver::get_size() const {
             winsize w = {};
             ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 

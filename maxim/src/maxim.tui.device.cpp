@@ -4,9 +4,13 @@
 namespace maxim {
     namespace tui {
 
-        point const & device::get_size () const {
+        size const & device::get_size () const {
             return _size;
         }
+
+		character_buffer & device::backbuffer() {
+			return _back_buffer;
+		}
 
 		maxim::tui::graphics device::graphics() {
 			return { _back_buffer };

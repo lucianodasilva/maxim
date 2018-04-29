@@ -2,7 +2,7 @@
 #ifndef _MAXIM_TUI_DRIVER_HPP_
 #define _MAXIM_TUI_DRIVER_HPP_
 
-#include "maxim.tui.point.hpp"
+#include "maxim.tui.structures.hpp"
 
 namespace maxim {
     namespace tui {
@@ -14,7 +14,7 @@ namespace maxim {
 
 			driver();
 
-			point get_size() const;
+			size get_size() const;
 
 			void send(maxim::tui::stream & stream);
 

@@ -4,7 +4,13 @@
 namespace maxim {
 	namespace tui {
 
-		graphics::graphics(character_buffer & buffer) : _buffer{ buffer }
+		graphics::graphics(character_buffer & buffer) :
+			_buffer{ buffer },
+			view{ {}, buffer.size() }
+		{}
+
+		graphics::graphics(character_buffer & buffer, rect const & view)
+				: _buffer {buffer}, view {view}
 		{}
 
 		void graphics::clear() {
@@ -12,8 +18,7 @@ namespace maxim {
 		}
 
 		void graphics::draw_box(
-			point const & position,
-			point const & size,
+			rect const & rct,
 			color_t color,
 			bool solid,
 			color_t backcolor
@@ -24,27 +29,30 @@ namespace maxim {
 				c.forecolor = color;
 				c.content = ' ';
 
-				for (int32_t y = position.y; y < position.y + size.y; ++y) {
-					int32_t
-						line_begin = _buffer.coords_to_index({ position.x, y }),
-						line_end = line_begin + size.x;
-
-					for (int32_t index = line_begin; index < line_end; ++index) {
-						_buffer.at(static_cast < uint32_t > (index)) = c;
+				for (
+						int32_t y = rct.top();
+						y < rct.bottom();
+						++y
+				) {
+					for (int32_t x = rct.left(); x < rct.right(); ++x) {
+						set({ x, y }, c);
 					}
 				}
 			}
 			else {
-				point top_left = position;
-				point top_right = position + point{ size.x, 0 };
-				point bottom_left = position + point{ 0, size.y };
-				point bottom_right = position + size;
+
+				point
+						top_left = rct.position,
+						top_right = {rct.right(), rct.top()},
+						bottom_left = {rct.left(), rct.bottom ()},
+						bottom_right = {rct.right(), rct.bottom ()};
 
 				// draw lines
-				draw_h_line(top_left, size.x, color, false, backcolor);
-				draw_h_line(bottom_left, size.x, color, false, backcolor);
-				draw_v_line(top_left, size.y, color, false, backcolor);
-				draw_v_line(top_right, size.y, color, false, backcolor);
+				draw_h_line(top_left, rct.size.width, color, false, backcolor);
+				draw_h_line(bottom_left, rct.size.width, color, false, backcolor);
+				draw_v_line(top_left, rct.size.height, color, false, backcolor);
+				draw_v_line(top_right, rct.size.height, color, false, backcolor);
+				 
 				// draw corners
 				character c = {
 					' ', // content
@@ -55,20 +63,23 @@ namespace maxim {
 					false, // reversed
 					true,  // is graph
 				},
-				backcolor,
-				color
+					backcolor,
+					color
 				};
 
 				auto const & graphs = encoding::ansi::graph_chars;
 
 				c.content = graphs.corner_up_right;
-				_buffer.at(top_left) = c;
+				set (top_left, c);
+
 				c.content = graphs.corner_up_left;
-				_buffer.at(top_right) = c;
+				set (top_right, c);
+
 				c.content = graphs.corner_down_right;
-				_buffer.at(bottom_left) = c;
+				set (bottom_left, c);
+
 				c.content = graphs.corner_down_left;
-				_buffer.at(bottom_right) = c;
+				set(bottom_right, c);
 			}
 		}
 
@@ -79,6 +90,7 @@ namespace maxim {
 			color_t back_color,
 			character_flags const & flags
 		) {
+
 			character c = {
 				' ',
 				flags,
@@ -86,11 +98,9 @@ namespace maxim {
 				color
 			};
 
-			auto index = _buffer.coords_to_index(position);
-
-			for (uint32_t i = 0; i < text.size(); ++i) {
+			for (int32_t i = 0; i < text.size(); ++i) {
 				c.content = text[i];
-				_buffer.at(index + i) = c;
+				set(position + point {i, 0}, c);
 			}
 		}
 
@@ -114,16 +124,8 @@ namespace maxim {
 				c.forecolor = color;
 			}
 
-			int32_t
-				y1 = position.y,
-				y2 = y1 + length;
-
-			if (y2 < y1)
-				std::swap(y1, y2);
-
-			for (int32_t y = y1; y < y2; ++y) {
-				_buffer.at({ position.x, y }) = c;
-			}
+			for (int32_t i = 0; i < length; ++i)
+				set(position + point {0, i}, c);
 		}
 
 		void graphics::draw_h_line(
@@ -146,15 +148,8 @@ namespace maxim {
 				c.forecolor = color;
 			}
 
-			int32_t
-				x1 = position.x,
-				x2 = x1 + length;
-
-			if (x2 < x1)
-				std::swap(x1, x2);
-
-			for (int32_t x = x1; x < x2; ++x)
-				_buffer.at({ x, position.y }) = c;
+			for (int32_t i = 0; i < length; ++i)
+				set(position + point{ i, 0 }, c);
 		}
 
 

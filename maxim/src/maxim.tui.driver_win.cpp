@@ -25,7 +25,7 @@ namespace maxim {
 				throw std::runtime_error("Failed setting consome mode");
 		}
 
-		point driver::get_size() const {
+		size driver::get_size() const {
 			CONSOLE_SCREEN_BUFFER_INFO buffer_info;
 			
 			GetConsoleScreenBufferInfo(

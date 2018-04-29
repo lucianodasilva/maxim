@@ -2,20 +2,26 @@
 #define _MAXIM_TUI_GRAPHICS_HPP_
 
 #include "maxim.tui.character.hpp"
-#include "maxim.tui.point.hpp"
+#include "maxim.tui.structures.hpp"
+
+#include <tuple>
 
 namespace maxim {
 	namespace tui {
 
 		struct graphics {
+		private:
+			character_buffer & _buffer;
+		public:
+			rect view = {};
 
 			graphics(character_buffer & buffer);
+			graphics(character_buffer & buffer, rect const & view);
 
 			void clear();
 
 			void draw_box(
-				point const & position,
-				point const & size,
+				rect const & rct,
 				color_t color,
 				bool solid = true,
 				color_t backcolor = colors::black
@@ -46,7 +52,18 @@ namespace maxim {
 			);
 
 		private:
-			character_buffer & _buffer;
+
+			inline void set( point const & pos, character const & c ) {
+				// transform
+				auto tpos = view.position + pos;
+
+				// clip
+				if (!view.contains(tpos))
+					return;
+
+				_buffer.at(tpos) = c;
+			}
+
 		};
 
 	}

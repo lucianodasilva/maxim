@@ -15,8 +15,9 @@ namespace maxim {
         struct device {
         public:
 
-            point const & get_size () const;
+            size const & get_size () const;
 
+			character_buffer & backbuffer();
 			maxim::tui::graphics graphics();
 
             void fullscreen(bool value);
@@ -29,7 +30,7 @@ namespace maxim {
         private:
 
             driver		_driver;
-            point       _size           { _driver.get_size() };
+            size       _size           { _driver.get_size() };
 
             character_buffer
                         _back_buffer    { _size },

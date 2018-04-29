@@ -12,15 +12,15 @@ namespace maxim {
 
             character_change_set changes;
 
-            for (uint32_t y = 0; y < _size.y; ++y) {
+            for (uint32_t y = 0; y < _size.height; ++y) {
                 uint32_t
-                        line_index = _size.x * y,
+                        line_index = _size.width * y,
                         begin_index = line_index,
                         ending_index = begin_index;
 
                 bool has_changes = false;
 
-                for (uint32_t x = 0; x < _size.x; ++x) {
+                for (uint32_t x = 0; x < _size.width; ++x) {
                     ending_index = line_index + x;
 
                     bool is_same = at(ending_index) == buffer.at(ending_index);
