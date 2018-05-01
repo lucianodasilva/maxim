@@ -51,6 +51,13 @@ namespace maxim {
 				color_t backcolor = colors::black
 			);
 
+			void draw_buffer(
+				character_buffer const & buffer,
+				point const & position,
+				rect source = {},
+				bool null_mask = false
+			);
+
 		private:
 
 			inline void set( point const & pos, character const & c ) {

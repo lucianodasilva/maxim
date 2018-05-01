@@ -152,6 +152,25 @@ namespace maxim {
 				set(position + point{ i, 0 }, c);
 		}
 
+		void graphics::draw_buffer(
+			character_buffer const & buffer,
+			point const & position,
+			rect source,
+			bool null_mask
+		) {
+			if (source.is_zero())
+				source = { {}, buffer.size() };
+
+			for (int32_t y = source.top(); y < source.bottom(); ++y) {
+				for (int32_t x = source.left(); x < source.right(); ++x) {
+					auto offset = point{ x, y };
+					auto & c = buffer.at(offset);
+
+					if (c.content != 0)
+						set(position + offset, c);
+				}
+			}
+		}
 
 	}
 }
