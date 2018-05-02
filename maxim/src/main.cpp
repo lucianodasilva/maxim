@@ -49,6 +49,14 @@ int main(int arg_c, char ** arg_v)
 
     tui_device.present();
 
+	application app;
+	
+	app.on_start += [](application &) {
+		std::cout << "app started" << std::endl;
+	};
+
+	app.run();
+
     std::cin >> i;
 
     tui_device.enable_cursor(true);

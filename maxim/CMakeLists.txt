@@ -32,13 +32,16 @@ project (maxim_tui)
 add_library(
 	maxim_tui
 	STATIC
+		include/maxim.tui.application.hpp
 		include/maxim.tui.character.hpp
 		include/maxim.tui.character_change_set.hpp
 		include/maxim.tui.device.hpp
 		include/maxim.tui.driver.hpp
 		include/maxim.tui.encoding.hpp
+		include/maxim.tui.event.hpp
 		include/maxim.tui.graphics.hpp
 		include/maxim.tui.structures.hpp
+		src/maxim.tui.application.cpp
 		src/maxim.tui.character.cpp
 		src/maxim.tui.device.cpp
 		src/maxim.tui.driver_unix.cpp 

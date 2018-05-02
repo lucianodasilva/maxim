@@ -1,0 +1,126 @@
+#ifndef _MAXIM_TUI_EVENT_HPP_
+#define _MAXIM_TUI_EVENT_HPP_
+
+#include <functional>
+#include <future>
+#include <memory>
+#include <mutex>
+#include <thread>
+
+namespace maxim{
+	namespace tui {
+
+		namespace details {
+
+			template < class _sender_t, class ... _args_tv >
+			struct event_traits {
+				using handler_t = std::function < void(_sender_t &, _args_tv && ...) >;
+			};
+
+			template < class _sender_t>
+			struct event_traits < _sender_t, void >{
+				using handler_t = std::function < void(_sender_t &) >;
+			};
+
+			template < class _sender_t, class ... _args_tv >
+			struct event_data {
+			public:
+				using handler_t = typename details::event_traits < _sender_t, _args_tv...>::handler_t;
+			protected:
+				mutable std::mutex
+					handler_mutex;
+
+				std::vector < std::shared_ptr <handler_t> >
+					handlers;
+			};
+
+			template < class _data_t, class _sender_t, class ... _args_tv >
+			struct event_invoke : public _data_t	
+			{
+			public:
+				inline void invoke(_sender_t & sender, _args_tv && ... argv) const {
+					std::vector < std::shared_ptr < handler_t > > handlers;
+					{
+						std::lock_guard < std::mutex > lock(_data_t::handler_mutex);
+						// copy handlers to avoid dead locks
+						handlers = _data_t::handlers;
+					}
+
+					for (auto & h : handlers)
+						h->operator ()(sender, std::forward<_args_tv...>(argv ...));
+
+				}
+
+				inline void async_invoke(_sender_t & sender, _args_tv && ... argv) const {
+					std::async(std::launch::async, [&]() {
+						this->invoke(sender, std::forward <_args_tv ...>(argv...));
+					})
+				}
+			};
+
+			template < class _data_t, class _sender_t >
+			struct event_invoke < _data_t, _sender_t > : public _data_t
+			{
+			public:
+				inline void invoke(_sender_t & sender ) const {
+					std::vector < std::shared_ptr < handler_t > > handlers;
+					{
+						std::lock_guard < std::mutex > lock(handler_mutex);
+						// copy handlers to avoid dead locks
+						handlers = handlers;
+					}
+
+					for (auto & h : handlers)
+						h->operator ()(sender);
+				}
+
+				inline void async_invoke(_sender_t & sender) const {
+					std::async(std::launch::async, [&]() {
+						this->invoke(sender);
+					})
+				}
+			};
+
+		}
+
+		template < class _sender_t, class ... _args_tv >
+		struct event : public details::event_invoke < 
+			details::event_data < _sender_t, _args_tv...>, 
+			_sender_t, 
+			_args_tv... 
+		>{
+		public:
+			using handler_t = typename details::event_traits < _sender_t, _args_tv... >::handler_t;
+
+			// force single instance / no copy
+			event(const event &) = delete;
+			event & operator = (const event &) = delete;
+
+			inline event() {}
+
+			inline void operator += (handler_t && handler) {
+				std::lock_guard < std::mutex > lock(handler_mutex);
+				handlers.emplace_back(
+					std::make_shared < handler_t >(std::forward < handler_t > (handler))
+				);
+			}
+
+			inline void operator -= (handler_t && handler) {
+				std::lock_guard < std::mutex > lock(handler_mutex);
+
+				auto it = find(
+					handlers.begin(),
+					handlers.end(),
+					std::forward(handler)
+				);
+
+				if (it != _handlers.end())
+					handlers.erase(it);
+			}
+
+		};
+
+	}
+}
+
+#endif
