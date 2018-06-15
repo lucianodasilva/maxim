@@ -10,7 +10,15 @@
 namespace maxim {
     namespace tui {
 
-        driver::driver() {}
+        struct driver::internals {};
+
+        driver::driver() {
+
+        }
+
+        driver::~driver() {
+
+        }
 
         size driver::get_size() const {
             winsize w = {};
@@ -22,8 +30,12 @@ namespace maxim {
             };
         }
 
-        void driver::send (maxim::tui::stream & stream) {
+        void driver::send (maxim::tui::stream & stream) const {
             ::write(STDOUT_FILENO, stream.data(), stream.size());
+        }
+
+        std::vector < input_event_info > driver::get_input_events () const {
+            return {};
         }
 
     }

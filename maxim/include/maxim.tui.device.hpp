@@ -27,9 +27,14 @@ namespace maxim {
 			void clear();
             void present ();
 
+			inline maxim::tui::driver const & driver () const {
+				return _driver;
+			}
+
         private:
 
-            driver		_driver;
+            maxim::tui::driver		
+						_driver;
             size       _size           { _driver.get_size() };
 
             character_buffer

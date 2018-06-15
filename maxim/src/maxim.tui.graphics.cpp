@@ -98,7 +98,9 @@ namespace maxim {
 				color
 			};
 
-			for (int32_t i = 0; i < text.size(); ++i) {
+			int32_t len = static_cast <int32_t> (text.size());
+
+			for (int32_t i = 0; i < len; ++i) {
 				c.content = text[i];
 				set(position + point {i, 0}, c);
 			}

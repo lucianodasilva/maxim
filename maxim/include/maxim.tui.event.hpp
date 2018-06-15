@@ -39,22 +39,22 @@ namespace maxim{
 			{
 			public:
 				inline void invoke(_sender_t & sender, _args_tv && ... argv) const {
-					std::vector < std::shared_ptr < handler_t > > handlers;
+					std::remove_const_t < decltype (_data_t::handlers) > local_handlers;
 					{
 						std::lock_guard < std::mutex > lock(_data_t::handler_mutex);
 						// copy handlers to avoid dead locks
-						handlers = _data_t::handlers;
+						local_handlers = _data_t::handlers;
 					}
 
-					for (auto & h : handlers)
+					for (auto & h : local_handlers)
 						h->operator ()(sender, std::forward<_args_tv...>(argv ...));
 
 				}
 
-				inline void async_invoke(_sender_t & sender, _args_tv && ... argv) const {
+				inline void async_invoke(_sender_t & sender, _args_tv && ... argv) {
 					std::async(std::launch::async, [&]() {
 						this->invoke(sender, std::forward <_args_tv ...>(argv...));
-					})
+					});
 				}
 			};
 
@@ -63,21 +63,21 @@ namespace maxim{
 			{
 			public:
 				inline void invoke(_sender_t & sender ) const {
-					std::vector < std::shared_ptr < handler_t > > handlers;
+					std::remove_const_t < decltype (_data_t::handlers) > local_handlers;
 					{
-						std::lock_guard < std::mutex > lock(handler_mutex);
+						std::lock_guard < std::mutex > lock(_data_t::handler_mutex);
 						// copy handlers to avoid dead locks
-						handlers = handlers;
+						local_handlers = _data_t::handlers;
 					}
 
-					for (auto & h : handlers)
+					for (auto & h : local_handlers)
 						h->operator ()(sender);
 				}
 
 				inline void async_invoke(_sender_t & sender) const {
 					std::async(std::launch::async, [&]() {
 						this->invoke(sender);
-					})
+					});
 				}
 			};
 
@@ -99,23 +99,23 @@ namespace maxim{
 			inline event() {}
 
 			inline void operator += (handler_t && handler) {
-				std::lock_guard < std::mutex > lock(handler_mutex);
-				handlers.emplace_back(
+				std::lock_guard < std::mutex > lock(this->handler_mutex);
+				this->handlers.emplace_back(
 					std::make_shared < handler_t >(std::forward < handler_t > (handler))
 				);
 			}
 
 			inline void operator -= (handler_t && handler) {
-				std::lock_guard < std::mutex > lock(handler_mutex);
+				std::lock_guard < std::mutex > lock(this->handler_mutex);
 
 				auto it = find(
-					handlers.begin(),
-					handlers.end(),
+					this->handlers.begin(),
+					this->handlers.end(),
 					std::forward(handler)
 				);
 
-				if (it != _handlers.end())
-					handlers.erase(it);
+				if (it != this->handlers.end())
+					this->handlers.erase(it);
 			}
 
 		};

@@ -1,4 +1,5 @@
 #include "maxim.tui.application.hpp"
+#include <iostream>
 
 namespace maxim {
 	namespace tui {
@@ -14,7 +15,7 @@ namespace maxim {
 			on_start.invoke(*this);
 
 			while (_is_running) {
-
+				dispatch_input_events();
 			}
 
 			// call on_exit event
@@ -23,6 +24,15 @@ namespace maxim {
 
 		void application::exit() {
 			_is_running = false;
+		}
+
+		void application::dispatch_input_events() {
+			auto args = _device.driver().get_input_events();
+
+			for (auto & arg : args) {
+				auto & e = (arg.is_down ? on_key_down : on_key_up);
+				e.invoke(*this, { arg.char_value, arg.key });
+			}
 		}
 
 	}

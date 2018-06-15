@@ -40,6 +40,7 @@ add_library(
 		include/maxim.tui.encoding.hpp
 		include/maxim.tui.event.hpp
 		include/maxim.tui.graphics.hpp
+		include/maxim.tui.input.hpp
 		include/maxim.tui.structures.hpp
 		src/maxim.tui.application.cpp
 		src/maxim.tui.character.cpp
