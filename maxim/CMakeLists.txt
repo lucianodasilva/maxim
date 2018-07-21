@@ -24,7 +24,7 @@ target_link_libraries(
 set_target_properties(
 		maxim_core
 		PROPERTIES
-		CXX_STANDARD 17
+		CXX_STANDARD 14
 )
 
 project (maxim_tui)
@@ -39,6 +39,7 @@ add_library(
 		include/maxim.tui.driver.hpp
 		include/maxim.tui.encoding.hpp
 		include/maxim.tui.event.hpp
+		include/maxim.tui.event_dispatcher.hpp
 		include/maxim.tui.graphics.hpp
 		include/maxim.tui.input.hpp
 		include/maxim.tui.structures.hpp
@@ -48,6 +49,7 @@ add_library(
 		src/maxim.tui.driver_unix.cpp 
 		src/maxim.tui.driver_win.cpp
 		src/maxim.tui.encoding.cpp
+		src/maxim.tui.event_dispatcher.cpp
 		src/maxim.tui.graphics.cpp
 )
 
@@ -61,7 +63,7 @@ target_include_directories(maxim_tui
 set_target_properties(
 		maxim_tui
 		PROPERTIES
-		CXX_STANDARD 17
+		CXX_STANDARD 14
 )
 
 target_link_libraries (maxim_tui maxim_core)
@@ -78,5 +80,5 @@ target_link_libraries(maxim maxim_core maxim_tui)
 set_target_properties(
 		maxim
 		PROPERTIES
-		CXX_STANDARD 17
+		CXX_STANDARD 14
 )
