@@ -7,6 +7,8 @@
 #include <mutex>
 #include <thread>
 
+#include "maxim.tui.event_dispatcher.hpp"
+
 namespace maxim{
 	namespace tui {
 
@@ -48,12 +50,14 @@ namespace maxim{
 
 					for (auto & h : local_handlers)
 						h->operator ()(sender, std::forward<_args_tv...>(argv ...));
-
 				}
 
-				inline void async_invoke(_sender_t & sender, _args_tv && ... argv) {
-					std::async(std::launch::async, [&]() {
-						this->invoke(sender, std::forward <_args_tv ...>(argv...));
+				template < class dispatcher_t = event_dispatcher <> >
+				inline void async_invoke(_sender_t & sender, _args_tv ... argv) {					
+					dispatcher_t::dispatch([=, handlers = _data_t::handlers]() {
+						for (auto & h : handlers) {
+							h(sender, argv...);
+						}
 					});
 				}
 			};
@@ -74,9 +78,12 @@ namespace maxim{
 						h->operator ()(sender);
 				}
 
-				inline void async_invoke(_sender_t & sender) const {
-					std::async(std::launch::async, [&]() {
-						this->invoke(sender);
+				template < class dispatcher_t = event_dispatcher <> >
+				inline void async_invoke(_sender_t & sender) {
+					dispatcher_t::dispatch([sender, handlers = _data_t::handlers]() {
+						for (auto & h : handlers) {
+							h(sender);
+						}
 					});
 				}
 			};

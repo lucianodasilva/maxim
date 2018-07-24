@@ -74,10 +74,10 @@ namespace maxim {
 		};
 
 		enum class modifier_key : uint8_t {
-			none = 0x00,
-			shift = 0x01,
+			none    = 0x00,
+			shift   = 0x01,
 			control = 0x02,
-			alt = 0x04
+			alt     = 0x04
 		};
 
 		inline modifier_key operator | (modifier_key v1, modifier_key v2) {
@@ -93,7 +93,7 @@ namespace maxim {
 			using under_type = std::underlying_type_t < modifier_key >;
 
 			return static_cast <modifier_key> (
-				static_cast <under_type> (v1) |
+				static_cast <under_type> (v1) &
 				static_cast <under_type> (v2)
 				);
 		}

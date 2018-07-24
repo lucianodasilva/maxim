@@ -7,7 +7,7 @@ add_library(
 	STATIC
 		include/maxim.hpp
 		src/maxim.cpp
-)
+        include/maxim.tui.driver_unix.hpp)
 
 target_include_directories(maxim_core 
 	PUBLIC
@@ -79,6 +79,21 @@ target_link_libraries(maxim maxim_core maxim_tui)
 
 set_target_properties(
 		maxim
+		PROPERTIES
+		CXX_STANDARD 14
+)
+
+add_executable(maxim_test
+	test/main.cpp
+	test/unix_input_parser_test.cpp
+)
+
+target_link_libraries(maxim_test maxim_core maxim_tui Catch2::Catch2)
+
+catch_discover_tests(maxim_test)
+
+set_target_properties(
+		maxim_test
 		PROPERTIES
 		CXX_STANDARD 14
 )
