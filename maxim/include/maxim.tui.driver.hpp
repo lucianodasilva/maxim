@@ -3,7 +3,7 @@
 #define _MAXIM_TUI_DRIVER_HPP_
 
 #include "maxim.tui.structures.hpp"
-#include "maxim.tui.input.hpp"
+#include "maxim.input.hpp"
 
 #include <memory>
 #include <vector>
@@ -22,8 +22,6 @@ namespace maxim {
 			size get_size() const;
 
 			void send(maxim::tui::stream & stream) const;
-
-			std::vector<input_event_info> get_input_events() const;
 
 		private:
 

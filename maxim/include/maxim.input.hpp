@@ -1,11 +1,11 @@
-#ifndef _MAXIM_TUI_INPUT_HPP_
-#define _MAXIM_TUI_INPUT_HPP_
+#ifndef _MAXIM_INPUT_HPP_
+#define _MAXIM_INPUT_HPP_
 
-#include "maxim.tui.event.hpp"
+#include "maxim.event.hpp"
+
 
 namespace maxim {
-	namespace tui {
-
+	namespace input {
 		// virtual key codes
 		enum class virtual_key : uint8_t {
 			none = 0x00,
@@ -104,6 +104,13 @@ namespace maxim {
 			modifier_key	modifiers;
 		};
 
+		inline bool operator==(key_event_args const &v1, key_event_args const &v2) {
+			return
+				v1.char_value == v2.char_value &&
+				v1.key == v2.key &&
+				v1.modifiers == v2.modifiers;
+		}
+
 		struct input_event_info {
 			char32_t		char_value;
 			virtual_key		key;
@@ -116,7 +123,47 @@ namespace maxim {
 
 		template < class _sender_t >
 		using key_up_event = event < _sender_t, key_event_args >;
+
+
+		// hasher and equality operator for key_event_args
+		namespace details {
+
+			// hash combination util
+			template<class ... hash_v_tv>
+			std::size_t hash_combine(hash_v_tv const &... values) {
+				std::size_t h = 0;
+				// sink
+				using sink = int[];
+				(void) sink{
+					0, ((h ^= std::hash<hash_v_tv>()(values) + 0x9e3779b9 + (h << 6) + (h >> 2)), 0)...
+				};
+
+				return h;
+			}
+
+			inline bool operator==(key_event_args const &v1, key_event_args const &v2) {
+				return
+					v1.char_value == v2.char_value &&
+					v1.key == v2.key &&
+					v1.modifiers == v2.modifiers;
+			}
+		}
 	}
+}
+
+namespace std
+{
+	template <>
+	struct hash <maxim::input::key_event_args>
+	{
+		std::size_t operator ()(maxim::input::key_event_args const & args) const noexcept{
+			return maxim::input::details::hash_combine(
+				args.char_value,
+				static_cast < std::underlying_type_t <maxim::input::virtual_key> > (args.key),
+				static_cast < std::underlying_type_t <maxim::input::modifier_key> > (args.modifiers)
+			);
+		}
+	};
 }
 
 #endif

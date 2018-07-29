@@ -7,7 +7,7 @@ add_library(
 	STATIC
 		include/maxim.hpp
 		src/maxim.cpp
-        include/maxim.tui.driver_unix.hpp)
+		include/maxim.input.unix.driver.hpp include/maxim.input.driver.hpp src/maxim.input.driver.cpp include/maxim.input.unix.termio_parser.hpp include/maxim.input.unix.key_state_emulator.hpp src/maxim.input.unix.termio_parser.cpp src/maxim.input.unix.key_state_emulator.cpp)
 
 target_include_directories(maxim_core 
 	PUBLIC
@@ -32,25 +32,24 @@ project (maxim_tui)
 add_library(
 	maxim_tui
 	STATIC
-		include/maxim.tui.application.hpp
+		include/maxim.application.hpp
 		include/maxim.tui.character.hpp
 		include/maxim.tui.character_change_set.hpp
 		include/maxim.tui.device.hpp
 		include/maxim.tui.driver.hpp
 		include/maxim.tui.encoding.hpp
-		include/maxim.tui.event.hpp
-		include/maxim.tui.event_dispatcher.hpp
+		include/maxim.event.hpp
+		include/maxim.event_dispatcher.hpp
 		include/maxim.tui.graphics.hpp
-		include/maxim.tui.input.hpp
+        include/maxim.input.hpp
 		include/maxim.tui.structures.hpp
-		src/maxim.tui.application.cpp
+		src/maxim.application.cpp
 		src/maxim.tui.character.cpp
 		src/maxim.tui.device.cpp
-		src/maxim.tui.driver_unix.cpp 
+		src/maxim.input.unix.driver.cpp
 		src/maxim.tui.driver_win.cpp
 		src/maxim.tui.encoding.cpp
-		src/maxim.tui.event_dispatcher.cpp
-		src/maxim.tui.graphics.cpp
+        src/maxim.tui.graphics.cpp
 )
 
 target_include_directories(maxim_tui 
