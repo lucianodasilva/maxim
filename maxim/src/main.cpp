@@ -11,8 +11,8 @@
 #include <cstring>
 
 /*
-void draw_grid(maxim::tui::device & device, maxim::tui::rect const & bounds) {
-	using namespace maxim::tui;
+void draw_grid(maxim::term::device & device, maxim::term::rect const & bounds) {
+	using namespace maxim::term;
 
 	device.graphics().draw_h_line(bounds.position, bounds.size.width, colors::dark_gray);
 	device.graphics().draw_h_line({bounds.left(), bounds.bottom()}, bounds.size.width, colors::dark_gray);
@@ -34,7 +34,8 @@ void draw_grid(maxim::tui::device & device, maxim::tui::rect const & bounds) {
 
 int main(int arg_c, char ** arg_v)
 {
-	using namespace maxim::tui;
+	using namespace maxim;
+	using namespace maxim::term;
 
 	/*
     device tui_device;
@@ -60,22 +61,30 @@ m
     tui_device.present();
 	*/
 	application app;
+	bool		can_cancel = false;
 	
 	app.on_start += [](application &) {
 		std::cout << "app started" << std::endl;
 	};
 
-	app.on_key_down += [](application & a, key_event_args const & args) {
+	app.on_exit += [&](application &, bool & cancel) {
+		cancel = can_cancel;
+	};
+
+	app.on_key_down += [&](application & a, input::key_event_args const & args) {
 		std::cout
             << "keypress: '" << args.char_value
             << "' virtual key: " << std::hex << (uint32_t)args.key
             << "' modifier key: " << std::hex << (uint32_t)args.modifiers
             << std::endl;
 
-		if (args.key == virtual_key::C && args.modifiers == modifier_key::control) {
+		if (args.key == input::virtual_key::C && args.modifiers == input::modifier_key::control) {
 			std::cout << "exit called" << std::endl;
 			a.exit();
 		}
+
+		if (args.key == input::virtual_key::T)
+			can_cancel = !can_cancel;
 	};
 
 	app.run();

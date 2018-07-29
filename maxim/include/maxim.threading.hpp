@@ -2,6 +2,8 @@
 #ifndef	_maxim_tui_threading_hpp_
 #define _maxim_tui_threading_hpp_
 
+#include <atomic>
+
 namespace maxim {
 	namespace tui {
 		namespace threading {

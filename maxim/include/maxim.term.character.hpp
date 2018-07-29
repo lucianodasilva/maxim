@@ -1,16 +1,16 @@
 #pragma once
-#ifndef _MAXIM_TUI_CHARACTER_HPP_
-#define _MAXIM_TUI_CHARACTER_HPP_
+#ifndef _maxim_term_character_hpp_
+#define _maxim_term_character_hpp_
 
 #include <cinttypes>
 #include <vector>
 #include <tuple>
 
-#include "maxim.tui.character_change_set.hpp"
-#include "maxim.tui.structures.hpp"
+#include "maxim.term.character_change_set.hpp"
+#include "maxim.term.structures.hpp"
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
         using color_t = uint8_t;
 
@@ -79,7 +79,7 @@ namespace maxim {
         struct character_buffer {
         public:
 
-            inline character_buffer (maxim::tui::size const & size) :
+            inline character_buffer (maxim::term::size const & size) :
                     _buffer { static_cast < size_t > (size.width * size.height) },
                     _size { size }
             {}
@@ -100,9 +100,9 @@ namespace maxim {
                 return _buffer[index];
             }
 
-			inline maxim::tui::size const & size() const { return _size; }
+			inline maxim::term::size const & size() const { return _size; }
 
-            inline void resize (maxim::tui::size const & size) {
+            inline void resize (maxim::term::size const & size) {
                 std::vector < character > resized (
                         static_cast <size_t>(size.width * size.height));
 
@@ -138,7 +138,7 @@ namespace maxim {
             std::vector < character >
                     _buffer;
 
-            maxim::tui::size
+            maxim::term::size
                     _size;
 
         };
@@ -146,4 +146,4 @@ namespace maxim {
     }
 }
 
-#endif //_MAXIM_TUI_CHARACTER_HPP_
+#endif

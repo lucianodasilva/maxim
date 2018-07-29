@@ -1,8 +1,8 @@
-#include "maxim.tui.graphics.hpp"
-#include "maxim.tui.encoding.hpp"
+#include "maxim.term.graphics.hpp"
+#include "maxim.term.encoding.hpp"
 
 namespace maxim {
-	namespace tui {
+	namespace term {
 
 		graphics::graphics(character_buffer & buffer) :
 			_buffer{ buffer },

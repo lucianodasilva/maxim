@@ -1,12 +1,12 @@
 #pragma once
-#ifndef _MAXIM_TUI_CHARACTER_CHANGE_SET_HPP_
-#define _MAXIM_TUI_CHARACTER_CHANGE_SET_HPP_
+#ifndef _maxim_term_character_change_set_hpp_
+#define _maxim_term_character_change_set_hpp_
 
 #include <cinttypes>
 #include <vector>
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
         struct character_span {
             uint32_t begin, end;
@@ -17,4 +17,4 @@ namespace maxim {
     }
 }
 
-#endif //_MAXIM_TUI_CHARACTER_CHANGE_SET_HPP_
+#endif

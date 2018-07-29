@@ -1,13 +1,13 @@
 #pragma once
-#ifndef _MAXIM_TUI_ENCODING_HPP_
-#define _MAXIM_TUI_ENCODING_HPP_
+#ifndef _maxim_term_encoding_hpp_
+#define _maxim_term_encoding_hpp_
 
-#include "maxim.tui.stream.hpp"
-#include "maxim.tui.character.hpp"
-#include "maxim.tui.character_change_set.hpp"
+#include "maxim.term.stream.hpp"
+#include "maxim.term.character.hpp"
+#include "maxim.term.character_change_set.hpp"
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
 		namespace encoding {
 
@@ -53,11 +53,11 @@ namespace maxim {
 			void encode_change_set (
 				character_buffer const &		buffer, 
 				character_change_set const &	change_set,
-				maxim::tui::stream &			out_stream
+				maxim::term::stream &			out_stream
 			);
 
 		}
     }
 }
 
-#endif //_MAXIM_TUI_ENCODING_HPP_
+#endif

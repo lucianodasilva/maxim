@@ -1,13 +1,14 @@
-#ifndef _MAXIM_TUI_GRAPHICS_HPP_
-#define _MAXIM_TUI_GRAPHICS_HPP_
+#pragma once
+#ifndef _maxim_term_graphics_hpp_
+#define _maxim_term_graphics_hpp_
 
-#include "maxim.tui.character.hpp"
-#include "maxim.tui.structures.hpp"
+#include "maxim.term.character.hpp"
+#include "maxim.term.structures.hpp"
 
 #include <tuple>
 
 namespace maxim {
-	namespace tui {
+	namespace term {
 
 		struct graphics {
 		private:
@@ -76,4 +77,4 @@ namespace maxim {
 	}
 }
 
-#endif // _MAXIM_TUI_GRAPHICS_HPP_
+#endif

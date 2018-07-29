@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _MAXIM_TUI_STREAM_HPP_
-#define _MAXIM_TUI_STREAM_HPP_
+#ifndef _maxim_term_stream_hpp_
+#define _maxim_term_stream_hpp_
 
 #include <iterator>
 #include <limits>
@@ -8,7 +8,7 @@
 #include <vector>
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
         struct stream {
         public:
@@ -100,4 +100,4 @@ namespace maxim {
     }
 }
 
-#endif //_MAXIM_TUI_STREAM_HPP_
+#endif

@@ -8,13 +8,13 @@
 #include <unistd.h>
 #include <cstring>
 
-#include "maxim.tui.driver.hpp"
-#include "maxim.tui.stream.hpp"
+#include "maxim.term.driver.hpp"
+#include "maxim.term.stream.hpp"
 
 #include <chrono>
 #include <unordered_map>
 
-#include "maxim.input.unix.driver.hpp"
+#include "maxim.term.input.unix.driver.hpp"
 
 namespace maxim {
     namespace tui {

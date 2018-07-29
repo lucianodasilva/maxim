@@ -1,10 +1,10 @@
-#include "maxim.tui.encoding.hpp"
-#include "maxim.tui.character.hpp"
-#include "maxim.tui.character_change_set.hpp"
-#include "maxim.tui.stream.hpp"
+#include "maxim.term.encoding.hpp"
+#include "maxim.term.character.hpp"
+#include "maxim.term.character_change_set.hpp"
+#include "maxim.term.stream.hpp"
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 		namespace encoding {
 
 			template < class _t >
@@ -12,7 +12,7 @@ namespace maxim {
 				return +v;
 			}
 
-			void encode_move(maxim::tui::stream & stream, point const &p) {
+			void encode_move(maxim::term::stream & stream, point const &p) {
 				stream
 					.write(ansi::move_prefix)
 					.write(p.y)
@@ -21,12 +21,12 @@ namespace maxim {
 					.write(ansi::move_suffix);
 			}
 
-			void encode_attribute_reset(maxim::tui::stream & stream) {
+			void encode_attribute_reset(maxim::term::stream & stream) {
 				stream.write(ansi::attr_reset);
 			}
 
 			void encode_attribute(
-				maxim::tui::stream & stream,
+				maxim::term::stream & stream,
 				character_flags const & current,
 				character_flags const & past
 			) {
@@ -71,7 +71,7 @@ namespace maxim {
 			}
 
 			void encode_color(
-				maxim::tui::stream & stream,
+				maxim::term::stream & stream,
 				character const & current, 
 				character const & past
 			) {
@@ -105,7 +105,7 @@ namespace maxim {
 			void encode_change_set (
 				character_buffer const &		buffer,
 				character_change_set const &	change_set,
-				maxim::tui::stream &			out_stream
+				maxim::term::stream &			out_stream
 			) {
 				if (change_set.empty())
 					return;

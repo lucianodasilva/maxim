@@ -1,8 +1,8 @@
-#include "maxim.tui.device.hpp"
-#include "maxim.tui.encoding.hpp"
+#include "maxim.term.device.hpp"
+#include "maxim.term.encoding.hpp"
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
         size const & device::get_size () const {
             return _size;
@@ -12,7 +12,7 @@ namespace maxim {
 			return _back_buffer;
 		}
 
-		maxim::tui::graphics device::graphics() {
+		maxim::term::graphics device::graphics() {
 			return { _back_buffer };
 		}
 

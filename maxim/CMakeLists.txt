@@ -7,7 +7,7 @@ add_library(
 	STATIC
 		include/maxim.hpp
 		src/maxim.cpp
-		include/maxim.input.unix.driver.hpp include/maxim.input.driver.hpp src/maxim.input.driver.cpp include/maxim.input.unix.termio_parser.hpp include/maxim.input.unix.key_state_emulator.hpp src/maxim.input.unix.termio_parser.cpp src/maxim.input.unix.key_state_emulator.cpp)
+		include/maxim.term.input.unix.driver.hpp include/maxim.term.input.driver.hpp src/maxim.term.input.driver.cpp include/maxim.term.input.unix.termio_parser.hpp include/maxim.term.input.unix.key_state_emulator.hpp src/maxim.term.input.unix.termio_parser.cpp src/maxim.term.input.unix.key_state_emulator.cpp)
 
 target_include_directories(maxim_core 
 	PUBLIC
@@ -33,23 +33,24 @@ add_library(
 	maxim_tui
 	STATIC
 		include/maxim.application.hpp
-		include/maxim.tui.character.hpp
-		include/maxim.tui.character_change_set.hpp
-		include/maxim.tui.device.hpp
-		include/maxim.tui.driver.hpp
-		include/maxim.tui.encoding.hpp
+		include/maxim.term.character.hpp
+		include/maxim.term.character_change_set.hpp
+		include/maxim.term.device.hpp
+		include/maxim.term.driver.hpp
+		include/maxim.term.encoding.hpp
 		include/maxim.event.hpp
 		include/maxim.event_dispatcher.hpp
-		include/maxim.tui.graphics.hpp
-        include/maxim.input.hpp
-		include/maxim.tui.structures.hpp
+		include/maxim.term.graphics.hpp
+		include/maxim.term.input.hpp
+		include/maxim.term.structures.hpp
+		include/maxim.threading.hpp
 		src/maxim.application.cpp
-		src/maxim.tui.character.cpp
-		src/maxim.tui.device.cpp
-		src/maxim.input.unix.driver.cpp
+		src/maxim.term.character.cpp
+		src/maxim.term.device.cpp
+		src/maxim.term.input.unix.driver.cpp
 		src/maxim.tui.driver_win.cpp
-		src/maxim.tui.encoding.cpp
-        src/maxim.tui.graphics.cpp
+		src/maxim.term.encoding.cpp
+		src/maxim.term.graphics.cpp
 )
 
 target_include_directories(maxim_tui 
@@ -85,7 +86,7 @@ set_target_properties(
 add_executable(maxim_test
 	test/main.cpp
 	test/unix_input_parser_test.cpp
-)
+        test/unix_key_state_emulator_test.cpp)
 
 target_link_libraries(maxim_test maxim_core maxim_tui Catch2::Catch2)
 

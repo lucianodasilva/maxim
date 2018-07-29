@@ -1,7 +1,7 @@
-#include "maxim.tui.character.hpp"
+#include "maxim.term.character.hpp"
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
         character_change_set character_buffer::calculate_change_set (
                 character_buffer const & buffer

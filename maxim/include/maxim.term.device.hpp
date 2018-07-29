@@ -1,16 +1,16 @@
 #pragma once
-#ifndef _MAXIM_TUI_DEVICE_HPP_
-#define _MAXIM_TUI_DEVICE_HPP_
+#ifndef _maxim_term_device_hpp_
+#define _maxim_term_device_hpp_
 
 #include <memory>
 
-#include "maxim.tui.character.hpp"
-#include "maxim.tui.driver.hpp"
-#include "maxim.tui.graphics.hpp"
-#include "maxim.tui.stream.hpp"
+#include "maxim.term.character.hpp"
+#include "maxim.term.driver.hpp"
+#include "maxim.term.graphics.hpp"
+#include "maxim.term.stream.hpp"
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
         struct device {
         public:
@@ -18,7 +18,7 @@ namespace maxim {
             size const & get_size () const;
 
 			character_buffer & backbuffer();
-			maxim::tui::graphics graphics();
+			maxim::term::graphics graphics();
 
             void fullscreen(bool value);
 
@@ -27,13 +27,13 @@ namespace maxim {
 			void clear();
             void present ();
 
-			inline maxim::tui::driver const & driver () const {
+			inline maxim::term::driver const & driver () const {
 				return _driver;
 			}
 
         private:
 
-            maxim::tui::driver		
+            maxim::term::driver
 						_driver;
             size       _size           { _driver.get_size() };
 
@@ -48,4 +48,4 @@ namespace maxim {
     }
 }
 
-#endif //_MAXIM_TUI_DEVICE_HPP_
+#endif

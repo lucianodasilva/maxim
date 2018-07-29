@@ -1,12 +1,12 @@
 #ifdef WIN32
 
-#include "maxim.tui.driver.hpp"
-#include "maxim.tui.stream.hpp"
+#include "maxim.term.driver.hpp"
+#include "maxim.term.stream.hpp"
 
 #include <Windows.h>
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
 		struct driver::internals{
 			DWORD
@@ -89,7 +89,7 @@ namespace maxim {
 			};
 		}
 
-		void driver::send(maxim::tui::stream & stream) const {
+		void driver::send(maxim::term::stream & stream) const {
 			DWORD writen_length = 0;
 
 			WriteConsole(

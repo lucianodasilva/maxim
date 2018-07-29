@@ -1,11 +1,12 @@
-#ifndef _MAXIM_TUI_STRUCTURES_HPP_
-#define _MAXIM_TUI_STRUCTURES_HPP_
+#pragma once
+#ifndef _maxim_term_structures_hpp_
+#define _maxim_term_structures_hpp_
 
 #include <cinttypes>
 #include <algorithm>
 
 namespace maxim {
-	namespace tui {
+	namespace term {
 
 		struct point {
 			int32_t x, y;
@@ -33,8 +34,8 @@ namespace maxim {
 		};
 
 		struct rect {
-			maxim::tui::point 	position;
-			maxim::tui::size	size;
+			maxim::term::point 	position;
+			maxim::term::size	size;
 
 			inline bool is_zero () const { return position.is_zero () && size.is_zero(); }
 
@@ -60,7 +61,7 @@ namespace maxim {
 						std::max(top(), r.top())
 				};
 
-				maxim::tui::size size = {
+				maxim::term::size size = {
 						std::min (right(), r.right()) - pos.x,
 						std::min (bottom(), r.bottom()) - pos.y
 				};

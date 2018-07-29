@@ -3,7 +3,7 @@
 
 
 #include "maxim.event.hpp"
-#include "maxim.input.driver.hpp"
+#include "maxim.term.input.driver.hpp"
 
 #include <atomic>
 
@@ -12,26 +12,27 @@ namespace maxim {
 	class application {
 	public:
 
-		using application_event = event < application >;
+		using application_start_event = event < application >;
+		using application_close_event = event < application, bool & >;
 
-		application_event on_start;
-		application_event on_exit;
+		application_start_event on_start;
+		application_close_event on_exit;
 
-		input::key_down_event < application >	on_key_down;
-		input::key_up_event < application >	on_key_up;
+		term::input::key_down_event < application >	on_key_down;
+		term::input::key_up_event < application >	on_key_up;
 
 		void run();
 
 		void exit();
 
-		inline input::driver const * input_driver () const { return _input_driver.get(); }
+		inline term::input::driver const * input_driver () const { return _input_driver.get(); }
 
 	private:
 
 		std::atomic_bool
 			_is_running{ false };
 
-		std::unique_ptr < input::driver > _input_driver;
+		std::unique_ptr < term::input::driver > _input_driver = term::input::driver::create();
 
 		void dispatch_input_events();
 	};

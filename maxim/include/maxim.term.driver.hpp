@@ -1,15 +1,15 @@
 #pragma once
-#ifndef _MAXIM_TUI_DRIVER_HPP_
-#define _MAXIM_TUI_DRIVER_HPP_
+#ifndef _maxim_term_driver_hpp_
+#define _maxim_term_driver_hpp_
 
-#include "maxim.tui.structures.hpp"
-#include "maxim.input.hpp"
+#include "maxim.term.structures.hpp"
+#include "maxim.term.input.hpp"
 
 #include <memory>
 #include <vector>
 
 namespace maxim {
-    namespace tui {
+    namespace term {
 
 		struct stream;
 
@@ -21,7 +21,7 @@ namespace maxim {
 
 			size get_size() const;
 
-			void send(maxim::tui::stream & stream) const;
+			void send(maxim::term::stream & stream) const;
 
 		private:
 
@@ -33,4 +33,4 @@ namespace maxim {
     }
 }
 
-#endif //_MAXIM_TUI_DRIVER_HPP_
+#endif
