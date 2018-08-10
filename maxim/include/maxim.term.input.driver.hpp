@@ -14,7 +14,7 @@ namespace maxim {
             public:
                 virtual ~driver() = default;
 
-                virtual std::vector<input_event_info> get_input_events() const = 0;
+                virtual std::vector<key_event_args> get_input_events() const = 0;
 
                 static std::unique_ptr<driver> create();
             };

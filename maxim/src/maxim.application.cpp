@@ -18,6 +18,8 @@ namespace maxim {
 
 			while (_is_running) {
 				dispatch_input_events();
+
+				_device.present();
 			}
 
 			// call on_exit event
@@ -30,12 +32,16 @@ namespace maxim {
 		_is_running = false;
 	}
 
-	void application::dispatch_input_events() {
-		auto args = input_driver()->get_input_events();
+	term::device & application::device() {
+		return _device;
+	}
 
-		for (auto & arg : args) {
-			auto & e = (arg.is_down ? on_key_down : on_key_up);
-			e.invoke(*this, { arg.char_value, arg.key, arg.modifiers });
+	void application::dispatch_input_events() {
+		auto args = _device.get_input_events();
+
+		for (auto arg : args) {
+			auto & ev = (arg.is_down ? on_key_down : on_key_up);
+			ev.invoke(*this, std::move(arg.key));
 		}
 	}
 

@@ -1,7 +1,7 @@
 #ifndef _MAXIM_TUI_APPLICATION_HPP_
 #define _MAXIM_TUI_APPLICATION_HPP_
 
-
+#include "maxim.term.device.hpp"
 #include "maxim.event.hpp"
 #include "maxim.term.input.driver.hpp"
 
@@ -25,14 +25,14 @@ namespace maxim {
 
 		void exit();
 
-		inline term::input::driver const * input_driver () const { return _input_driver.get(); }
+		term::device & device();
 
 	private:
 
+		term::device _device;
+
 		std::atomic_bool
 			_is_running{ false };
-
-		std::unique_ptr < term::input::driver > _input_driver = term::input::driver::create();
 
 		void dispatch_input_events();
 	};

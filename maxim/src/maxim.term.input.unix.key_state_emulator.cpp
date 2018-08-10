@@ -5,19 +5,21 @@ namespace maxim {
         namespace input {
             namespace _unix {
 
-                std::vector<input_event_info> key_state_emulator::update_key_state(key_event_args const &key) {
-                    std::vector<input_event_info> events;
+                std::vector<key_event_args> key_state_emulator::update_key_state(key_event_args const & args) {
+                    std::vector<key_event_args> events;
+
+					auto & key = args.key;
 
                     auto time = std::chrono::high_resolution_clock::now();
                     // set or reset counter for key combination
                     if (key.char_value != 0) {
-                        auto key_it = _key_states.find(key);
+                        auto key_it = _key_states.find(args);
                         bool is_new_key = key_it == _key_states.end();
 
                         if (is_new_key) {
-                            _key_states[key] = time;
+                            _key_states[args] = time;
 
-                            events.push_back(input_event_info{
+                            events.push_back(key_event_args {
                                 key.char_value,
                                 key.key,
                                 key.modifiers,
@@ -33,10 +35,12 @@ namespace maxim {
                         auto time_span = std::chrono::duration_cast<std::chrono::milliseconds>(time - k.second).count();
                         if (time_span > key_delay_ms) {
                             // remove
-                            events.push_back(input_event_info{
-                                k.first.char_value,
-                                k.first.key,
-                                k.first.modifiers,
+                            events.push_back(key_event_args {
+								{
+									k.first.key.char_value,
+									k.first.key.key,
+									k.first.key.modifiers
+								},
                                 false
                             });
                         }
@@ -45,10 +49,7 @@ namespace maxim {
                     // remove from key state cache
                     for (auto &e : events) {
                         if (!e.is_down)
-                            _key_states.erase({
-                                                  e.char_value,
-                                                  e.key,
-                                                  e.modifiers});
+                            _key_states.erase(e);
                     }
 
                     return events;

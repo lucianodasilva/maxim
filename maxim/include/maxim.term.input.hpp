@@ -75,10 +75,10 @@ namespace maxim {
 			};
 
 			enum class modifier_key : uint8_t {
-				none    = 0x00,
-				shift   = 0x01,
-				control = 0x02,
-				alt     = 0x04
+				none    = 0b0000,
+				shift   = 0b0001,
+				control = 0b0010,
+				alt     = 0b0100
 			};
 
 			inline modifier_key operator | (modifier_key v1, modifier_key v2) {
@@ -87,7 +87,7 @@ namespace maxim {
 				return static_cast <modifier_key> (
 					static_cast <under_type> (v1) |
 					static_cast <under_type> (v2)
-					);
+				);
 			}
 
 			inline modifier_key operator & (modifier_key v1, modifier_key v2) {
@@ -96,34 +96,39 @@ namespace maxim {
 				return static_cast <modifier_key> (
 					static_cast <under_type> (v1) &
 					static_cast <under_type> (v2)
-					);
+				);
 			}
 
-			struct key_event_args {
+			struct key_info {
 				char32_t		char_value;
 				virtual_key		key;
 				modifier_key	modifiers;
+
 			};
 
-			inline bool operator==(key_event_args const &v1, key_event_args const &v2) {
+			inline bool operator==(key_info const &v1, key_info const &v2) noexcept {
 				return
 					v1.char_value == v2.char_value &&
 					v1.key == v2.key &&
 					v1.modifiers == v2.modifiers;
 			}
 
-			struct input_event_info {
-				char32_t		char_value;
-				virtual_key		key;
-				modifier_key	modifiers;
+			struct key_event_args {
+				key_info		key;
 				bool			is_down;
 			};
 
-			template < class _sender_t >
-			using key_down_event = event < _sender_t, key_event_args >;
+			inline bool operator==(key_event_args const &v1, key_event_args const &v2) {
+				return
+					v1.key == v2.key &&
+					v1.is_down == v2.is_down;
+			}
 
 			template < class _sender_t >
-			using key_up_event = event < _sender_t, key_event_args >;
+			using key_down_event = event < _sender_t, key_info >;
+
+			template < class _sender_t >
+			using key_up_event = event < _sender_t, key_info >;
 
 
 			// hasher and equality operator for key_event_args
@@ -142,17 +147,10 @@ namespace maxim {
 					return h;
 				}
 
-				inline bool operator==(key_event_args const &v1, key_event_args const &v2) {
-					return
-						v1.char_value == v2.char_value &&
-						v1.key == v2.key &&
-						v1.modifiers == v2.modifiers;
-				}
 			}
 		}
 	}
 }
-
 
 namespace std
 {
@@ -161,9 +159,9 @@ namespace std
 	{
 		std::size_t operator ()(maxim::term::input::key_event_args const & args) const noexcept{
 			return maxim::term::input::details::hash_combine(
-				args.char_value,
-				static_cast < std::underlying_type_t <maxim::term::input::virtual_key> > (args.key),
-				static_cast < std::underlying_type_t <maxim::term::input::modifier_key> > (args.modifiers)
+				args.key.char_value,
+				static_cast < std::underlying_type_t <maxim::term::input::virtual_key> > (args.key.key),
+				static_cast < std::underlying_type_t <maxim::term::input::modifier_key> > (args.key.modifiers)
 			);
 		}
 	};

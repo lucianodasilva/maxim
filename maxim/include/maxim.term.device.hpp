@@ -3,9 +3,11 @@
 #define _maxim_term_device_hpp_
 
 #include <memory>
+#include <vector>
 
 #include "maxim.term.character.hpp"
-#include "maxim.term.driver.hpp"
+#include "maxim.term.input.driver.hpp"
+#include "maxim.term.output.driver.hpp"
 #include "maxim.term.graphics.hpp"
 #include "maxim.term.stream.hpp"
 
@@ -27,15 +29,17 @@ namespace maxim {
 			void clear();
             void present ();
 
-			inline maxim::term::driver const & driver () const {
-				return _driver;
-			}
+			std::vector<input::key_event_args> get_input_events() const;
 
         private:
 
-            maxim::term::driver
-						_driver;
-            size       _size           { _driver.get_size() };
+			std::unique_ptr < input::driver >	
+				_input_driver = input::driver::create ();
+
+			std::unique_ptr < output::driver >	
+				_output_driver = output::driver::create ();
+
+            size       _size           { _output_driver->get_size() };
 
             character_buffer
                         _back_buffer    { _size },

@@ -113,7 +113,7 @@ namespace maxim{
 		inline void operator -= (handler_t && handler) {
 			std::lock_guard < std::mutex > lock(this->handler_mutex);
 
-			auto it = find(
+			auto it = std::find(
 				this->handlers.begin(),
 				this->handlers.end(),
 				std::forward(handler)

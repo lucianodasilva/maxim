@@ -24,7 +24,7 @@ namespace maxim {
 			else
 				_stream.write(encoding::ansi::alternate_buffer_disable);
 
-			_driver.send(_stream);
+			_output_driver->send(_stream);
         }
 
         void device::enable_cursor(bool value) {
@@ -35,7 +35,7 @@ namespace maxim {
 			else
 				_stream.write(encoding::ansi::cursor_disable);
 
-			_driver.send(_stream);
+			_output_driver->send(_stream);
         }
 
         void device::clear() {
@@ -44,7 +44,7 @@ namespace maxim {
         }
 
         void device::present() {
-            auto size = _driver.get_size();
+            auto size = _output_driver->get_size();
 
             if (_size != size) {
                 _size = size;
@@ -60,13 +60,17 @@ namespace maxim {
 				_stream
 			);
 
-			_driver.send(_stream);
+			_output_driver->send(_stream);
 
             // swap buffers
             _front_buffer = _back_buffer;
 
 			_stream.reset();
         }
+
+		std::vector<input::key_event_args> device::get_input_events() const {
+			return _input_driver->get_input_events();
+		}
 
     }
 }

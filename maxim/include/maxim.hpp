@@ -8,7 +8,7 @@
 #include "maxim.term.character.hpp"
 #include "maxim.term.character_change_set.hpp"
 #include "maxim.term.device.hpp"
-#include "maxim.term.driver.hpp"
+#include "maxim.term.output.driver.hpp"
 #include "maxim.term.encoding.hpp"
 #include "maxim.term.graphics.hpp"
 #include "maxim.term.input.driver.hpp"
