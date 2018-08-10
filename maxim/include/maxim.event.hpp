@@ -1,6 +1,7 @@
 #ifndef _MAXIM_EVENT_HPP_
 #define _MAXIM_EVENT_HPP_
 
+#include <algorithm>
 #include <functional>
 #include <future>
 #include <memory>

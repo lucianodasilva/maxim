@@ -36,7 +36,7 @@ void wait_half_expiration () {
 
 template < class _container_t >
 std::ptrdiff_t index_of_key (_container_t const & c, maxim::term::input::key_event_args const & k) {
-    return std::distance(std::begin(c), std::find_if(std::begin(c), std::end(c), [&](maxim::term::input::input_event_info const & i) {
+    return std::distance(std::begin(c), std::find_if(std::begin(c), std::end(c), [&](maxim::term::input::key_event_args const & i) {
         return i.char_value == k.char_value &&
             i.key == k.key &&
             i.modifiers == k.modifiers;

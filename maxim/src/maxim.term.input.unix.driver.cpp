@@ -43,7 +43,7 @@ namespace maxim {
                     tcsetattr(0, TCSANOW, &_initial_term_settings);
                 }
 
-                std::vector<input_event_info> driver::get_input_events() const {
+                std::vector<key_event_args> driver::get_input_events() const {
                     uint64_t v = 0;
 
                     auto len = read(STDIN_FILENO, &v, sizeof(uint64_t));

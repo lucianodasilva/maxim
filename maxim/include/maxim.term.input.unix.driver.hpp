@@ -21,7 +21,7 @@ namespace maxim {
 
                     virtual ~driver();
 
-                    virtual std::vector<input_event_info> get_input_events() const override;
+                    virtual std::vector<key_event_args> get_input_events() const override;
 
                 private:
                     termios

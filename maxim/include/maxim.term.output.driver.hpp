@@ -5,6 +5,7 @@
 #include "maxim.term.structures.hpp"
 #include "maxim.term.input.hpp"
 
+#include <iterator>
 #include <memory>
 #include <vector>
 
