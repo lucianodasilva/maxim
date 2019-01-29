@@ -7,7 +7,7 @@
 #include <tuple>
 
 #include "maxim.term.character_change_set.hpp"
-#include "maxim.term.structures.hpp"
+#include "maxim.term.details.hpp"
 
 namespace maxim {
     namespace term {

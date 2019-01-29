@@ -12,6 +12,7 @@ add_library(
 		include/maxim.term.character.hpp
 		include/maxim.term.character_change_set.hpp
 		include/maxim.term.device.hpp
+		include/maxim.term.details.hpp
 		include/maxim.term.encoding.hpp
 		include/maxim.term.graphics.hpp
 		include/maxim.term.input.driver.hpp
@@ -22,10 +23,14 @@ add_library(
 		include/maxim.term.output.driver.hpp
 		include/maxim.term.output.unix.driver.hpp
 		include/maxim.term.stream.hpp
-		include/maxim.term.structures.hpp
 		include/maxim.threading.hpp
+		include/maxim.ui.details.hpp
+		include/maxim.ui.container.hpp
+		include/maxim.ui.element.hpp
+		include/maxim.ui.property.hpp
 		src/maxim.application.cpp
         src/maxim.cpp
+		src/maxim.ui.element.cpp
 		src/maxim.term.character.cpp
 		src/maxim.term.device.cpp
 		src/maxim.term.encoding.cpp

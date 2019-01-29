@@ -2,7 +2,7 @@
 #ifndef _maxim_term_output_driver_hpp_
 #define _maxim_term_output_driver_hpp_
 
-#include "maxim.term.structures.hpp"
+#include "maxim.term.details.hpp"
 #include "maxim.term.input.hpp"
 
 #include <iterator>

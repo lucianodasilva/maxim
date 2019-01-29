@@ -1,4 +1,5 @@
 #include "maxim.term.character.hpp"
+#include <stdexcept>
 
 namespace maxim {
     namespace term {

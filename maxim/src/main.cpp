@@ -3,6 +3,8 @@
 
 int main(int arg_c, char ** arg_v)
 {
+
+	
 	using namespace maxim;
 	using namespace maxim::term;
 
@@ -30,8 +32,10 @@ int main(int arg_c, char ** arg_v)
 			a.exit();
 		}
 
-		if (args.key == input::virtual_key::T)
-			can_cancel = !can_cancel;
+		if (args.key == input::virtual_key::T) {
+            std::cout << "cancel toggle" << std::endl;
+            can_cancel = !can_cancel;
+        }
 	};
 
 	app.run();

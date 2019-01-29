@@ -37,9 +37,9 @@ void wait_half_expiration () {
 template < class _container_t >
 std::ptrdiff_t index_of_key (_container_t const & c, maxim::term::input::key_event_args const & k) {
     return std::distance(std::begin(c), std::find_if(std::begin(c), std::end(c), [&](maxim::term::input::key_event_args const & i) {
-        return i.char_value == k.char_value &&
-            i.key == k.key &&
-            i.modifiers == k.modifiers;
+        return i.key.char_value == k.key.char_value &&
+            i.key.key == k.key.key &&
+            i.key.modifiers == k.key.modifiers;
     }));
 }
 
@@ -70,7 +70,6 @@ TEST_CASE("single key press", "[unix key state emulator]") {
 
         REQUIRE(events.size () == 1);
         REQUIRE(events[0].key == key.key);
-        REQUIRE(events[0].modifiers == key.modifiers);
         REQUIRE(events[0].is_down);
 
         wait_for_expiration();
@@ -79,7 +78,6 @@ TEST_CASE("single key press", "[unix key state emulator]") {
 
         REQUIRE(events.size () == 1);
         REQUIRE(events[0].key == key.key);
-        REQUIRE(events[0].modifiers == key.modifiers);
         REQUIRE(!events[0].is_down);
     }
 
@@ -92,7 +90,6 @@ TEST_CASE("single key press", "[unix key state emulator]") {
         auto & ev_item = events[0];
 
         REQUIRE(ev_item.key == key.key);
-        REQUIRE(ev_item.modifiers == key.modifiers);
         REQUIRE(ev_item.is_down);
 
         events = emulator.update_key_state(null_key);
@@ -108,7 +105,6 @@ TEST_CASE("single key press", "[unix key state emulator]") {
 
         auto & ev_item = events[0];
         REQUIRE(ev_item.key == key.key);
-        REQUIRE(ev_item.modifiers == key.modifiers);
         REQUIRE(ev_item.is_down);
 
         wait_half_expiration();
@@ -126,7 +122,6 @@ TEST_CASE("single key press", "[unix key state emulator]") {
 
         auto & ev_item = events [0];
         REQUIRE(ev_item.key == key.key);
-        REQUIRE(ev_item.modifiers == key.modifiers);
         REQUIRE(ev_item.is_down);
 
         wait_for_expiration();

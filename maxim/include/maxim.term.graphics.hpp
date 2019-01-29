@@ -3,9 +3,10 @@
 #define _maxim_term_graphics_hpp_
 
 #include "maxim.term.character.hpp"
-#include "maxim.term.structures.hpp"
+#include "maxim.term.details.hpp"
 
 #include <tuple>
+#include <string>
 
 namespace maxim {
 	namespace term {
