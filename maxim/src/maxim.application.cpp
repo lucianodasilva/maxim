@@ -32,7 +32,7 @@ namespace maxim {
 		_is_running = false;
 	}
 
-	term::device & application::device() {
+	maxim::device & application::device() {
 		return _device;
 	}
 

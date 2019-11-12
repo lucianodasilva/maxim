@@ -3,11 +3,11 @@
 #include <catch2/catch.hpp>
 
 #include <maxim.hpp>
-#include <maxim.term.input.unix.key_state_emulator.hpp>
+#include <maxim.input.unix.key_state_emulator.hpp>
 
 void wait_for_expiration () {
-    using namespace maxim::term::input;
-    using namespace maxim::term::input::_unix;
+    using namespace maxim::input;
+    using namespace maxim::input::_unix;
 
     using namespace std;
 
@@ -21,8 +21,8 @@ void wait_for_expiration () {
 }
 
 void wait_half_expiration () {
-    using namespace maxim::term::input;
-    using namespace maxim::term::input::_unix;
+    using namespace maxim::input;
+    using namespace maxim::input::_unix;
 
     using namespace std;
 
@@ -35,8 +35,8 @@ void wait_half_expiration () {
 }
 
 template < class _container_t >
-std::ptrdiff_t index_of_key (_container_t const & c, maxim::term::input::key_event_args const & k) {
-    return std::distance(std::begin(c), std::find_if(std::begin(c), std::end(c), [&](maxim::term::input::key_event_args const & i) {
+std::ptrdiff_t index_of_key (_container_t const & c, maxim::input::key_event_args const & k) {
+    return std::distance(std::begin(c), std::find_if(std::begin(c), std::end(c), [&](maxim::input::key_event_args const & i) {
         return i.key.char_value == k.key.char_value &&
             i.key.key == k.key.key &&
             i.key.modifiers == k.key.modifiers;
@@ -44,8 +44,8 @@ std::ptrdiff_t index_of_key (_container_t const & c, maxim::term::input::key_eve
 }
 
 TEST_CASE("single key press", "[unix key state emulator]") {
-    using namespace maxim::term::input;
-    using namespace maxim::term::input::_unix;
+    using namespace maxim::input;
+    using namespace maxim::input::_unix;
 
     using namespace std;
 

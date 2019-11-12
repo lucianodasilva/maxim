@@ -3,11 +3,11 @@
 #include <catch2/catch.hpp>
 
 #include <maxim.hpp>
-#include <maxim.term.input.unix.termio_parser.hpp>
+#include <maxim.input.unix.termio_parser.hpp>
 
 TEST_CASE("basic key presses", "[unix termio parser]") {
-    using namespace maxim::term::input;
-    using namespace maxim::term::input::_unix;
+    using namespace maxim::input;
+    using namespace maxim::input::_unix;
 
     SECTION("single character parsing") {
 
@@ -45,8 +45,8 @@ TEST_CASE("basic key presses", "[unix termio parser]") {
 }
 
 TEST_CASE("function key presses", "[unix termio parser]") {
-    using namespace maxim::term::input;
-    using namespace maxim::term::input::_unix;
+    using namespace maxim::input;
+    using namespace maxim::input::_unix;
 
     SECTION("low f_key simple parsing") {
 
@@ -118,8 +118,8 @@ TEST_CASE("function key presses", "[unix termio parser]") {
 }
 
 TEST_CASE("special key presses", "[unix termio parser]") {
-    using namespace maxim::term::input;
-    using namespace maxim::term::input::_unix;
+    using namespace maxim::input;
+    using namespace maxim::input::_unix;
 
     SECTION("'insert' simple parsing") {
 
@@ -157,8 +157,8 @@ TEST_CASE("special key presses", "[unix termio parser]") {
 }
 
 TEST_CASE("directional key presses", "[unix termio parser]") {
-    using namespace maxim::term::input;
-    using namespace maxim::term::input::_unix;
+    using namespace maxim::input;
+    using namespace maxim::input::_unix;
 
     SECTION("'up' simple parsing") {
 
@@ -196,8 +196,8 @@ TEST_CASE("directional key presses", "[unix termio parser]") {
 }
 
 TEST_CASE("page up/down key presses", "[unix termio parser]") {
-    using namespace maxim::term::input;
-    using namespace maxim::term::input::_unix;
+    using namespace maxim::input;
+    using namespace maxim::input::_unix;
 
     SECTION("'page up' simple parsing") {
 

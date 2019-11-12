@@ -3,10 +3,7 @@
 
 int main(int arg_c, char ** arg_v)
 {
-
-	
 	using namespace maxim;
-	using namespace maxim::term;
 
 	application app;
 	bool		can_cancel = false;

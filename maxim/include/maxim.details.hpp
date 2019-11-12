@@ -2,156 +2,79 @@
 #ifndef _maxim_details_hpp_
 #define _maxim_details_hpp_
 
+#include <cinttypes>
+#include <algorithm>
+
 namespace maxim {
-	
-	namespace details {
 
-		template < typename _derived_t, typename _value_t >
-		struct value_base
-		{
-		public:
+    struct point {
+        int32_t x, y;
 
-			using value_type = _value_t;
+        inline point operator + (point const & v) const { return { x + v.x, y + v.y }; }
+        inline point operator - (point const & v) const { return { x - v.x, y - v.y }; }
+        inline point operator * (point const & v) const { return { x * v.x, y * v.y }; }
+        inline point operator * (int32_t s) const { return { x * s, y * s }; }
+        inline point operator / (point const & v) const { return { x / v.x, y / v.y }; }
+        inline point operator / (int32_t s) const { return { x / s, y / s }; }
+        inline bool operator == (point const & p) const { return x == p.x && y == p.y; }
+        inline bool operator != (point const & p) const { return !operator==(p); }
 
-			inline value_base () = default;
+        inline bool is_zero () const { return x == 0 && y == 0; }
+    };
 
-			inline value_base (std::initializer_list < value_type > args ){}
+    struct size {
+        int32_t width, height;
 
-			inline _derived_t operator + (_derived_t const & v) const {
-				return apply(
-					v,
-					[](auto v1, auto v2) { return v1 + v2; }
-				);
-			}
+        inline bool is_zero () const { return width == 0 && height == 0; }
 
-			inline _derived_t operator - (_derived_t const & v) const {
-				return apply(
-					v,
-					[](auto v1, auto v2) { return v1 - v2; }
-				);
-			}
+        inline bool operator == (size const & s) const { return width == s.width && height == s.height; }
+        inline bool operator != (size const & s) const { return !operator==(s); }
 
-			inline _derived_t operator * (_derived_t const & v) const {
-				return apply(
-					v,
-					[](auto v1, auto v2) { return v1 * v2; }
-				);
-			}
+    };
 
-			inline _derived_t operator * (value_type const & v) const {
-				return apply_scalar(
-					v,
-					[](auto v1, auto v2) { return v1 * v2; }
-				);
-			}
+    struct rect {
+        maxim::point 	position;
+        maxim::size	size;
 
-			inline _derived_t operator / (_derived_t const & v) const {
-				return apply(
-					v,
-					[](auto v1, auto v2) { return v1 / v2; }
-				);
-			}
+        inline bool is_zero () const { return position.is_zero () && size.is_zero(); }
 
-			inline _derived_t operator / (value_type const & v) const {
-				return apply_scalar(
-					v,
-					[](auto v1, auto v2) { return v1 / v2; }
-				);
-			}
+        inline int32_t left () const { return position.x; }
+        inline int32_t right () const { return position.x + size.width; }
+        inline int32_t top () const { return position.y; }
+        inline int32_t bottom () const { return position.y + size.height; }
 
-			inline bool operator == (_derived_t const & v) const {
-				return apply_reduce(
-					true,
-					v,
-					[](bool r, auto v1, auto v2) { return r && (v1 == v2); }
-				);
-			}
+        inline bool intersects (rect const & r) const {
+            return
+                    left () < r.right () &&
+                    top () < r.bottom () &&
+                    right () > r.left () &&
+                    bottom () > r.top ();
+        }
 
-			inline bool operator != (_derived_t const & v) const {
-				return !operator==(v);
-			}
+        inline rect intersection (rect const & r) const {
+            if (!intersects(r))
+                return {};
 
-			inline bool is_zero() const {
-				return operator == ({});
-			}
+            point pos = {
+                    std::max(left(), r.left()),
+                    std::max(top(), r.top())
+            };
 
-		private:
+            maxim::size size = {
+                    std::min (right(), r.right()) - pos.x,
+                    std::min (bottom(), r.bottom()) - pos.y
+            };
 
-			template < typename _op_t >
-			inline _derived_t apply(_derived_t const & v, _op_t && op) const {
-				_derived_t r = {};
+            return { pos, size };
+        }
 
-				auto & _this = *static_cast <_derived_t const *> (this);
+        inline bool contains (point const & p) const {
+            return
+                    p.x >= left() && p.x <= right() &&
+                    p.y >= top() && p.y <= bottom();
 
-				for (int i = 0; i < _derived_t::data_length; ++i)
-					r.data[i] = op(_this.data[i], v.data[i]);
-
-				return r;
-			}
-
-			template < typename _op_t >
-			inline _derived_t apply_scalar(value_type const & v, _op_t && op) const {
-				_derived_t r = {};
-
-				auto & _this = *static_cast <_derived_t const *> (this);
-
-				for (int i = 0; i < _derived_t::data_length; ++i)
-					r.data[i] = op(_this.data[i], v);
-
-				return r;
-			}
-
-			template < typename _r_t, typename _op_t >
-			inline auto apply_reduce(_r_t zero, _derived_t const & v, _op_t && op) const {
-				_r_t r = zero;
-
-				auto & _this = *static_cast <_derived_t const *> (this);
-
-				for (int i = 0; i < _derived_t::data_length; ++i)
-					r = op(r, _this.data[i], v.data[i]);
-
-				return r;
-			}
-		};
-
-		template < typename _value_t >
-		struct value_2d : public value_base < value_2d < _value_t >, _value_t > {
-			static constexpr std::size_t data_length = 2;
-
-			using value_base < value_2d < _value_t >, _value_t >::value_base;
-
-			union {
-				_value_t data[data_length];
-
-				_value_t
-					x, y;
-			};
-		};
-
-		template < typename _value_t >
-		struct value : public value_base < value < _value_t >, _value_t > {
-			static constexpr std::size_t data_length = 1;
-
-			using value_base < value < _value_t >, _value_t >::value_base;
-
-			union {
-				_value_t data[data_length];
-
-				_value_t
-					v;
-			};
-
-			_value_t const & get() {
-				return v;
-			}
-
-			void set(_value_t const & value) {
-				v = value;
-			}
-
-		};
-
-	}
+        }
+    };
 
 }
 
