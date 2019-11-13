@@ -1,42 +1,35 @@
 #pragma once
 
 #ifdef WIN32
-#ifndef _maxim_term_output_win_driver_hpp_
-#define _maxim_term_output_win_driver_hpp_
+#ifndef _maxim_output_win_driver_hpp_
+#define _maxim_output_win_driver_hpp_
 
-#include "maxim.term.output.driver.hpp"
+#include "maxim.output.driver.hpp"
 
 #include <Windows.h>
 
 namespace maxim {
-    namespace term {
+	struct stream;
 
-		struct stream;
+	namespace output::win {
 
-		namespace output {
+		class driver : public maxim::output::driver {
+        public:
+			driver();
 
-		    namespace win {
+            virtual ~driver();
 
-		        class driver : public maxim::term::output::driver {
-                public:
-					driver();
+            virtual size get_size() const override;
 
-                    virtual ~driver();
-
-                    virtual size get_size() const override;
-
-                    virtual void send(maxim::term::stream & stream) const override;
+            virtual void send(maxim::stream & stream) const override;
 				
-				private:
+		private:
 
-					DWORD	_stdout_original_mode;
-					HANDLE	_stdout_handle;
+			DWORD	_stdout_original_mode;
+			HANDLE	_stdout_handle;
 
-                };
-            }
-        }
-
-    }
+        };
+    }    
 }
 
 #endif

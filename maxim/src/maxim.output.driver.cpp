@@ -8,8 +8,8 @@
 #endif
 
 #ifdef WIN32
-#	include "maxim.term.output.win.driver.hpp"
-	std::unique_ptr < maxim::term::output::driver > maxim::term::output::driver::create() {
-		return std::make_unique < maxim::term::output::win::driver >();
+#	include "maxim.output.win.driver.hpp"
+	std::unique_ptr < maxim::output::driver > maxim::output::driver::create() {
+		return std::make_unique < maxim::output::win::driver >();
 	}
 #endif
