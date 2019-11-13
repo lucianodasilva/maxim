@@ -9,7 +9,7 @@ namespace maxim::input::_unix {
 
         auto time = std::chrono::high_resolution_clock::now();
         // set or reset counter for key combination
-        if (key.char_value != 0) {
+        if (key.char_value != 0 || key.key != virtual_key::none) {
             auto key_it = _key_states.find(args);
             bool is_new_key = key_it == _key_states.end();
 

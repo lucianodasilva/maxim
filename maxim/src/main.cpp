@@ -22,6 +22,7 @@ int main(int arg_c, char ** arg_v)
             << "keypress: '" << args.char_value
             << "' virtual key: " << std::hex << (uint32_t)args.key
             << "' modifier key: " << std::hex << (uint32_t)args.modifiers
+            << "' down"
             << std::endl;
 
 		if (args.key == input::virtual_key::C && args.modifiers == input::modifier_key::control) {
@@ -34,6 +35,16 @@ int main(int arg_c, char ** arg_v)
             can_cancel = !can_cancel;
         }
 	};
+
+    app.on_key_up += [&](application & a, input::key_info const & args) {
+
+        std::cout
+                << "keypress: '" << args.char_value
+                << "' virtual key: " << std::hex << (uint32_t)args.key
+                << "' modifier key: " << std::hex << (uint32_t)args.modifiers
+                << "' up"
+                << std::endl;
+    };
 
 	app.run();
 
