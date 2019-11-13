@@ -4,7 +4,7 @@
 namespace maxim {
 
     graphics::graphics(character_buffer & buffer) :
-        _buffer{ buffer },
+        _buffer { buffer },
         view{ {}, buffer.size() }
     {}
 
@@ -13,7 +13,7 @@ namespace maxim {
     {}
 
     void graphics::clear() {
-        _buffer = {_buffer.size()};
+        _buffer.reset ();
     }
 
     void graphics::draw_box(

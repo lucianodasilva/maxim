@@ -106,7 +106,7 @@ namespace maxim::input::_unix {
                 } else if (len == 5) {
                     key_code = *reinterpret_cast <uint16_t *> (buffer + 2);
                 }
-                    // special key with modifier combinations
+                // special key with modifier combinations
                 else if (len == 6) {
                     if (buffer[5] == '\x7e') {
                         key_code = buffer[2];

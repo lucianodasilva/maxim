@@ -24,8 +24,7 @@ namespace maxim::input::_unix {
 
         new_settings.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INPCK | ISTRIP | IXON);
         new_settings.c_lflag &= ~(ICANON | ECHO | ECHOK | ECHOE | ECHONL | ISIG | IEXTEN);
-        new_settings.c_cflag
-            &= ~(OPOST);
+        new_settings.c_cflag &= ~(OPOST);
         new_settings.c_cflag |= CS8;
         new_settings.c_cc[VMIN] = 0;
         new_settings.c_cc[VTIME] = key_state_emulator::key_delay_ds;

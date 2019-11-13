@@ -92,10 +92,11 @@ namespace maxim::encoding {
                 stream.write(";");
         }
 
-        if (backcolor_changed)
+        if (backcolor_changed) {
             stream
-            .write(ansi::color_background)
-            .write(encode_as_integer(current.backcolor));
+                .write(ansi::color_background)
+                .write(encode_as_integer(current.backcolor));
+        }
 
         stream.write(ansi::color_suffix);
     }

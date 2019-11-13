@@ -83,6 +83,10 @@ namespace maxim {
                 _size { size }
         {}
 
+        inline void reset () {
+            _buffer.assign(_buffer.size(), character{});
+        }
+
         inline character & at (point const & p) {
             return _buffer [coords_to_index(p)];
         }

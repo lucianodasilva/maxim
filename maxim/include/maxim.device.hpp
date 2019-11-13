@@ -17,6 +17,8 @@ namespace maxim {
     struct device {
     public:
 
+        ~device();
+
         size const & get_size () const;
 
         character_buffer & backbuffer();
@@ -46,6 +48,8 @@ namespace maxim {
                     _front_buffer   { _size };
 
         stream		_stream;
+        bool        _alternate_buffer_enabled {false};
+        bool        _cursor_enabled { true };
 
     };
 }

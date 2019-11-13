@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.10)
 
 # maxim core project
 project (maxim)
@@ -65,13 +66,12 @@ target_compile_features(
 		cxx_std_17)
 
 add_executable(maxim_test
+        test/calculate_change_set_test.cpp
 	test/main.cpp
 	test/unix_input_parser_test.cpp
-        test/unix_key_state_emulator_test.cpp)
+	test/unix_key_state_emulator_test.cpp)
 
 target_link_libraries(maxim_test maxim Catch2::Catch2)
-
-catch_discover_tests(maxim_test)
 
 target_compile_features(
 		maxim_test
