@@ -1,9 +1,9 @@
 
 # maxim core project
-project (maxim_core)
+project (maxim)
 
 add_library(
-	maxim_core
+	maxim
 	STATIC
 		include/maxim.application.hpp
 		include/maxim.event.hpp
@@ -39,45 +39,41 @@ add_library(
 		src/maxim.output.win.driver.cpp
 )
 
-target_include_directories(maxim_core
+target_include_directories(
+		maxim
 	PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 	PRIVATE
-	src
+		src
 )
 
-set_target_properties(
-    maxim_core
-    PROPERTIES
-    CXX_STANDARD 14
-)
-
-project (maxim)
+target_compile_features(
+		maxim
+	PUBLIC
+		cxx_std_17)
 
 add_executable(
-	maxim
+	maxim_demo
 	src/main.cpp
 )
 
-target_link_libraries(maxim maxim_core)
+target_link_libraries(maxim_demo maxim)
 
-set_target_properties(
-    maxim
-    PROPERTIES
-    CXX_STANDARD 17
-)
+target_compile_features(
+		maxim_demo
+		PUBLIC
+		cxx_std_17)
 
 add_executable(maxim_test
 	test/main.cpp
 	test/unix_input_parser_test.cpp
         test/unix_key_state_emulator_test.cpp)
 
-target_link_libraries(maxim_test maxim_core Catch2::Catch2)
+target_link_libraries(maxim_test maxim Catch2::Catch2)
 
 catch_discover_tests(maxim_test)
 
-set_target_properties(
+target_compile_features(
 		maxim_test
-		PROPERTIES
-		CXX_STANDARD 17
-)
+		PUBLIC
+		cxx_std_17)
