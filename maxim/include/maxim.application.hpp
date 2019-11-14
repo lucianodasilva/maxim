@@ -15,8 +15,12 @@ namespace maxim {
 		using application_start_event = event < application >;
 		using application_close_event = event < application, bool & >;
 
+		using application_draw_event = event < application, graphics & >;
+
 		application_start_event on_start;
 		application_close_event on_exit;
+
+		application_draw_event on_draw;
 
 		input::key_down_event < application >	on_key_down;
 		input::key_up_event < application >	on_key_up;

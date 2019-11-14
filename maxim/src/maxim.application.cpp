@@ -19,7 +19,11 @@ namespace maxim {
 			while (_is_running) {
 				dispatch_input_events();
 
+				auto g = _device.graphics();
+				on_draw.invoke(*this, g);
+
 				_device.present();
+
 				std::this_thread::yield();
 			}
 

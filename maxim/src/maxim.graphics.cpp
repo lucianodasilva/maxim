@@ -105,6 +105,54 @@ namespace maxim {
         }
     }
 
+    void graphics::draw_text(
+            std::string const & text,
+            point const & position,
+            int32_t width,
+            alignment align,
+            color_t color,
+            color_t back_color,
+            character_flags const & flags
+    ){
+        character c = {
+                ' ',
+                flags,
+                back_color,
+                color
+        };
+
+        int32_t
+            len = std::min(static_cast <int32_t> (text.size()), width),
+            left_pad {0};
+
+        if (align == alignment::right) {
+            left_pad = width - len;
+        } else if (align == alignment::centered) {
+            auto half_width = width / 2;
+            auto half_len = len / 2;
+
+            left_pad = half_width - half_len;
+        }
+
+        // pad left
+        c.content = ' ';
+        for (int32_t i = 0; i < left_pad; ++i)
+            set (position + point {i, 0}, c);
+
+        // text
+        for (int32_t i = 0; i < len; ++i) {
+            c.content = text[i];
+            set(position + point {left_pad + i, 0}, c);
+        }
+
+        c.content = ' ';
+
+        // pad right
+        for (int32_t i = left_pad + len; i < width; ++i) {
+            set(position + point {i, 0}, c);
+        }
+    }
+
     void graphics::draw_v_line(
         point const & position,
         int32_t length,

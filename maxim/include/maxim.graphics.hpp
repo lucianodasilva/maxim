@@ -10,6 +10,12 @@
 
 namespace maxim {
 
+    enum class alignment {
+        left,
+        centered,
+        right
+    };
+
     struct graphics {
     private:
         character_buffer & _buffer;
@@ -31,6 +37,16 @@ namespace maxim {
         void draw_text(
             std::string const & text,
             point const & position,
+            color_t color = colors::white,
+            color_t back_color = colors::black,
+            character_flags const & flags = {}
+        );
+
+        void draw_text(
+            std::string const & text,
+            point const & position,
+            int32_t width,
+            alignment align,
             color_t color = colors::white,
             color_t back_color = colors::black,
             character_flags const & flags = {}
