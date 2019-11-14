@@ -13,7 +13,8 @@ void print_key_state (maxim::device & device, maxim::input::key_info const & arg
     str
             << "C [0x" << std::hex << std::setw(2) << (uint32_t)args.char_value << "] "
             << "V [0x" << std::hex << std::setw(2) << (uint32_t)args.key << "] "
-            << "M [0x" << std::hex << std::setw(2) << (uint32_t)args.modifiers << "]";
+            << "M [0x" << std::hex << std::setw(2) << (uint32_t)args.modifiers << "]"
+            ;
 
     maxim::color_t
         background = maxim::colors::black,

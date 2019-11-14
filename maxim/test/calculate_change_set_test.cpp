@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 #include <maxim.hpp>
 
-TEST_CASE("calculate change set empty", "[character_buffer calculate_change_set]") {
+TEST_CASE("calculate change set", "[character_buffer calculate_change_set]") {
     using namespace maxim;
 
     character_buffer const empty_buffer {{ 5, 5}};

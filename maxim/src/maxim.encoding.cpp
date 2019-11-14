@@ -13,9 +13,9 @@ namespace maxim::encoding {
     void encode_move(maxim::stream & stream, point const &p) {
         stream
             .write(ansi::move_prefix)
-            .write(p.y)
+            .write(p.y + 1)
             .write(";")
-            .write(p.x)
+            .write(p.x + 1)
             .write(ansi::move_suffix);
     }
 

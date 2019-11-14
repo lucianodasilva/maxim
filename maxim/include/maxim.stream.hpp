@@ -33,7 +33,7 @@ namespace maxim {
             if (v < _t(0))
                 _buffer[index] = '-';
 
-            while(v) {
+            while(count) {
                 _buffer[index + (count - 1)] = '0' + char (v % 10);
                 v /= 10;
                 --count;
@@ -79,10 +79,13 @@ namespace maxim {
         static inline std::enable_if_t <std::numeric_limits<_t>::is_integer, size_t >
             digit_count (_t v)
         {
+            if (v == 0)
+                return 1;
+
             size_t digits = 0;
 
             if (v < 0)
-                digits = 0;
+                ++digits;
 
             while (v) {
                 v /= 10;

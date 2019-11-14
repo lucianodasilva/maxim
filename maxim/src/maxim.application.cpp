@@ -20,6 +20,7 @@ namespace maxim {
 				dispatch_input_events();
 
 				_device.present();
+				std::this_thread::yield();
 			}
 
 			// call on_exit event

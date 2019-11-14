@@ -46,7 +46,7 @@ namespace maxim {
     };
 
     struct character {
-        char content            = 0;
+        char content            = ' ';
         character_flags flags   = {};
         color_t backcolor       = colors::black;
         color_t forecolor       = colors::white;
