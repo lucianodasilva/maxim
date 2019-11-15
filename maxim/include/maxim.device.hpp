@@ -28,6 +28,17 @@ namespace maxim {
 
         void enable_cursor (bool value);
 
+        void send_thing (char const * str) {
+            _stream.reset ();
+
+            while (*str) {
+                _stream.write(*str);
+                ++str;
+            }
+
+            _output_driver->send(_stream);
+        }
+
         void clear();
         void present ();
 

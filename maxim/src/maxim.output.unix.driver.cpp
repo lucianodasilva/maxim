@@ -24,6 +24,4 @@ namespace maxim::output::_unix {
 
 }
 
-
-
 #endif

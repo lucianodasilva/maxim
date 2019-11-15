@@ -10,6 +10,8 @@
 
 #include <chrono>
 #include <unordered_map>
+#include <iostream>
+#include <iomanip>
 
 #include "maxim.input.unix.driver.hpp"
 #include "maxim.input.unix.termio_parser.hpp"
@@ -43,6 +45,25 @@ namespace maxim::input::_unix {
         uint64_t v = 0;
 
         auto len = read(STDIN_FILENO, &v, sizeof(uint64_t));
+
+        if (len > 0) {
+            auto * ptr = (uint8_t *)&v;
+
+            for (int i = 0; i < len; ++i) {
+                std::cout << "0x" << std::hex << std::setw(2) << std::setfill ('0') << (int)ptr [i] << " ";
+            }
+
+            std::cout << "'";
+
+            for (int i = 0; i < len; ++i) {
+                std::cout << (char)(std::isgraph(ptr [i]) ? ptr[i] : ' ');
+            }
+
+            std::cout << "'";
+
+            std::cout << std::endl;
+        }
+
         key_event_args key = parse_termio_input(v, len);
 
         return _state_emulator.update_key_state(key);
