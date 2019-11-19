@@ -26,6 +26,9 @@ namespace maxim::input::_unix {
 
         mutable key_state_emulator
             _state_emulator;
+
+        mutable std::vector < key_info >
+            _key_info_state;
     };
 
 

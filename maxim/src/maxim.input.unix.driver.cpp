@@ -42,31 +42,35 @@ namespace maxim::input::_unix {
     }
 
     std::vector<key_event_args> driver::get_input_events() const {
-        uint64_t v = 0;
+        constexpr std::size_t buffer_size { 16 };
+        char buffer [buffer_size];
 
-        auto len = read(STDIN_FILENO, &v, sizeof(uint64_t));
+        auto len = read(STDIN_FILENO, +buffer, buffer_size);
 
-        if (len > 0) {
-            auto * ptr = (uint8_t *)&v;
+        if (len < 0)
+            return {};
 
+        // debug printing
+         if (len > 0) {
             for (int i = 0; i < len; ++i) {
-                std::cout << "0x" << std::hex << std::setw(2) << std::setfill ('0') << (int)ptr [i] << " ";
+                std::cout << "0x" << std::hex << std::setw(2) << std::setfill ('0') << (int)buffer [i] << " ";
             }
 
             std::cout << "'";
 
             for (int i = 0; i < len; ++i) {
-                std::cout << (char)(std::isgraph(ptr [i]) ? ptr[i] : ' ');
+                std::cout << (char)(std::isgraph(buffer [i]) ? buffer[i] : ' ');
             }
 
             std::cout << "'";
 
             std::cout << std::endl;
         }
+        // --------------
+        _key_info_state.resize (0);
+        parse_termio_input(buffer, len, _key_info_state);
 
-        key_event_args key = parse_termio_input(v, len);
-
-        return _state_emulator.update_key_state(key);
+        return _state_emulator.update_key_states(_key_info_state);
     }
 }
 

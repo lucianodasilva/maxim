@@ -7,8 +7,8 @@
 namespace maxim::input::_unix {
 
     struct key_map_item {
-        virtual_key key;
-        modifier_key mod;
+        virtual_key     key;
+        modifier_key    mod;
     };
 
     constexpr key_map_item key_map[] = {
@@ -142,7 +142,7 @@ namespace maxim::input::_unix {
             {virtual_key::backspace, modifier_key::none} // 0x7F
     };
 
-    key_event_args parse_termio_input(uint64_t input, int len);
+    void parse_termio_input (const char * buffer, int len, std::vector < key_info > & out_keys);
 
 }
 

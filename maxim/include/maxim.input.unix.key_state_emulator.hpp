@@ -15,7 +15,7 @@ namespace maxim::input::_unix {
         static constexpr uint32_t key_delay_ms = 150;
         static constexpr uint32_t key_delay_ds = key_delay_ms / 100;
 
-        std::vector<key_event_args> update_key_state(key_event_args const &key);
+        std::vector<key_event_args> update_key_states (std::vector < key_info > const & key_states);
 
     private:
         // key press state

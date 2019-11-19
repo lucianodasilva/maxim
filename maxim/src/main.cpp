@@ -1,7 +1,7 @@
 #include <maxim.hpp>
 #include <iostream>
-#include <iomanip>
 #include <algorithm>
+#include <array>
 
 struct menu_item {
 public:
@@ -142,7 +142,7 @@ int main(int arg_c, char ** arg_v)
     //app.device().fullscreen(true);
     //app.device().enable_cursor(false);
     //app.device().clear();
-    app.device().send_thing("\033]10;?\007");
+    //app.device().send_thing("\033]10;?\007");
 
 	app.run();
 
