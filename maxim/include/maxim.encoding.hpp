@@ -12,7 +12,7 @@ namespace maxim::encoding {
 
         constexpr char const
             csi[]                       = "\033[", // control sequence introducer
-            sse3[]                      = "\0330", // single shift select of G3
+            sse3[]                      = "\033O", // single shift select of G3
             clear[]                     = "\033[2J",
             alternate_buffer_enable[]   = "\033[?1049h",
             alternate_buffer_disable[]  = "\033[?1049l",

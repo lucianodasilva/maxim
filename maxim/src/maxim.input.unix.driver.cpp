@@ -41,19 +41,19 @@ namespace maxim::input::_unix {
         tcsetattr(0, TCSANOW, &_initial_term_settings);
     }
 
-    std::vector<key_event_args> driver::get_input_events() const {
+    void driver::dispatch_events(maxim::application &app) const {
         constexpr std::size_t buffer_size { 16 };
         char buffer [buffer_size];
 
         auto len = read(STDIN_FILENO, +buffer, buffer_size);
 
         if (len < 0)
-            return {};
+            return;
 
-        // debug printing
-         if (len > 0) {
+        // debug printing --------------
+        if (len > 0) {
             for (int i = 0; i < len; ++i) {
-                std::cout << "0x" << std::hex << std::setw(2) << std::setfill ('0') << (int)buffer [i] << " ";
+                    std::cout << "0x" << std::hex << std::setw(2) << std::setfill ('0') << (int)buffer [i] << " ";
             }
 
             std::cout << "'";
@@ -66,11 +66,18 @@ namespace maxim::input::_unix {
 
             std::cout << std::endl;
         }
-        // --------------
-        _key_info_state.resize (0);
-        parse_termio_input(buffer, len, _key_info_state);
+        // ----------------------------
 
-        return _state_emulator.update_key_states(_key_info_state);
+        span source { buffer, buffer + len };
+
+        while (source) {
+            auto key = termio_parse(source);
+
+            if (key)
+                _state_emulator.evaluate_and_dispatch (key, app);
+        }
+
+        _state_emulator.timeout_and_dispatch(app);
     }
 }
 

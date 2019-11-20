@@ -1,58 +1,14 @@
 #include "maxim.input.unix.termio_parser.hpp"
 #include "maxim.encoding.hpp"
+#include "maxim.input.unix.key_state_emulator.hpp"
 
 namespace maxim::input::_unix {
 
-    struct span {
-    public:
-
-        inline span & operator += (std::ptrdiff_t len) {
-            begin += len;
-            return *this;
-        }
-
-        inline explicit operator bool () const {
-            return begin != end;
-        }
-
-        template < std::size_t len >
-        inline bool match_and_advance (char const (&sequence) [len]) {
-            auto dist = std::distance (begin, end);
-
-            if (dist > len)
-                return false;
-
-            auto equals = std::equal(begin, begin + len, +sequence);
-
-            if (equals)
-                begin += len;
-
-            return equals;
-        }
-
-        inline void ignore_until (char c) {
-            while (begin != end && *begin != c)
-                ++begin;
-        }
-
-        inline void step () {
-            if (begin != end)
-                ++begin;
-        }
-
-        inline bool is (char c) {
-            if (!*this)
-                return false;
-
-            return *begin == c;
-        }
-
-        const char * begin, * end;
-    };
-
 #   define match_to(sequence, key) \
-    if (source.match_and_advance(sequence)) \
-        return key
+    if (source.match(sequence)) { \
+        source += sequence_len (sequence); \
+        return key; \
+    }
 
 
     template < std::size_t ... _len_v >
@@ -124,65 +80,70 @@ namespace maxim::input::_unix {
 
 #   undef match_to
 
-    void parse_termio_input (const char * buffer, int len, std::vector < key_info > & out_keys) {
-        span source { buffer, buffer + len };
+    key_info termio_parse (span & source) {
 
-        while (source) {
-            // check for special keys
-            if (source.match_and_advance(encoding::ansi::csi)) {
+        // check for special keys
+        if (source.match (encoding::ansi::csi)) {
+            auto next = source + sequence_len (encoding::ansi::csi);
 
-                virtual_key key = match_special_keys_csi (source);
-                modifier_key mod{modifier_key::none};
+            virtual_key key = match_special_keys_csi(next);
+            modifier_key mod{modifier_key::none};
 
-                // recognized key
-                if (key != virtual_key::none) {
+            // recognized key
+            if (key != virtual_key::none) {
 
-                    // check for modifiers
-                    if (source.match_and_advance(";")) {
-                        mod = map_modifiers(source);
-                    }
-
-                    out_keys.push_back({
-                       0,
-                       key,
-                       mod});
+                // check for modifiers
+                if (next.is(';')) {
+                    next.step();
+                    mod = map_modifiers(next);
                 }
 
-                source.ignore_until('~');
+                next.ignore_until('~');
+                source = next;
 
-            } else if (source.match_and_advance(encoding::ansi::sse3)) {
-
-                virtual_key key = match_special_keys_sse3 (source);
-                modifier_key mod{modifier_key::none};
-
-                // recognized key
-                if (key != virtual_key::none) {
-
-                    // check for modifiers
-                    if (source.match_and_advance(";")) {
-                        mod = map_modifiers(source);
-                    }
-
-                    out_keys.push_back({
+                return {
                         0,
                         key,
-                        mod});
-                }
-
-                source.ignore_until('~');
-
-            } else {
-                auto map_item = key_map[*buffer];
-
-                out_keys.push_back ({
-                        static_cast < char32_t > (*buffer),
-                        map_item.key,
-                        map_item.mod});
-
-
+                        mod
+                };
             }
+        }
+
+        if (source.match (encoding::ansi::sse3)) {
+            auto next = source + sequence_len (encoding::ansi::csi);
+
+            virtual_key key = match_special_keys_sse3 (next);
+            modifier_key mod{modifier_key::none};
+
+            // recognized key
+            if (key != virtual_key::none) {
+                source = next;
+
+                return {
+                    0,
+                    key,
+                    mod
+                };
+            }
+        }
+
+        { // remaining
+            auto key_char = *source.begin;
+            bool prefixed = key_char == '\033';
+            key_info key {};
 
             source.step();
+
+            if (prefixed && source) {
+                key = key_map[*source.begin];
+                key.modifiers = key.modifiers | modifier_key::alt;
+
+                source.step();
+            } else {
+                key = key_map[key_char];
+            }
+
+            return key;
         }
     }
 

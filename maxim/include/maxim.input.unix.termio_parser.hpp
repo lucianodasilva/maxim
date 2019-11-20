@@ -6,54 +6,49 @@
 
 namespace maxim::input::_unix {
 
-    struct key_map_item {
-        virtual_key     key;
-        modifier_key    mod;
-    };
-
-    constexpr key_map_item key_map[] = {
+    constexpr key_info key_map[] = {
             {}, // 0x00
-            {virtual_key::A,         modifier_key::control}, // 0x01
-            {virtual_key::B,         modifier_key::control}, // 0x02
-            {virtual_key::C,         modifier_key::control}, // 0x03
-            {virtual_key::D,         modifier_key::control}, // 0x04
-            {virtual_key::E,         modifier_key::control}, // 0x05
-            {virtual_key::F,         modifier_key::control}, // 0x06
-            {virtual_key::G,         modifier_key::control}, // 0x07
-            {virtual_key::backspace, modifier_key::control}, // 0x08
-            {virtual_key::tab,       modifier_key::none}, // 0x09
-            {virtual_key::J,         modifier_key::control}, // 0x0A
-            {virtual_key::K,         modifier_key::control}, // 0x0B
-            {virtual_key::L,         modifier_key::control}, // 0x0C
-            {virtual_key::enter,     modifier_key::control}, // 0x0D
-            {virtual_key::N,         modifier_key::control}, // 0x0E
-            {virtual_key::O,         modifier_key::control}, // 0x0F
-            {virtual_key::P,         modifier_key::control}, // 0x10
-            {virtual_key::Q,         modifier_key::control}, // 0x11
-            {virtual_key::R,         modifier_key::control}, // 0x12
-            {virtual_key::S,         modifier_key::control}, // 0x13
-            {virtual_key::T,         modifier_key::control}, // 0x14
-            {virtual_key::U,         modifier_key::control}, // 0x15
-            {virtual_key::V,         modifier_key::control}, // 0x16
-            {virtual_key::W,         modifier_key::control}, // 0x17
-            {virtual_key::X,         modifier_key::control}, // 0x18
-            {virtual_key::Y,         modifier_key::control}, // 0x19
-            {virtual_key::Z,         modifier_key::control}, // 0x1A
-            {virtual_key::escape,    modifier_key::none}, // 0x1B
+            { 0, virtual_key::A,         modifier_key::control}, // 0x01
+            { 0, virtual_key::B,         modifier_key::control}, // 0x02
+            { 0, virtual_key::C,         modifier_key::control}, // 0x03
+            { 0, virtual_key::D,         modifier_key::control}, // 0x04
+            { 0, virtual_key::E,         modifier_key::control}, // 0x05
+            { 0, virtual_key::F,         modifier_key::control}, // 0x06
+            { 0, virtual_key::G,         modifier_key::control}, // 0x07
+            { 0, virtual_key::backspace, modifier_key::control}, // 0x08
+            { 0, virtual_key::tab,       modifier_key::none}, // 0x09
+            { 0, virtual_key::J,         modifier_key::control}, // 0x0A
+            { 0, virtual_key::K,         modifier_key::control}, // 0x0B
+            { 0, virtual_key::L,         modifier_key::control}, // 0x0C
+            { 0, virtual_key::enter,     modifier_key::control}, // 0x0D
+            { 0, virtual_key::N,         modifier_key::control}, // 0x0E
+            { 0, virtual_key::O,         modifier_key::control}, // 0x0F
+            { 0, virtual_key::P,         modifier_key::control}, // 0x10
+            { 0, virtual_key::Q,         modifier_key::control}, // 0x11
+            { 0, virtual_key::R,         modifier_key::control}, // 0x12
+            { 0, virtual_key::S,         modifier_key::control}, // 0x13
+            { 0, virtual_key::T,         modifier_key::control}, // 0x14
+            { 0, virtual_key::U,         modifier_key::control}, // 0x15
+            { 0, virtual_key::V,         modifier_key::control}, // 0x16
+            { 0, virtual_key::W,         modifier_key::control}, // 0x17
+            { 0, virtual_key::X,         modifier_key::control}, // 0x18
+            { 0, virtual_key::Y,         modifier_key::control}, // 0x19
+            { 0, virtual_key::Z,         modifier_key::control}, // 0x1A
+            { 0, virtual_key::escape,    modifier_key::none}, // 0x1B
             {}, // 0x1C
             {}, // 0x1D
             {}, // 0x1E
             {}, // 0x1F
-            {virtual_key::space,     modifier_key::none}, // 0x20
-            {virtual_key::none,      modifier_key::shift}, // 0x21
-            {virtual_key::none,      modifier_key::shift}, // 0x22
-            {virtual_key::none,      modifier_key::shift}, // 0x23
-            {virtual_key::none,      modifier_key::shift}, // 0x24
-            {virtual_key::none,      modifier_key::shift}, // 0x25
-            {virtual_key::none,      modifier_key::shift}, // 0x26
-            {virtual_key::none,      modifier_key::shift}, // 0x27
-            {virtual_key::none,      modifier_key::shift}, // 0x28
-            {virtual_key::none,      modifier_key::shift}, // 0x29
+            { 0, virtual_key::space,     modifier_key::none}, // 0x20
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x21
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x22
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x23
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x24
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x25
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x26
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x27
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x28
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x29
             {}, // 0x2A
             {}, // 0x2B
             {}, // 0x2C
@@ -73,76 +68,160 @@ namespace maxim::input::_unix {
             {}, // 0x3A
             {}, // 0x3B
             {}, // 0x3C
-            {virtual_key::none,      modifier_key::shift}, // 0x3D
+            { 0, virtual_key::none,      modifier_key::shift}, // 0x3D
             {}, // 0x3E
             {}, // 0x3F
             {}, // 0x40
-            {virtual_key::A,         modifier_key::shift}, // 0x41
-            {virtual_key::B,         modifier_key::shift}, // 0x42
-            {virtual_key::C,         modifier_key::shift}, // 0x43
-            {virtual_key::D,         modifier_key::shift}, // 0x44
-            {virtual_key::E,         modifier_key::shift}, // 0x45
-            {virtual_key::F,         modifier_key::shift}, // 0x46
-            {virtual_key::G,         modifier_key::shift}, // 0x47
-            {virtual_key::H,         modifier_key::shift}, // 0x48
-            {virtual_key::I,         modifier_key::shift}, // 0x49
-            {virtual_key::J,         modifier_key::shift}, // 0x4A
-            {virtual_key::K,         modifier_key::shift}, // 0x4B
-            {virtual_key::L,         modifier_key::shift}, // 0x4C
-            {virtual_key::M,         modifier_key::shift}, // 0x4D
-            {virtual_key::N,         modifier_key::shift}, // 0x4E
-            {virtual_key::O,         modifier_key::shift}, // 0x4F
-            {virtual_key::P,         modifier_key::shift}, // 0x50
-            {virtual_key::Q,         modifier_key::shift}, // 0x51
-            {virtual_key::R,         modifier_key::shift}, // 0x52
-            {virtual_key::S,         modifier_key::shift}, // 0x53
-            {virtual_key::T,         modifier_key::shift}, // 0x54
-            {virtual_key::U,         modifier_key::shift}, // 0x55
-            {virtual_key::V,         modifier_key::shift}, // 0x56
-            {virtual_key::W,         modifier_key::shift}, // 0x57
-            {virtual_key::X,         modifier_key::shift}, // 0x58
-            {virtual_key::Y,         modifier_key::shift}, // 0x59
-            {virtual_key::Z,         modifier_key::shift}, // 0x5A
+            { 0, virtual_key::A,         modifier_key::shift}, // 0x41
+            { 0, virtual_key::B,         modifier_key::shift}, // 0x42
+            { 0, virtual_key::C,         modifier_key::shift}, // 0x43
+            { 0, virtual_key::D,         modifier_key::shift}, // 0x44
+            { 0, virtual_key::E,         modifier_key::shift}, // 0x45
+            { 0, virtual_key::F,         modifier_key::shift}, // 0x46
+            { 0, virtual_key::G,         modifier_key::shift}, // 0x47
+            { 0, virtual_key::H,         modifier_key::shift}, // 0x48
+            { 0, virtual_key::I,         modifier_key::shift}, // 0x49
+            { 0, virtual_key::J,         modifier_key::shift}, // 0x4A
+            { 0, virtual_key::K,         modifier_key::shift}, // 0x4B
+            { 0, virtual_key::L,         modifier_key::shift}, // 0x4C
+            { 0, virtual_key::M,         modifier_key::shift}, // 0x4D
+            { 0, virtual_key::N,         modifier_key::shift}, // 0x4E
+            { 0, virtual_key::O,         modifier_key::shift}, // 0x4F
+            { 0, virtual_key::P,         modifier_key::shift}, // 0x50
+            { 0, virtual_key::Q,         modifier_key::shift}, // 0x51
+            { 0, virtual_key::R,         modifier_key::shift}, // 0x52
+            { 0, virtual_key::S,         modifier_key::shift}, // 0x53
+            { 0, virtual_key::T,         modifier_key::shift}, // 0x54
+            { 0, virtual_key::U,         modifier_key::shift}, // 0x55
+            { 0, virtual_key::V,         modifier_key::shift}, // 0x56
+            { 0, virtual_key::W,         modifier_key::shift}, // 0x57
+            { 0, virtual_key::X,         modifier_key::shift}, // 0x58
+            { 0, virtual_key::Y,         modifier_key::shift}, // 0x59
+            { 0, virtual_key::Z,         modifier_key::shift}, // 0x5A
             {}, // 0x5B
             {}, // 0x5C
             {}, // 0x5D
             {}, // 0x5E
             {}, // 0x5F
             {}, // 0x60
-            {virtual_key::A,         modifier_key::none}, // 0x61
-            {virtual_key::B,         modifier_key::none}, // 0x62
-            {virtual_key::C,         modifier_key::none}, // 0x63
-            {virtual_key::D,         modifier_key::none}, // 0x64
-            {virtual_key::E,         modifier_key::none}, // 0x65
-            {virtual_key::F,         modifier_key::none}, // 0x66
-            {virtual_key::G,         modifier_key::none}, // 0x67
-            {virtual_key::H,         modifier_key::none}, // 0x68
-            {virtual_key::I,         modifier_key::none}, // 0x69
-            {virtual_key::J,         modifier_key::none}, // 0x6A
-            {virtual_key::K,         modifier_key::none}, // 0x6B
-            {virtual_key::L,         modifier_key::none}, // 0x6C
-            {virtual_key::M,         modifier_key::none}, // 0x6D
-            {virtual_key::N,         modifier_key::none}, // 0x6E
-            {virtual_key::O,         modifier_key::none}, // 0x6F
-            {virtual_key::P,         modifier_key::none}, // 0x70
-            {virtual_key::Q,         modifier_key::none}, // 0x71
-            {virtual_key::R,         modifier_key::none}, // 0x72
-            {virtual_key::S,         modifier_key::none}, // 0x73
-            {virtual_key::T,         modifier_key::none}, // 0x74
-            {virtual_key::U,         modifier_key::none}, // 0x75
-            {virtual_key::V,         modifier_key::none}, // 0x76
-            {virtual_key::W,         modifier_key::none}, // 0x77
-            {virtual_key::X,         modifier_key::none}, // 0x78
-            {virtual_key::Y,         modifier_key::none}, // 0x79
-            {virtual_key::Z,         modifier_key::none}, // 0x7A
+            { 0, virtual_key::A,         modifier_key::none}, // 0x61
+            { 0, virtual_key::B,         modifier_key::none}, // 0x62
+            { 0, virtual_key::C,         modifier_key::none}, // 0x63
+            { 0, virtual_key::D,         modifier_key::none}, // 0x64
+            { 0, virtual_key::E,         modifier_key::none}, // 0x65
+            { 0, virtual_key::F,         modifier_key::none}, // 0x66
+            { 0, virtual_key::G,         modifier_key::none}, // 0x67
+            { 0, virtual_key::H,         modifier_key::none}, // 0x68
+            { 0, virtual_key::I,         modifier_key::none}, // 0x69
+            { 0, virtual_key::J,         modifier_key::none}, // 0x6A
+            { 0, virtual_key::K,         modifier_key::none}, // 0x6B
+            { 0, virtual_key::L,         modifier_key::none}, // 0x6C
+            { 0, virtual_key::M,         modifier_key::none}, // 0x6D
+            { 0, virtual_key::N,         modifier_key::none}, // 0x6E
+            { 0, virtual_key::O,         modifier_key::none}, // 0x6F
+            { 0, virtual_key::P,         modifier_key::none}, // 0x70
+            { 0, virtual_key::Q,         modifier_key::none}, // 0x71
+            { 0, virtual_key::R,         modifier_key::none}, // 0x72
+            { 0, virtual_key::S,         modifier_key::none}, // 0x73
+            { 0, virtual_key::T,         modifier_key::none}, // 0x74
+            { 0, virtual_key::U,         modifier_key::none}, // 0x75
+            { 0, virtual_key::V,         modifier_key::none}, // 0x76
+            { 0, virtual_key::W,         modifier_key::none}, // 0x77
+            { 0, virtual_key::X,         modifier_key::none}, // 0x78
+            { 0, virtual_key::Y,         modifier_key::none}, // 0x79
+            { 0, virtual_key::Z,         modifier_key::none}, // 0x7A
             {}, // 0x7B
             {}, // 0x7C
             {}, // 0x7D
             {}, // 0x7E
-            {virtual_key::backspace, modifier_key::none} // 0x7F
+            { 0, virtual_key::backspace, modifier_key::none} // 0x7F
     };
 
-    void parse_termio_input (const char * buffer, int len, std::vector < key_info > & out_keys);
+    namespace details {
+
+        constexpr std::size_t static_strnlen (
+                char const * buffer,
+                char const * end,
+                std::size_t index = 0
+        ) noexcept {
+            return buffer != end && *buffer ? static_strnlen(buffer + 1, end, index + 1) : index;
+        }
+
+    }
+
+    template < std::size_t _len_v >
+    constexpr std::size_t sequence_len (char const (&buffer) [_len_v]) noexcept {
+        return details::static_strnlen(+buffer, +buffer + _len_v);
+    }
+
+    struct span {
+    public:
+
+        inline span operator + (std::ptrdiff_t len) {
+            return advance(len);
+        }
+
+        inline span & operator += (std::ptrdiff_t len) {
+            begin += len;
+
+            if (begin > end)
+                begin = end;
+
+            return *this;
+        }
+
+        inline explicit operator bool () const {
+            return begin != end;
+        }
+
+        template < std::size_t _len_v >
+        inline bool match (char const (&sequence) [_len_v]) {
+            auto * seq_ptr = +sequence;
+            auto * seq_end = seq_ptr + _len_v;
+            auto * cursor = begin;
+
+            while (seq_ptr != seq_end && *seq_ptr != '\0') {
+                if (cursor == end || *cursor != *seq_ptr)
+                    return false;
+
+                ++cursor;
+                ++seq_ptr;
+            }
+
+            return true;
+        }
+
+        span advance (std::ptrdiff_t len) {
+            span ret = *this;
+            ret += len;
+
+            return ret;
+        }
+
+        inline void ignore_until (char c) {
+            while (begin != end && *begin != c)
+                ++begin;
+
+            if (begin != end)
+                ++begin;
+        }
+
+        inline void step () {
+            if (begin != end)
+                ++begin;
+        }
+
+        inline bool is (char c) {
+            if (!*this)
+                return false;
+
+            return *begin == c;
+        }
+
+        const char * begin, * end;
+    };
+
+    key_info termio_parse (span & source);
 
 }
 

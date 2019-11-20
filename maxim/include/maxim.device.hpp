@@ -24,25 +24,14 @@ namespace maxim {
         character_buffer & backbuffer();
         maxim::graphics graphics();
 
-        void fullscreen(bool value);
+        void set_fullscreen(bool enable);
 
-        void enable_cursor (bool value);
-
-        void send_thing (char const * str) {
-            _stream.reset ();
-
-            while (*str) {
-                _stream.write(*str);
-                ++str;
-            }
-
-            _output_driver->send(_stream);
-        }
+        void set_cursor (bool enable);
 
         void clear();
         void present ();
 
-        std::vector<input::key_event_args> get_input_events() const;
+        void dispatch_input_events (application & app) const;
 
     private:
 

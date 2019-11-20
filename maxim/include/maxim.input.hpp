@@ -102,6 +102,9 @@ namespace maxim::input {
         virtual_key		key;
         modifier_key	modifiers;
 
+        inline explicit operator bool () noexcept {
+            return char_value || key != virtual_key::none;
+        }
     };
 
     inline bool operator==(key_info const &v1, key_info const &v2) noexcept {
@@ -109,17 +112,6 @@ namespace maxim::input {
             v1.char_value == v2.char_value &&
             v1.key == v2.key &&
             v1.modifiers == v2.modifiers;
-    }
-
-    struct key_event_args {
-        key_info		key;
-        bool			is_down;
-    };
-
-    inline bool operator==(key_event_args const &v1, key_event_args const &v2) {
-        return
-            v1.key == v2.key &&
-            v1.is_down == v2.is_down;
     }
 
     template < class _sender_t >
@@ -151,13 +143,13 @@ namespace maxim::input {
 namespace std
 {
 	template <>
-	struct hash <maxim::input::key_event_args>
+	struct hash <maxim::input::key_info>
 	{
-		std::size_t operator ()(maxim::input::key_event_args const & args) const noexcept{
+		std::size_t operator ()(maxim::input::key_info const & info) const noexcept{
 			return maxim::input::details::hash_combine(
-				args.key.char_value,
-				static_cast < std::underlying_type_t <maxim::input::virtual_key> > (args.key.key),
-				static_cast < std::underlying_type_t <maxim::input::modifier_key> > (args.key.modifiers)
+				info.char_value,
+				static_cast < std::underlying_type_t <maxim::input::virtual_key> > (info.key),
+				static_cast < std::underlying_type_t <maxim::input::modifier_key> > (info.modifiers)
 			);
 		}
 	};

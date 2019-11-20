@@ -7,10 +7,10 @@ namespace maxim {
 
         // restore default terminal configuration
         if (_alternate_buffer_enabled)
-            fullscreen(false);
+            set_fullscreen(false);
 
         if (!_cursor_enabled)
-            enable_cursor(true);
+            set_cursor(true);
     }
 
     size const & device::get_size () const {
@@ -25,28 +25,28 @@ namespace maxim {
         return { _back_buffer };
     }
 
-    void device::fullscreen(bool value) {
+    void device::set_fullscreen(bool enabled) {
         _stream.reset();
 
-        if (value)
+        if (enabled)
             _stream.write(encoding::ansi::alternate_buffer_enable);
         else
             _stream.write(encoding::ansi::alternate_buffer_disable);
 
-        _alternate_buffer_enabled = value;
+        _alternate_buffer_enabled = enabled;
 
         _output_driver->send(_stream);
     }
 
-    void device::enable_cursor(bool value) {
+    void device::set_cursor (bool enabled) {
         _stream.reset();
 
-        if (value)
+        if (enabled)
             _stream.write(encoding::ansi::cursor_enable);
         else
             _stream.write(encoding::ansi::cursor_disable);
 
-        _cursor_enabled = value;
+        _cursor_enabled = enabled;
 
         _output_driver->send(_stream);
     }
@@ -86,7 +86,8 @@ namespace maxim {
         _stream.reset();
     }
 
-    std::vector<input::key_event_args> device::get_input_events() const {
-        return _input_driver->get_input_events();
+    void device::dispatch_input_events(maxim::application &app) const {
+        _input_driver->dispatch_events(app);
     }
+
 }

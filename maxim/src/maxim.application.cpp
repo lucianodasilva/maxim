@@ -17,13 +17,12 @@ namespace maxim {
 				return; // TODO: possibly throw exception
 
 			while (_is_running) {
-				dispatch_input_events();
+			    _device.dispatch_input_events(*this);
 
-				//auto g = _device.graphics();
-				//on_draw.invoke(*this, g);
+				auto g = _device.graphics();
+				this->on_draw.invoke(*this, g);
 
-				//_device.present();
-
+				_device.present();
 				std::this_thread::yield();
 			}
 
@@ -39,15 +38,6 @@ namespace maxim {
 
 	maxim::device & application::device() {
 		return _device;
-	}
-
-	void application::dispatch_input_events() {
-		auto args = _device.get_input_events();
-
-		for (auto arg : args) {
-			auto & ev = (arg.is_down ? on_key_down : on_key_up);
-			ev.invoke(*this, std::move(arg.key));
-		}
 	}
 
 }

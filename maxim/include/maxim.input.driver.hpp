@@ -6,16 +6,21 @@
 #include <memory>
 #include <vector>
 
-namespace maxim::input {
+namespace maxim {
 
-    class driver {
-    public:
-        virtual ~driver() = default;
+    class application;
 
-        virtual std::vector<key_event_args> get_input_events() const = 0;
+    namespace input {
 
-        static std::unique_ptr<driver> create();
-    };
+        class driver {
+        public:
+            virtual ~driver() = default;
+
+            virtual void dispatch_events (application & app) const = 0;
+
+            static std::unique_ptr<driver> create();
+        };
+    }
 }
 
 #endif
