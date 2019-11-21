@@ -66,7 +66,7 @@ target_compile_features(
 		cxx_std_17)
 
 add_executable(maxim_test
-        test/calculate_change_set_test.cpp
+    test/calculate_change_set_test.cpp
 	test/main.cpp
 	test/unix_input_parser_test.cpp
 	test/unix_key_state_emulator_test.cpp)
