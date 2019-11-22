@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-# maxim core project
+# maxim.device core project
 project (maxim)
 
 add_library(

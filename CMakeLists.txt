@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
+include (3rd_party/treemake/cmake/treemake.cmake)
+# third parties
+add_subdirectory (3rd_party/catch2)
+
 option (MAXIM_BUILD_DEMO "Build Drivers debug executable"                       FALSE)
 option (MAXIM_BUILD_TEST "Compile Drivers unit tests"                           FALSE)
 option (MAXIM_BUILD_TEST_COVERAGE "Compile Drivers with unit tests coverage"    FALSE)
@@ -14,8 +18,4 @@ endif()
 
 project (maxim)
 
-# third parties
-add_subdirectory (3rd_party/catch2)
-
-# project
-add_subdirectory (maxim)
+add_library_dir(maxim.device STATIC)
