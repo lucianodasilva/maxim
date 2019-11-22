@@ -1,126 +1,150 @@
 #include "maxim.input.unix.termio_parser.hpp"
+#include "maxim.encoding.hpp"
+#include "maxim.input.unix.key_state_emulator.hpp"
 
 namespace maxim::input::_unix {
 
-    virtual_key map_special_key_code(uint16_t key_code) {
-        switch (key_code) {
-            case 0x32:
-                return virtual_key::insert;
-            case 0x33:
-                return virtual_key::del;
-            case 0x35:
-                return virtual_key::page_up;
-            case 0x36:
-                return virtual_key::page_down;
-            case 0x41:
-                return virtual_key::up;
-            case 0x42:
-                return virtual_key::down;
-            case 0x43:
-                return virtual_key::right;
-            case 0x44:
-                return virtual_key::left;
-            case 0x46:
-                return virtual_key::end;
-            case 0x48:
-                return virtual_key::home;
-            case 0x50:
-                return virtual_key::f1;
-            case 0x51:
-                return virtual_key::f2;
-            case 0x52:
-                return virtual_key::f3;
-            case 0x53:
-                return virtual_key::f4;
-            case 0x3531:
-                return virtual_key::f5;
-            case 0x3731:
-                return virtual_key::f6;
-            case 0x3831:
-                return virtual_key::f7;
-            case 0x3931:
-                return virtual_key::f8;
-            case 0x3032:
-                return virtual_key::f9;
-            case 0x3132:
-                return virtual_key::f10;
-            case 0x3332:
-                return virtual_key::f11;
-            case 0x3432:
-                return virtual_key::f12;
-            default:
-                return virtual_key::none;
-        }
+#   define match_to(sequence, key) \
+    if (source.match(sequence)) { \
+        source += sequence_len (sequence); \
+        return key; \
     }
 
-    modifier_key map_modifiers(uint8_t m) {
-        switch (m) {
-            case 0x32:
-                return modifier_key::shift;
-            case 0x33:
-                return modifier_key::alt;
-            case 0x34:
-                return modifier_key::shift | modifier_key::alt;
-            case 0x35:
-                return modifier_key::control;
-            case 0x36:
-                return modifier_key::shift | modifier_key::control;
-            case 0x37:
-                return modifier_key::control | modifier_key::alt;
-            case 0x38:
-                return modifier_key::control | modifier_key::alt | modifier_key::shift;
-            default:
-                return modifier_key::none;
-        }
+
+    template < std::size_t ... _len_v >
+    virtual_key match_special_keys_csi (span & source) {
+
+        // larger sequences must come first
+
+        // function keys
+        match_to ("11", virtual_key::f1);
+        match_to ("12", virtual_key::f2);
+        match_to ("13", virtual_key::f3);
+        match_to ("14", virtual_key::f4);
+        match_to ("15", virtual_key::f5);
+        match_to ("17", virtual_key::f6);
+        match_to ("18", virtual_key::f7);
+        match_to ("19", virtual_key::f8);
+        match_to ("20", virtual_key::f9);
+        match_to ("21", virtual_key::f10);
+        match_to ("23", virtual_key::f11);
+        match_to ("24", virtual_key::f12);
+
+        // directional keys
+        match_to ("A", virtual_key::up);
+        match_to ("B", virtual_key::down);
+        match_to ("C", virtual_key::right);
+        match_to ("D", virtual_key::left);
+
+        // six-key editing keypad
+        match_to ("H", virtual_key::home);
+        match_to ("1", virtual_key::home);
+
+        match_to ("F", virtual_key::end);
+        match_to ("4", virtual_key::end);
+
+        match_to ("2", virtual_key::insert);
+        match_to ("3", virtual_key::del);
+        match_to ("5", virtual_key::page_up);
+        match_to ("6", virtual_key::page_down);
+
+        return virtual_key::none;
     }
 
-    key_event_args parse_termio_input(uint64_t input, int len) {
-        auto *buffer = reinterpret_cast < uint8_t * > (&input);
-        if (len <= 0)
-            return {};
+    template < std::size_t ... _len_v >
+    virtual_key match_special_keys_sse3 (span & source) {
 
-        // regular keys
-        if (len == 1 && buffer[0] < 0x80) {
-            auto map_item = key_map[buffer[0]];
+        // larger sequences must come first
 
-            return {
-                *reinterpret_cast <char32_t *> (+buffer),
-                map_item.key,
-                map_item.mod
-            };
-        } else {
-            // regular keys + mod
-            if (len == 2 && buffer[0] == '\x1B') {
+        // function keys
+        match_to ("P", virtual_key::f1);
+        match_to ("Q", virtual_key::f2);
+        match_to ("R", virtual_key::f3);
+        match_to ("S", virtual_key::f4);
+
+        return virtual_key::none;
+    }
+
+    modifier_key map_modifiers(span & source) {
+
+        match_to ("2", modifier_key::shift);
+        match_to ("3", modifier_key::alt);
+        match_to ("4", modifier_key::alt | modifier_key::shift);
+        match_to ("5", modifier_key::control);
+        match_to ("6", modifier_key::control | modifier_key::shift);
+        match_to ("7", modifier_key::control | modifier_key::alt);
+        match_to ("8", modifier_key::control | modifier_key::alt | modifier_key::shift);
+
+        return modifier_key::none;
+    }
+
+#   undef match_to
+
+    key_info termio_parse (span & source) {
+
+        // check for special keys
+        if (source.match (encoding::ansi::csi)) {
+            auto next = source + sequence_len (encoding::ansi::csi);
+
+            virtual_key key = match_special_keys_csi(next);
+            modifier_key mod{modifier_key::none};
+
+            // recognized key
+            if (key != virtual_key::none) {
+
+                // check for modifiers
+                if (next.is(';')) {
+                    next.step();
+                    mod = map_modifiers(next);
+                }
+
+                next.ignore_until('~');
+                source = next;
+
                 return {
-                    *reinterpret_cast <char32_t *> (1 + buffer),
-                    key_map[buffer[1]].key,
-                    key_map[buffer[1]].mod | modifier_key::alt
+                        0,
+                        key,
+                        mod
                 };
-            } else if (buffer[0] == '\x1B') {
-                uint16_t key_code = 0;
-                modifier_key alt = modifier_key::none;
-
-                // simple special keys
-                if (len < 5) {
-                    key_code = buffer[2];
-                } else if (len == 5) {
-                    key_code = *reinterpret_cast <uint16_t *> (buffer + 2);
-                }
-                // special key with modifier combinations
-                else if (len == 6) {
-                    if (buffer[5] == '\x7e') {
-                        key_code = buffer[2];
-                    } else {
-                        key_code = buffer[5];
-                    }
-                    alt = map_modifiers(buffer[4]);
-                } else if (len == 7) {
-                    key_code = *reinterpret_cast <uint16_t *> (buffer + 2);
-                    alt = map_modifiers(buffer[5]);
-                }
-
-                return {0x00, map_special_key_code(key_code), alt};
             }
         }
+
+        if (source.match (encoding::ansi::sse3)) {
+            auto next = source + sequence_len (encoding::ansi::csi);
+
+            virtual_key key = match_special_keys_sse3 (next);
+            modifier_key mod{modifier_key::none};
+
+            // recognized key
+            if (key != virtual_key::none) {
+                source = next;
+
+                return {
+                    0,
+                    key,
+                    mod
+                };
+            }
+        }
+
+        { // remaining
+            auto key_char = *source.begin;
+            bool prefixed = key_char == '\033';
+            key_info key {};
+
+            source.step();
+
+            if (prefixed && source) {
+                key = key_map[*source.begin];
+                key.modifiers = key.modifiers | modifier_key::alt;
+
+                source.step();
+            } else {
+                key = key_map[key_char];
+            }
+
+            return key;
+        }
     }
+
 }

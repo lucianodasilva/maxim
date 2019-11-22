@@ -7,25 +7,32 @@
 #include <chrono>
 #include <unordered_map>
 
-namespace maxim::input::_unix {
+namespace maxim {
 
-    struct key_state_emulator {
-    public:
+    class application;
 
-        static constexpr uint32_t key_delay_ms = 150;
-        static constexpr uint32_t key_delay_ds = key_delay_ms / 100;
+    namespace input::_unix {
 
-        std::vector<key_event_args> update_key_state(key_event_args const &key);
+        struct key_state_emulator {
+        public:
 
-    private:
-        // key press state
-        std::unordered_map<
-            key_event_args,
-            std::chrono::high_resolution_clock::time_point
-        >
-            _key_states;
-    };
+            static constexpr uint32_t key_delay_ms = 150;
+            static constexpr uint32_t key_delay_ds = key_delay_ms / 100;
 
+            void timeout_and_dispatch  (application & app);
+
+            void evaluate_and_dispatch (key_info key, application & app);
+
+        private:
+            // key press state
+            std::unordered_map<
+                key_info,
+                std::chrono::high_resolution_clock::time_point
+            >
+                _key_states;
+        };
+
+    }
 }
 
 #endif

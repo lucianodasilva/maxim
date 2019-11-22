@@ -9,7 +9,10 @@
 namespace maxim::encoding {
 
     namespace ansi {
+
         constexpr char const
+            csi[]                       = "\033[", // control sequence introducer
+            sse3[]                      = "\033O", // single shift select of G3
             clear[]                     = "\033[2J",
             alternate_buffer_enable[]   = "\033[?1049h",
             alternate_buffer_disable[]  = "\033[?1049l",
@@ -32,7 +35,7 @@ namespace maxim::encoding {
             color_background[]          = "48;5;",
             color_suffix[]              = "m";
 
-        constexpr graph_chars graph_chars = {
+        constexpr graph_chars graph_chars {
             'x', // line_vertical
             'q', // line_horizontal
             'n', // cross_lines
@@ -50,7 +53,7 @@ namespace maxim::encoding {
     void encode_change_set (
         character_buffer const &		buffer,
         character_change_set const &	change_set,
-        maxim::stream &			out_stream
+        maxim::stream &			        out_stream
     );
 }
 

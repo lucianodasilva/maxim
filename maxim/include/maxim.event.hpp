@@ -39,7 +39,7 @@ namespace maxim{
 		struct event_invoke : public _data_t
 		{
 		public:
-			inline void invoke(_sender_t & sender, _args_tv && ... argv) const {
+			inline void invoke(_sender_t & sender, _args_tv ... argv) const {
 				std::remove_const_t < decltype (_data_t::handlers) > local_handlers;
 				{
 					std::lock_guard < std::mutex > lock(_data_t::handler_mutex);

@@ -1,55 +1,48 @@
 #include "maxim.input.unix.key_state_emulator.hpp"
+#include "maxim.application.hpp"
 
 namespace maxim::input::_unix {
 
-    std::vector<key_event_args> key_state_emulator::update_key_state(key_event_args const & args) {
-        std::vector<key_event_args> events;
+    void key_state_emulator::timeout_and_dispatch(maxim::application &app) {
+        using namespace std::chrono;
+        auto now = high_resolution_clock::now();
 
-        auto & key = args.key;
+        auto it = _key_states.begin();
 
-        auto time = std::chrono::high_resolution_clock::now();
+        while (it != _key_states.end()) {
+            auto time = it->second;
+            auto time_span = duration_cast<milliseconds>(now - time).count();
+
+            if (time_span > key_delay_ms) {
+                // on timeout dispatch and erase from state
+                auto key = it->first;
+                it = _key_states.erase (it);
+
+                app.on_key_up.invoke (app, key);
+            } else {
+                ++it;
+            }
+        }
+    }
+
+    void key_state_emulator::evaluate_and_dispatch(maxim::input::key_info key, maxim::application &app) {
+        using namespace std::chrono;
+        auto now = high_resolution_clock::now();
+
         // set or reset counter for key combination
         if (key.char_value != 0 || key.key != virtual_key::none) {
-            auto key_it = _key_states.find(args);
-            bool is_new_key = key_it == _key_states.end();
 
-            if (is_new_key) {
-                _key_states[args] = time;
+            auto key_it = _key_states.find(key);
 
-                events.push_back(key_event_args {
-                    key.char_value,
-                    key.key,
-                    key.modifiers,
-                    true
-                });
+            if (key_it == _key_states.end()) {
+                _key_states[key] = now;
+
+                // dispatch
+                app.on_key_down.invoke (app, key);
             } else {
-                key_it->second = time;
+                key_it->second = now;
             }
         }
-
-        // check for time timeouts
-        for (auto k : _key_states) {
-            auto time_span = std::chrono::duration_cast<std::chrono::milliseconds>(time - k.second).count();
-            if (time_span > key_delay_ms) {
-                // remove
-                events.push_back(key_event_args {
-                    {
-                        k.first.key.char_value,
-                        k.first.key.key,
-                        k.first.key.modifiers
-                    },
-                    false
-                });
-            }
-        }
-
-        // remove from key state cache
-        for (auto &e : events) {
-            if (!e.is_down)
-                _key_states.erase(e);
-        }
-
-        return events;
     }
 
 }

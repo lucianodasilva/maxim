@@ -18,9 +18,10 @@ namespace maxim::input::_unix {
 
         virtual ~driver();
 
-        virtual std::vector<key_event_args> get_input_events() const override;
+        virtual void dispatch_events (application & app) const override;
 
     private:
+
         termios
             _initial_term_settings;
 

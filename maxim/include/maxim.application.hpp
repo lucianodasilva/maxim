@@ -37,8 +37,6 @@ namespace maxim {
 
 		std::atomic_bool
 			_is_running{ false };
-
-		void dispatch_input_events();
 	};
 
 }

@@ -10,6 +10,8 @@
 
 #include <chrono>
 #include <unordered_map>
+#include <iostream>
+#include <iomanip>
 
 #include "maxim.input.unix.driver.hpp"
 #include "maxim.input.unix.termio_parser.hpp"
@@ -39,13 +41,43 @@ namespace maxim::input::_unix {
         tcsetattr(0, TCSANOW, &_initial_term_settings);
     }
 
-    std::vector<key_event_args> driver::get_input_events() const {
-        uint64_t v = 0;
+    void driver::dispatch_events(maxim::application &app) const {
+        constexpr std::size_t buffer_size { 16 };
+        char buffer [buffer_size];
 
-        auto len = read(STDIN_FILENO, &v, sizeof(uint64_t));
-        key_event_args key = parse_termio_input(v, len);
+        auto len = read(STDIN_FILENO, +buffer, buffer_size);
 
-        return _state_emulator.update_key_state(key);
+        if (len < 0)
+            return;
+
+        // debug printing --------------
+        if (len > 0) {
+            for (int i = 0; i < len; ++i) {
+                    std::cout << "0x" << std::hex << std::setw(2) << std::setfill ('0') << (int)buffer [i] << " ";
+            }
+
+            std::cout << "'";
+
+            for (int i = 0; i < len; ++i) {
+                std::cout << (char)(std::isgraph(buffer [i]) ? buffer[i] : ' ');
+            }
+
+            std::cout << "'";
+
+            std::cout << std::endl;
+        }
+        // ----------------------------
+
+        span source { buffer, buffer + len };
+
+        while (source) {
+            auto key = termio_parse(source);
+
+            if (key)
+                _state_emulator.evaluate_and_dispatch (key, app);
+        }
+
+        _state_emulator.timeout_and_dispatch(app);
     }
 }
 

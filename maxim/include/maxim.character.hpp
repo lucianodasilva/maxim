@@ -53,7 +53,7 @@ namespace maxim {
     };
 
     struct graph_chars {
-        char
+        char const
                 line_vertical,
                 line_horizontal,
                 cross_lines,

@@ -10,37 +10,44 @@ TEST_CASE("basic key presses", "[unix termio parser]") {
     using namespace maxim::input::_unix;
 
     SECTION("single character parsing") {
+        char const buffer [] = "a";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-                    input = 0x61;
-
-        auto k = parse_termio_input(input, 1).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::A);
         REQUIRE(k.modifiers == modifier_key::none);
     }
 
     SECTION("single character with single modifier parsing") {
+        char const buffer [] = "\003";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x03;
-
-        auto k = parse_termio_input(input, 1).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::C);
         REQUIRE(k.modifiers == modifier_key::control);
     }
 
     SECTION("single character with multiple modifier parsing") {
+        char const buffer [] = "\033J";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x4A1B;
-
-        auto k = parse_termio_input(input, 2).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::J);
         REQUIRE((k.modifiers & modifier_key::shift) == modifier_key::shift);
         REQUIRE((k.modifiers & modifier_key::alt) == modifier_key::alt);
+    }
+
+    SECTION("single escape character") {
+        char const buffer [1] = {'\033'};
+        span source { +buffer, +buffer + sizeof (buffer) };
+
+        auto k = termio_parse(source);
+
+        REQUIRE(k.key == virtual_key::escape);
+        REQUIRE(k.modifiers == modifier_key::none);
     }
 }
 
@@ -48,34 +55,41 @@ TEST_CASE("function key presses", "[unix termio parser]") {
     using namespace maxim::input;
     using namespace maxim::input::_unix;
 
-    SECTION("low f_key simple parsing") {
+    SECTION("low f_key simple parsing sse3") {
+        char const buffer [] = "\033OP";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x504F1B;
-
-        auto k = parse_termio_input(input, 3).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::f1);
         REQUIRE(k.modifiers == modifier_key::none);
     }
 
     SECTION("low f_key with single modifier parsing") {
+        char const buffer [] = "\033[12;2~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x51323B315B1B;
-
-        auto k = parse_termio_input(input, 6).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::f2);
         REQUIRE(k.modifiers == modifier_key::shift);
     }
 
+    SECTION("low f_key with no modifier parsing") {
+        char const buffer [] = "\033[14~";
+        span source { +buffer, +buffer + sizeof (buffer) };
+
+        auto k = termio_parse(source);
+
+        REQUIRE(k.key == virtual_key::f4);
+        REQUIRE(k.modifiers == modifier_key::none);
+    }
+
     SECTION("low f_key with multiple modifier parsing") {
+        char const buffer [] = "\033[13;4~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x52343B315B1B;
-
-        auto k = parse_termio_input(input, 6).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::f3);
         REQUIRE((k.modifiers & modifier_key::shift) == modifier_key::shift);
@@ -83,116 +97,112 @@ TEST_CASE("function key presses", "[unix termio parser]") {
     }
 
     SECTION("high f_key simple parsing") {
+        char const buffer [] = "\033[20~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x7E35315B1B;
+        auto k = termio_parse(source);
 
-        auto k = parse_termio_input(input, 5).key;
-
-        REQUIRE(k.key == virtual_key::f5);
+        REQUIRE(k.key == virtual_key::f9);
         REQUIRE(k.modifiers == modifier_key::none);
     }
 
     SECTION("high f_key with single modifier parsing") {
+        char const buffer [] = "\033[17;2~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x7E323B37315B1B;
-
-        auto k = parse_termio_input(input, 7).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::f6);
         REQUIRE(k.modifiers == modifier_key::shift);
     }
 
+
     SECTION("high f_key with multiple modifier parsing") {
+        char const buffer [] = "\033[18;7~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x7E343B38315B1B;
-
-        auto k = parse_termio_input(input, 7).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::f7);
-        REQUIRE((k.modifiers & modifier_key::shift) == modifier_key::shift);
+        REQUIRE((k.modifiers & modifier_key::control) == modifier_key::control);
         REQUIRE((k.modifiers & modifier_key::alt) == modifier_key::alt);
     }
 }
 
 TEST_CASE("special key presses", "[unix termio parser]") {
+
     using namespace maxim::input;
     using namespace maxim::input::_unix;
 
     SECTION("'insert' simple parsing") {
+        char const buffer [] = "\033[2";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0X7E325B1B;
-
-        auto k = parse_termio_input(input, 4).key;
+        auto k = termio_parse (source);
 
         REQUIRE(k.key == virtual_key::insert);
         REQUIRE(k.modifiers == modifier_key::none);
     }
 
     SECTION("'delete' key with single modifier parsing") {
+        char const buffer [] = "\033[3;2~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x7E323B335B1B;
-
-        auto k = parse_termio_input(input, 6).key;
+        auto k = termio_parse (source);
 
         REQUIRE(k.key == virtual_key::del);
         REQUIRE(k.modifiers == modifier_key::shift);
     }
 
     SECTION("'home' with multiple modifier parsing") {
-
-        uint64_t const
-            input = 0x48343B315B1B;
-
-        auto k = parse_termio_input(input, 6).key;
-
+        char const buffer [] = "\033[H;8~";
+        span source { +buffer, +buffer + sizeof (buffer) };
+    
+        auto k = termio_parse(source);
+    
         REQUIRE(k.key == virtual_key::home);
         REQUIRE((k.modifiers & modifier_key::shift) == modifier_key::shift);
+        REQUIRE((k.modifiers & modifier_key::control) == modifier_key::control);
         REQUIRE((k.modifiers & modifier_key::alt) == modifier_key::alt);
     }
 }
 
 TEST_CASE("directional key presses", "[unix termio parser]") {
+
     using namespace maxim::input;
     using namespace maxim::input::_unix;
 
     SECTION("'up' simple parsing") {
+        char const buffer [] = "\033[A~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0X415B1B;
-
-        auto k = parse_termio_input(input, 3).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::up);
         REQUIRE(k.modifiers == modifier_key::none);
     }
 
     SECTION("'down' key with single modifier parsing") {
+        char const buffer [] = "\033[B;2~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x42323B315B1B;
-
-        auto k = parse_termio_input(input, 6).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::down);
         REQUIRE(k.modifiers == modifier_key::shift);
     }
 
     SECTION("'right' with multiple modifier parsing") {
+        char const buffer [] = "\033[C;6~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x43343B315B1B;
-
-        auto k = parse_termio_input(input, 6).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::right);
         REQUIRE((k.modifiers & modifier_key::shift) == modifier_key::shift);
-        REQUIRE((k.modifiers & modifier_key::alt) == modifier_key::alt);
+        REQUIRE((k.modifiers & modifier_key::control) == modifier_key::control);
     }
+
 }
 
 TEST_CASE("page up/down key presses", "[unix termio parser]") {
@@ -200,38 +210,36 @@ TEST_CASE("page up/down key presses", "[unix termio parser]") {
     using namespace maxim::input::_unix;
 
     SECTION("'page up' simple parsing") {
+        char const buffer [] = "\033[5~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0X7E355B1B;
-
-        auto k = parse_termio_input(input, 4).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::page_up);
         REQUIRE(k.modifiers == modifier_key::none);
     }
 
     SECTION("'page up' key with single modifier parsing") {
+        char const buffer [] = "\033[5;2~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x7E323B355B1B;
-
-        auto k = parse_termio_input(input, 6).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::page_up);
         REQUIRE(k.modifiers == modifier_key::shift);
     }
 
     SECTION("'page down' with multiple modifier parsing") {
+        char const buffer [] = "\033[6;4~";
+        span source { +buffer, +buffer + sizeof (buffer) };
 
-        uint64_t const
-            input = 0x7E343B365B1B;
-
-        auto k = parse_termio_input(input, 6).key;
+        auto k = termio_parse(source);
 
         REQUIRE(k.key == virtual_key::page_down);
         REQUIRE((k.modifiers & modifier_key::shift) == modifier_key::shift);
         REQUIRE((k.modifiers & modifier_key::alt) == modifier_key::alt);
     }
 }
+
 
 #endif
