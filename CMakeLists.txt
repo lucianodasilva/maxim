@@ -14,8 +14,16 @@ if (MAXIM_BUILD_ALL)
     set (MAXIM_BUILD_DEMO ON)
     set (MAXIM_BUILD_TEST ON)
     set (MAXIM_BUILD_TEST_COVERAGE ON)
+else ()
+    if (MAXIM_BUILD_TEST_COVERAGE)
+        set (MAXIM_BUILD_TEST ON)
+    endif()
 endif()
 
 project (maxim)
 
 add_library_dir(maxim.device STATIC)
+
+if (MAXIM_BUILD_DEMO)
+    add_executable_dir(demo)
+endif()
