@@ -18,7 +18,7 @@ namespace maxim::input::_unix {
 
         virtual ~driver();
 
-        virtual void dispatch_events (application & app) const override;
+        virtual void dispatch_events (input_event_handler & handler) const override;
 
     private:
 

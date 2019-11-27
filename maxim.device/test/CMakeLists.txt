@@ -1,4 +1,3 @@
-
 dir_target_name (target_name)
 
 target_compile_features(

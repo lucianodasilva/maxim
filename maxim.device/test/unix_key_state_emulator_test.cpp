@@ -1,9 +1,8 @@
 #ifdef __linux__
 
-#include <maxim.hpp>
-#include <maxim.application.hpp>
-#include <maxim.input.unix.key_state_emulator.hpp>
+#include <thread>
 
+#include <maxim.input.unix.key_state_emulator.hpp>
 #include <catch2/catch.hpp>
 
 void wait_for_expiration () {
@@ -44,11 +43,11 @@ TEST_CASE("single key press", "[unix key state emulator]") {
 
 	key_state_emulator emulator;
 
-	application app;
-
 	std::size_t key_down_count{ 0 };
 	std::size_t key_up_count{ 0 };
 	key_info	last_key{};
+
+
 
 	app.on_key_down += [&](application& app, key_info const& key) {
 		++key_down_count;

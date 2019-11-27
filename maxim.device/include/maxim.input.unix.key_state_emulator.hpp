@@ -9,7 +9,7 @@
 
 namespace maxim {
 
-    class application;
+    class input_event_handler;
 
     namespace input::_unix {
 
@@ -19,9 +19,9 @@ namespace maxim {
             static constexpr uint32_t key_delay_ms = 150;
             static constexpr uint32_t key_delay_ds = key_delay_ms / 100;
 
-            void timeout_and_dispatch  (application & app);
+            void timeout_and_dispatch  (input_event_handler & handler);
 
-            void evaluate_and_dispatch (key_info key, application & app);
+            void evaluate_and_dispatch (key_info key, input_event_handler & handler);
 
         private:
             // key press state

@@ -1,13 +1,20 @@
-#ifndef _MAXIM_APPLICATION_HPP_
-#define _MAXIM_APPLICATION_HPP_
+#ifndef _maxim_application_hpp_
+#define _maxim_application_hpp_
 
 #include "maxim.device.hpp"
 #include "maxim.event.hpp"
+#include "maxim.input.hpp"
 #include "maxim.input.driver.hpp"
 
 #include <atomic>
 
 namespace maxim {
+
+    template < class _sender_t >
+    using key_down_event = event < _sender_t, key_info >;
+
+    template < class _sender_t >
+    using key_up_event = event < _sender_t, key_info >;
 
 	class application {
 	public:

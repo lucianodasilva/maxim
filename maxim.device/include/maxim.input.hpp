@@ -2,7 +2,9 @@
 #ifndef _maxim_input_hpp_
 #define _maxim_input_hpp_
 
-#include "maxim.event.hpp"
+#include <cinttypes>
+#include <type_traits>
+#include <map>
 
 namespace maxim::input {
     // virtual key codes
@@ -113,13 +115,6 @@ namespace maxim::input {
             v1.key == v2.key &&
             v1.modifiers == v2.modifiers;
     }
-
-    template < class _sender_t >
-    using key_down_event = event < _sender_t, key_info >;
-
-    template < class _sender_t >
-    using key_up_event = event < _sender_t, key_info >;
-
 
     // hasher and equality operator for key_event_args
     namespace details {

@@ -21,10 +21,6 @@ namespace maxim {
         return _back_buffer;
     }
 
-    maxim::graphics device::graphics() {
-        return { _back_buffer };
-    }
-
     void device::set_fullscreen(bool enabled) {
         _stream.reset();
 
@@ -53,7 +49,7 @@ namespace maxim {
 
     void device::clear() {
         //TODO: check if sending the clear signal causes flickering and replace this with xterm code for clear
-        graphics().clear();
+        graphics { _back_buffer }.clear();
 
         _stream.reset ();
         _stream.write(encoding::ansi::clear);
@@ -86,8 +82,8 @@ namespace maxim {
         _stream.reset();
     }
 
-    void device::dispatch_input_events(maxim::application &app) const {
-        _input_driver->dispatch_events(app);
+    void device::dispatch_input_events(maxim::input_event_handler & handler) const {
+        _input_driver->dispatch_events(handler);
     }
 
 }
