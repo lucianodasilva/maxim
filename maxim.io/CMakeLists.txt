@@ -29,7 +29,7 @@ if (MAXIM_BUILD_TEST_COVERAGE)
 
         # TODO: move to external script file
         add_custom_target(${target_name}_coverage
-                WORKING_DIRECTORY $<TARGET_FILE_DIR:${target_name}_test>
+                WORKING_DIRECTORY $<TARGET_FILE_DIR:${target_name}>
                 # clean stuffs
                 COMMAND echo \"Cleaning coverage counters\"
                 COMMAND ${lcov_path} --directory . --zerocounters --quiet --rc lcov_branch_coverage=1

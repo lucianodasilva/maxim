@@ -17,8 +17,8 @@ namespace maxim {
 
     class input_event_handler {
     public:
-        virtual void on_key_up (input::key_info const & key) = 0;
-        virtual void on_key_down (input::key_info const & key) = 0;
+        virtual void on_key_up (input::key_info const & key);
+        virtual void on_key_down (input::key_info const & key);
     };
 
     struct device {
@@ -32,33 +32,12 @@ namespace maxim {
         character_buffer & backbuffer();
 
         void set_fullscreen(bool enable);
-        void set_cursor (bool enable);
+        void set_cursor_enabled (bool enable);
 
-        void clear();
+        void clear_screen();
         void present ();
 
         void dispatch_input_events (input_event_handler & handler) const;
-
-        template < typename _on_key_down_t, typename _on_key_up_t >
-        void dispatch_input_events (_on_key_down_t & key_down_handler, _on_key_up_t & key_up_handler = [](input::key_info const &){}) const {
-
-            class : input_event_handler {
-            public:
-                _on_key_down_t & _key_down_handler;
-                _on_key_up_t & _key_up_handler;
-
-                void on_key_up (input::key_info const & key) override {
-                    _key_up_handler (key);
-                }
-
-                void on_key_down (input::key_info const & key) override {
-                    _key_down_handler (key);
-                }
-
-            } handler { key_down_handler, key_up_handler };
-
-            dispatch_input_events(handler);
-        }
 
     private:
 

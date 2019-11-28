@@ -141,7 +141,7 @@ int main(int arg_c, char ** arg_v)
 
     //app.device().fullscreen(true);
     //app.device().enable_cursor(false);
-    //app.device().clear();
+    //app.device().clear_screen();
     //app.device().send_thing("\033]10;?\007");
 
 	app.run();
