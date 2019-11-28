@@ -2,7 +2,7 @@
 
 #include <catch2/catch.hpp>
 
-#include <maxim.hpp>
+#include <maxim.io.hpp>
 #include <maxim.input.unix.termio_parser.hpp>
 
 TEST_CASE("basic key presses", "[unix termio parser]") {

@@ -17,9 +17,9 @@ namespace maxim {
 				return; // TODO: possibly throw exception
 
 			while (_is_running) {
-			    _device.dispatch_input_events(*this);
+			    _device.dispatch_input_events(_event_proxy);
 
-				auto g = _device.graphics();
+				auto g = maxim::graphics { _device.backbuffer() };
 				this->on_draw.invoke(*this, g);
 
 				_device.present();
@@ -39,5 +39,17 @@ namespace maxim {
 	maxim::device & application::device() {
 		return _device;
 	}
+
+	application::io_event_proxy::io_event_proxy(maxim::application &app) :
+	    _application { app }
+	{}
+
+	void application::io_event_proxy::on_key_up (input::key_info const & key) {
+        _application.on_key_up.invoke (_application, key);
+	}
+
+    void application::io_event_proxy::on_key_down (input::key_info const & key) {
+        _application.on_key_down.invoke(_application, key);
+    }
 
 }

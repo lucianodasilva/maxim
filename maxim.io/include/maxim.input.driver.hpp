@@ -8,7 +8,7 @@
 
 namespace maxim {
 
-    class application;
+    class input_event_handler;
 
     namespace input {
 
@@ -16,7 +16,7 @@ namespace maxim {
         public:
             virtual ~driver() = default;
 
-            virtual void dispatch_events (application & app) const = 0;
+            virtual void dispatch_events (input_event_handler & handler) const = 0;
 
             static std::unique_ptr<driver> create();
         };

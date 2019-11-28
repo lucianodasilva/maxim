@@ -1,9 +1,9 @@
 #include "maxim.input.unix.key_state_emulator.hpp"
-#include "maxim.application.hpp"
+#include "maxim.device.hpp"
 
 namespace maxim::input::_unix {
 
-    void key_state_emulator::timeout_and_dispatch(maxim::application &app) {
+    void key_state_emulator::timeout_and_dispatch(maxim::input_event_handler & handler) {
         using namespace std::chrono;
         auto now = high_resolution_clock::now();
 
@@ -18,14 +18,14 @@ namespace maxim::input::_unix {
                 auto key = it->first;
                 it = _key_states.erase (it);
 
-                app.on_key_up.invoke (app, key);
+                handler.on_key_up (key);
             } else {
                 ++it;
             }
         }
     }
 
-    void key_state_emulator::evaluate_and_dispatch(maxim::input::key_info key, maxim::application &app) {
+    void key_state_emulator::evaluate_and_dispatch(maxim::input::key_info key, maxim::input_event_handler & handler) {
         using namespace std::chrono;
         auto now = high_resolution_clock::now();
 
@@ -38,7 +38,7 @@ namespace maxim::input::_unix {
                 _key_states[key] = now;
 
                 // dispatch
-                app.on_key_down.invoke (app, key);
+                handler.on_key_down (key);
             } else {
                 key_it->second = now;
             }

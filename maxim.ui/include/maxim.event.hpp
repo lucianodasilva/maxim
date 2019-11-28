@@ -1,5 +1,5 @@
-#ifndef _MAXIM_EVENT_HPP_
-#define _MAXIM_EVENT_HPP_
+#ifndef _maxim_event_hpp_
+#define _maxim_event_hpp_
 
 #include <algorithm>
 #include <functional>

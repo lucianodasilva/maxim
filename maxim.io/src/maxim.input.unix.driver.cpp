@@ -41,7 +41,7 @@ namespace maxim::input::_unix {
         tcsetattr(0, TCSANOW, &_initial_term_settings);
     }
 
-    void driver::dispatch_events(maxim::application &app) const {
+    void driver::dispatch_events(maxim::input_event_handler & handler) const {
         constexpr std::size_t buffer_size { 16 };
         char buffer [buffer_size];
 
@@ -74,10 +74,10 @@ namespace maxim::input::_unix {
             auto key = termio_parse(source);
 
             if (key)
-                _state_emulator.evaluate_and_dispatch (key, app);
+                _state_emulator.evaluate_and_dispatch (key, handler);
         }
 
-        _state_emulator.timeout_and_dispatch(app);
+        _state_emulator.timeout_and_dispatch(handler);
     }
 }
 

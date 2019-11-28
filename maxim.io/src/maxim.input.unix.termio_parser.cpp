@@ -1,6 +1,5 @@
 #include "maxim.input.unix.termio_parser.hpp"
 #include "maxim.encoding.hpp"
-#include "maxim.input.unix.key_state_emulator.hpp"
 
 namespace maxim::input::_unix {
 

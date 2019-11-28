@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include <maxim.hpp>
+#include <maxim.device.hpp>
 
 TEST_CASE("calculate change set", "[character_buffer calculate_change_set]") {
     using namespace maxim;

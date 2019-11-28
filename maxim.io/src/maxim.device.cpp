@@ -3,6 +3,9 @@
 
 namespace maxim {
 
+    void input_event_handler::on_key_up(const maxim::input::key_info &key) {}
+    void input_event_handler::on_key_down(const maxim::input::key_info &key) {}
+
     device::~device() {
 
         // restore default terminal configuration
@@ -10,7 +13,7 @@ namespace maxim {
             set_fullscreen(false);
 
         if (!_cursor_enabled)
-            set_cursor(true);
+            set_cursor_enabled(true);
     }
 
     size const & device::get_size () const {
@@ -19,10 +22,6 @@ namespace maxim {
 
     character_buffer & device::backbuffer() {
         return _back_buffer;
-    }
-
-    maxim::graphics device::graphics() {
-        return { _back_buffer };
     }
 
     void device::set_fullscreen(bool enabled) {
@@ -38,7 +37,7 @@ namespace maxim {
         _output_driver->send(_stream);
     }
 
-    void device::set_cursor (bool enabled) {
+    void device::set_cursor_enabled (bool enabled) {
         _stream.reset();
 
         if (enabled)
@@ -51,9 +50,9 @@ namespace maxim {
         _output_driver->send(_stream);
     }
 
-    void device::clear() {
-        //TODO: check if sending the clear signal causes flickering and replace this with xterm code for clear
-        graphics().clear();
+    void device::clear_screen() {
+        //TODO: check if sending the clear signal causes flickering and replace this with xterm code for clear_screen
+        graphics { _back_buffer }.clear();
 
         _stream.reset ();
         _stream.write(encoding::ansi::clear);
@@ -86,8 +85,8 @@ namespace maxim {
         _stream.reset();
     }
 
-    void device::dispatch_input_events(maxim::application &app) const {
-        _input_driver->dispatch_events(app);
+    void device::dispatch_input_events(maxim::input_event_handler & handler) const {
+        _input_driver->dispatch_events(handler);
     }
 
 }

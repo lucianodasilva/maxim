@@ -7,6 +7,7 @@
 
 #include "maxim.details.hpp"
 #include "maxim.character.hpp"
+#include "maxim.input.hpp"
 #include "maxim.input.driver.hpp"
 #include "maxim.output.driver.hpp"
 #include "maxim.graphics.hpp"
@@ -14,24 +15,29 @@
 
 namespace maxim {
 
+    class input_event_handler {
+    public:
+        virtual void on_key_up (input::key_info const & key);
+        virtual void on_key_down (input::key_info const & key);
+    };
+
     struct device {
     public:
 
         ~device();
 
+        [[nodiscard]]
         size const & get_size () const;
 
         character_buffer & backbuffer();
-        maxim::graphics graphics();
 
         void set_fullscreen(bool enable);
+        void set_cursor_enabled (bool enable);
 
-        void set_cursor (bool enable);
-
-        void clear();
+        void clear_screen();
         void present ();
 
-        void dispatch_input_events (application & app) const;
+        void dispatch_input_events (input_event_handler & handler) const;
 
     private:
 
