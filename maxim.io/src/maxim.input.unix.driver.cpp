@@ -42,6 +42,9 @@ namespace maxim::input::_unix {
     }
 
     void driver::dispatch_events(maxim::input_event_handler & handler) const {
+
+        _state_emulator.timeout_and_dispatch(handler);
+
         constexpr std::size_t buffer_size { 16 };
         char buffer [buffer_size];
 
@@ -49,24 +52,6 @@ namespace maxim::input::_unix {
 
         if (len < 0)
             return;
-
-        // debug printing --------------
-        if (len > 0) {
-            for (int i = 0; i < len; ++i) {
-                    std::cout << "0x" << std::hex << std::setw(2) << std::setfill ('0') << (int)buffer [i] << " ";
-            }
-
-            std::cout << "'";
-
-            for (int i = 0; i < len; ++i) {
-                std::cout << (char)(std::isgraph(buffer [i]) ? buffer[i] : ' ');
-            }
-
-            std::cout << "'";
-
-            std::cout << std::endl;
-        }
-        // ----------------------------
 
         span source { buffer, buffer + len };
 
@@ -76,8 +61,6 @@ namespace maxim::input::_unix {
             if (key)
                 _state_emulator.evaluate_and_dispatch (key, handler);
         }
-
-        _state_emulator.timeout_and_dispatch(handler);
     }
 }
 

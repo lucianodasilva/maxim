@@ -108,7 +108,7 @@ TEST_CASE("single key press", "[unix key state emulator]") {
 		REQUIRE(test_state.last_key == key);
 	}
 
-	SECTION("duplicate key press") {
+	SECTION("duplicate key press half wait") {
 
 		emulator.evaluate_and_dispatch (key, test_state);
 
@@ -116,13 +116,70 @@ TEST_CASE("single key press", "[unix key state emulator]") {
 		REQUIRE(test_state.key_up_count == 0);
 		REQUIRE(test_state.last_key == key);
 
-		wait_half_expiration();
 		emulator.timeout_and_dispatch(test_state);
 
 		REQUIRE(test_state.key_down_count == 1);
 		REQUIRE(test_state.key_up_count == 0);
 		REQUIRE(test_state.last_key == key);
+
+        wait_half_expiration();
+
+        emulator.evaluate_and_dispatch (key, test_state);
+
+        REQUIRE(test_state.key_down_count == 1);
+        REQUIRE(test_state.key_up_count == 0);
+        REQUIRE(test_state.last_key == key);
+
+        emulator.timeout_and_dispatch(test_state);
+
+        REQUIRE(test_state.key_down_count == 1);
+        REQUIRE(test_state.key_up_count == 0);
+        REQUIRE(test_state.last_key == key);
+
+        wait_for_expiration();
+
+        emulator.timeout_and_dispatch(test_state);
+
+        REQUIRE(test_state.key_down_count == 1);
+        REQUIRE(test_state.key_up_count == 1);
+        REQUIRE(test_state.last_key == key);
 	}
+
+    SECTION("duplicate key full wait") {
+
+        emulator.evaluate_and_dispatch (key, test_state);
+
+        REQUIRE(test_state.key_down_count == 1);
+        REQUIRE(test_state.key_up_count == 0);
+        REQUIRE(test_state.last_key == key);
+
+        emulator.timeout_and_dispatch(test_state);
+
+        REQUIRE(test_state.key_down_count == 1);
+        REQUIRE(test_state.key_up_count == 0);
+        REQUIRE(test_state.last_key == key);
+
+        wait_for_expiration();
+        emulator.timeout_and_dispatch(test_state);
+
+        REQUIRE(test_state.key_down_count == 1);
+        REQUIRE(test_state.key_up_count == 1);
+        REQUIRE(test_state.last_key == key);
+
+        emulator.evaluate_and_dispatch (key, test_state);
+
+        REQUIRE(test_state.key_down_count == 2);
+        REQUIRE(test_state.key_up_count == 1);
+        REQUIRE(test_state.last_key == key);
+
+        wait_for_expiration();
+        emulator.timeout_and_dispatch(test_state);
+
+        REQUIRE(test_state.key_down_count == 2);
+        REQUIRE(test_state.key_up_count == 2);
+        REQUIRE(test_state.last_key == key);
+    }
+
 }
 
 #endif

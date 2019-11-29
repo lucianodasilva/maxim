@@ -1,4 +1,5 @@
-#include <maxim.hpp>
+#include <maxim.io.hpp>
+#include <maxim.ui.hpp>
 #include <iostream>
 #include <algorithm>
 #include <array>
@@ -137,11 +138,11 @@ int main(int arg_c, char ** arg_v)
 
 	};
 
-	//app.on_draw += &render;
+	app.on_draw += &render;
 
-    //app.device().fullscreen(true);
-    //app.device().enable_cursor(false);
-    //app.device().clear_screen();
+    app.device().set_fullscreen(true);
+    app.device().set_cursor_enabled(false);
+    app.device().clear_screen();
     //app.device().send_thing("\033]10;?\007");
 
 	app.run();
