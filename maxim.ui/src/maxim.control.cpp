@@ -1,7 +1,7 @@
 #include "maxim.control.hpp"
 
 namespace maxim {
-
+/*
     void control::update_layout(maxim::point const &position, maxim::size const & size) {
 
         auto
@@ -29,7 +29,7 @@ namespace maxim {
         _layout_position = {left, top};
         _layout_size = { right - left, bottom - top };
 
-    }
+    }*/
 
 
 }

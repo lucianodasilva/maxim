@@ -60,21 +60,25 @@ namespace maxim {
         _output_driver->send(_stream);
     }
 
-    void device::present() {
+    void device::begin_present() {
         auto size = _output_driver->get_size();
 
         if (_size != size) {
             _size = size;
-            _back_buffer.resize(_size);
-            _front_buffer.resize(_size);
+            _back_buffer.resize(_size, true);
+            _front_buffer.resize(_size, true);
+            // clear screen to avoid image corruption from automatic terminal buffer wrap
+            clear_screen();
         }
 
         _stream.reset();
+    }
 
+    void device::end_present() {
         encoding::encode_change_set(
-            _back_buffer,
-            _back_buffer.calculate_change_set (_front_buffer),
-            _stream
+                _back_buffer,
+                _back_buffer.calculate_change_set (_front_buffer),
+                _stream
         );
 
         _output_driver->send(_stream);

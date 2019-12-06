@@ -1,7 +1,7 @@
 #include "maxim.stack.hpp"
 
 namespace maxim {
-
+/*
     void vertical_stack::update_layout(maxim::point const &position, maxim::size const & size) {
 
         if ((this->docking.get() & docking_type::fill) == docking_type::fill) {
@@ -30,5 +30,5 @@ namespace maxim {
             
         }
     }
-
+*/
 }

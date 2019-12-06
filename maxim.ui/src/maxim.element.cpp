@@ -2,6 +2,8 @@
 
 namespace maxim {
 
-    void element::update_layout(maxim::point const &position, maxim::size const & size) {}
+    void element::paint (graphics & g, rect const & bounds) {
+        g.draw_box(bounds, background.get(), true, background.get());
+    }
 
 }

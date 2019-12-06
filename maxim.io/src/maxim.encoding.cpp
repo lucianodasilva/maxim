@@ -131,6 +131,7 @@ namespace maxim::encoding {
 
         // after all changes commited reset attributes to avoid
         // terminal corruption on crash
+        out_stream.write(ansi::color_reset);
         out_stream.write(ansi::attr_reset);
         out_stream.write(ansi::attr_disable_graph);
     }

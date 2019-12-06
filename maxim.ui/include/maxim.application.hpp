@@ -2,6 +2,8 @@
 #define _maxim_application_hpp_
 
 #include "maxim.event.hpp"
+#include "maxim.panel.hpp"
+
 #include <maxim.io.hpp>
 #include <atomic>
 
@@ -34,6 +36,8 @@ namespace maxim {
 		void exit();
 
 		maxim::device & device();
+
+		panel * root;
 
 	private:
 

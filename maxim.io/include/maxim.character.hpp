@@ -105,16 +105,17 @@ namespace maxim {
 
         inline maxim::size const & size() const { return _size; }
 
-        inline void resize (maxim::size const & size) {
-            std::vector < character > resized (
-                    static_cast <size_t>(size.width * size.height));
+        inline void resize (maxim::size const & size, bool clear = false) {
+            std::vector < character > resized (static_cast <size_t>(size.width * size.height));
 
-            for (int32_t i = 0; i < size.height; ++i) {
-                std::copy(
-                        _buffer.begin() += (size.width * i),
-                        _buffer.begin() += ((size.width * i) + size.width),
-                        resized.begin() += (size.width * i)
-                );
+            if (!clear) {
+                for (int32_t i = 0; i < size.height; ++i) {
+                    std::copy(
+                            _buffer.begin() += (size.width * i),
+                            _buffer.begin() += ((size.width * i) + size.width),
+                            resized.begin() += (size.width * i)
+                    );
+                }
             }
 
             _buffer = resized;

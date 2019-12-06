@@ -24,7 +24,7 @@ namespace maxim {
     class vertical_stack : public stack {
     public:
 
-        void update_layout(maxim::point const &position, maxim::size const & size) override;
+        //void update_layout(maxim::point const &position, maxim::size const & size) override;
 
     };
 

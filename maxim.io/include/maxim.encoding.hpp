@@ -30,6 +30,7 @@ namespace maxim::encoding {
             attr_disable_prefix[]       = "2",
             attr_enable_graph[]         = "\033(0",
             attr_disable_graph[]        = "\033(B",
+            color_reset[]               = "\033[39;49m",
             color_prefix[]              = "\033[",
             color_foreground[]          = "38;5;",
             color_background[]          = "48;5;",

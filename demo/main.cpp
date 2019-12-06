@@ -3,7 +3,9 @@
 #include <iostream>
 #include <algorithm>
 #include <array>
+#include <sstream>
 
+/*
 struct menu_item {
 public:
 
@@ -99,6 +101,7 @@ void render (maxim::application & app, maxim::graphics & g) {
     g.draw_h_line({0, size.height - 1}, size.width - 1, maxim::colors::dark_green);
 
 }
+*/
 
 int main(int arg_c, char ** arg_v)
 {
@@ -106,6 +109,7 @@ int main(int arg_c, char ** arg_v)
 
 	application app;
 
+	/*
 	menu m;
 
 	m.items.push_back({"Battery Level"});
@@ -139,12 +143,113 @@ int main(int arg_c, char ** arg_v)
 	};
 
 	app.on_draw += &render;
+	 */
+
+    app.on_key_down += [](application & a, input::key_info const & args) {
+        if (args.key == input::virtual_key::C && args.modifiers == input::modifier_key::control) {
+            a.exit();
+        }
+    };
+
+    app.on_draw += [](application & a, maxim::graphics & g) {
+        std::stringstream s;
+
+        s << "size: " << g.view.size.width << ", " << g.view.size.height;
+        g.draw_text (s.str(), maxim::point { 1, 1 }, maxim::colors::white, maxim::colors::red);
+    };
 
     app.device().set_fullscreen(true);
     app.device().set_cursor_enabled(false);
     app.device().clear_screen();
-    //app.device().send_thing("\033]10;?\007");
 
+    // make controls
+    grid main_panel;
+
+    main_panel.columns = { 10.0_var, 10.0_var, 10.0_var };
+    main_panel.rows = { 5.0_var, 5.0_var, 5.0_var };
+
+    auto * name_label_1 = main_panel.create_element < label > ();
+
+    name_label_1->text = "1";
+    name_label_1->text_alignment = maxim::alignment::centered;
+    name_label_1->columns = grid::range { 0 };
+    name_label_1->rows = grid::range {0 };
+    name_label_1->background = maxim::colors::yellow;
+    name_label_1->foreground = maxim::colors::red;
+
+    auto * name_label_2 = main_panel.create_element < label > ();
+
+    name_label_2->text = "2";
+    name_label_2->text_alignment = maxim::alignment::centered;
+    name_label_2->columns = grid::range { 1 };
+    name_label_2->rows = grid::range {0};
+    name_label_2->background = maxim::colors::red;
+    name_label_2->foreground = maxim::colors::green;
+
+    auto * name_label_3 = main_panel.create_element < label > ();
+
+    name_label_3->text = "3";
+    name_label_3->text_alignment = maxim::alignment::centered;
+    name_label_3->columns = grid::range { 2 };
+    name_label_3->rows = grid::range {0};
+    name_label_3->background = maxim::colors::green;
+    name_label_3->foreground = maxim::colors::blue;
+
+    auto * name_label_4 = main_panel.create_element < label > ();
+
+    name_label_4->text = "4";
+    name_label_4->text_alignment = maxim::alignment::centered;
+    name_label_4->columns = grid::range { 0 };
+    name_label_4->rows = grid::range {1};
+    name_label_4->background = maxim::colors::blue;
+    name_label_4->foreground = maxim::colors::cyan;
+
+    auto * name_label_5  = main_panel.create_element < label > ();
+
+    name_label_5->text = "5";
+    name_label_5->text_alignment = maxim::alignment::centered;
+    name_label_5->columns = grid::range { 1 };
+    name_label_5->rows = grid::range {1};
+    name_label_5->background = maxim::colors::cyan;
+    name_label_5->foreground = maxim::colors::white;
+
+    auto * name_label_6 = main_panel.create_element < label > ();
+
+    name_label_6->text = "6";
+    name_label_6->text_alignment = maxim::alignment::centered;
+    name_label_6->columns = grid::range { 2 };
+    name_label_6->rows = grid::range {1};
+    name_label_6->background = maxim::colors::white;
+    name_label_6->foreground = maxim::colors::black;
+
+    auto * name_label_7 = main_panel.create_element < label > ();
+
+    name_label_7->text = "7";
+    name_label_7->text_alignment = maxim::alignment::centered;
+    name_label_7->columns = grid::range { 0 };
+    name_label_7->rows = grid::range {2};
+    name_label_7->background = maxim::colors::black;
+    name_label_7->foreground = maxim::colors::pink;
+
+    auto * name_label_8 = main_panel.create_element < label > ();
+
+    name_label_8->text = "8";
+    name_label_8->text_alignment = maxim::alignment::centered;
+    name_label_8->columns = grid::range { 1 };
+    name_label_8->rows = grid::range {2};
+    name_label_8->background = maxim::colors::pink;
+    name_label_8->foreground = maxim::colors::purple;
+
+    auto * name_label_9 = main_panel.create_element < label > ();
+
+    name_label_9->text = "9";
+    name_label_9->text_alignment = maxim::alignment::centered;
+    name_label_9->columns = grid::range { 2 };
+    name_label_9->rows = grid::range {2 };
+    name_label_9->background = maxim::colors::purple;
+    name_label_9->foreground = maxim::colors::yellow;
+
+    app.root = &main_panel;
 	app.run();
 
     return 0;

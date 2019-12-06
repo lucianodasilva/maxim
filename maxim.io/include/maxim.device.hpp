@@ -35,7 +35,8 @@ namespace maxim {
         void set_cursor_enabled (bool enable);
 
         void clear_screen();
-        void present ();
+        void begin_present ();
+        void end_present ();
 
         void dispatch_input_events (input_event_handler & handler) const;
 

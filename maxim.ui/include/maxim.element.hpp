@@ -7,11 +7,15 @@
 
 namespace maxim {
 
-    class element {
+    class paintable {
     public:
+        virtual void paint (graphics & g, rect const & bounds) = 0;
+    };
 
-        virtual void update_layout (maxim::point const & position, maxim::size const & size);
-
+    class element : public virtual paintable {
+    public:
+        property < maxim::color_t > background;
+        void paint (graphics & g, rect const & bounds) override;
     };
 
 }

@@ -14,8 +14,6 @@ namespace maxim {
         property < docking_type >   docking;
         property < maxim::size >    size;
 
-        void update_layout(maxim::point const &position, maxim::size const & size) override;
-
     private:
 
         maxim::point    _layout_position {};

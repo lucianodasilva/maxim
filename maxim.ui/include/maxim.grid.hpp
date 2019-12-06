@@ -3,8 +3,10 @@
 #ifndef _maxim_grid_hpp_
 #define _maxim_grid_hpp_
 
+#include "maxim.panel.hpp"
+
 #include <vector>
-#include "maxim.io.hpp"
+#include <maxim.io.hpp>
 
 namespace maxim {
 
@@ -19,6 +21,7 @@ namespace maxim {
         float       value;
         value_type  type;
 
+        float       layout_sum;
         float       layout_value;
     };
 
@@ -30,18 +33,57 @@ namespace maxim {
         return { static_cast < float > (value), value_type::variable, .0F };
     }
 
-    class grid {
+    class grid : public panel {
     public:
+
+        struct range {
+            range () = default;
+
+            explicit range (int value) :
+                from {value},
+                to {value}
+            {}
+
+            explicit range (int from_v, int to_v) :
+                from { from_v },
+                to { to_v }
+            {}
+
+            int from {}, to {};
+        };
+
+        class base_item : public virtual paintable {
+        public:
+            property < range > columns;
+            property < range > rows;
+        };
+
+        template < typename _t >
+        class item : public base_item, public _t {
+        public:
+        };
 
         std::vector < grid_part_size >
                 columns,
                 rows;
 
-        void update_layout (maxim::size const & size);
+        void paint (graphics & g, rect const & bounds) override;
+
+        template < typename _t >
+        inline item < _t > * create_element () {
+            auto * new_item = new item < _t > ();
+            _elements.emplace_back (new_item);
+
+            return new_item;
+        }
+
+    private:
 
         static float calc_partition_sum (value_type type, std::vector < grid_part_size > const & partitions);
 
         static void update_layout_partitions (int size, std::vector < grid_part_size > & partitions);
+
+        std::vector < std::unique_ptr < base_item > > _elements;
     };
 
 }

@@ -17,12 +17,22 @@ namespace maxim {
 				return; // TODO: possibly throw exception
 
 			while (_is_running) {
+			    // handle inputs
 			    _device.dispatch_input_events(_event_proxy);
 
+			    // update layout and render
+			    _device.begin_present();
 				auto g = maxim::graphics { _device.backbuffer() };
+
+                if (root)
+                    root->paint(g, {{0, 0}, _device.get_size ()});
+
 				this->on_draw.invoke(*this, g);
 
-				_device.present();
+				// present
+				_device.end_present();
+
+				// yield to the operating system
 				std::this_thread::yield();
 			}
 
