@@ -30,26 +30,39 @@ namespace maxim {
                 blue        = 0xC,
                 pink        = 0xD,
                 cyan        = 0xE,
-                white       = 0xF;
+                white       = 0xF,
+                system		= 0xFF;
     }
 
-    union character_flags {
-        struct {
-            bool bold       : 1;
-            bool underlined : 1;
-            bool blink      : 1;
-            bool reversed   : 1;
-            bool is_graph   : 1;
-            int             : 0; // fill to next byte
-        };
-        uint8_t data = {};
-    };
+    struct style_t {
+
+		color_t backcolor { colors::system };
+		color_t forecolor { colors::system };
+
+		union {
+			struct {
+				bool bold       : 1;
+				bool underlined : 1;
+				bool blink      : 1;
+				bool reversed   : 1;
+				bool is_graph   : 1;
+				int             : 0; // fill to next byte
+			};
+
+			uint8_t _style_flags;
+		};
+	};
+
+    inline bool operator == (style_t a, style_t b) {
+    	return
+    		a._style_flags == b._style_flags &&
+    		a.backcolor == b.backcolor &&
+    		a.forecolor == b.forecolor;
+    }
 
     struct character {
-        char content            = ' ';
-        character_flags flags   = {};
-        color_t backcolor       = colors::black;
-        color_t forecolor       = colors::white;
+		style_t style 	{};
+        char content 	{' '};
     };
 
     struct graph_chars {
@@ -67,12 +80,10 @@ namespace maxim {
                 horizontal_down;
     };
 
-    inline bool operator == (character const & c1, character const & c2) {
+    inline bool operator == (character const & a, character const & b) {
         return
-            c1.content == c2.content &&
-            c1.flags.data == c2.flags.data &&
-            c1.backcolor == c2.backcolor &&
-            c1.forecolor == c2.forecolor;
+            a.content == b.content &&
+            a.style == b.style;
     }
 
     struct character_buffer {

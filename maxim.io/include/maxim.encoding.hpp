@@ -13,6 +13,7 @@ namespace maxim::encoding {
         constexpr char const
             csi[]                       = "\033[", // control sequence introducer
             sse3[]                      = "\033O", // single shift select of G3
+            ris[]						= "\033c", // reset to initial state
             clear[]                     = "\033[2J",
             alternate_buffer_enable[]   = "\033[?1049h",
             alternate_buffer_disable[]  = "\033[?1049l",
@@ -33,7 +34,9 @@ namespace maxim::encoding {
             color_reset[]               = "\033[39;49m",
             color_prefix[]              = "\033[",
             color_foreground[]          = "38;5;",
+            default_foreground[]		= "39",
             color_background[]          = "48;5;",
+            default_background[]		= "49",
             color_suffix[]              = "m";
 
         constexpr graph_chars graph_chars {

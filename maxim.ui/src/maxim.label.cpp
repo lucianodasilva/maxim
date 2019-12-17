@@ -6,14 +6,18 @@ namespace maxim {
         // render background as default
         element::paint (g, bounds);
 
+        style_t style {
+			foreground.get(),
+			background.get()
+        };
+
         // render text
         g.draw_text(
                 text.get(),
                 bounds.position,
                 bounds.size.width,
                 text_alignment.get(),
-                foreground.get(),
-                background.get()
+                style
         );
     }
 

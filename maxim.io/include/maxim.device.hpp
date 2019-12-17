@@ -30,6 +30,7 @@ namespace maxim {
         size const & get_size () const;
 
         character_buffer & backbuffer();
+        maxim::stream & stream ();
 
         void set_fullscreen(bool enable);
         void set_cursor_enabled (bool enable);
@@ -54,7 +55,8 @@ namespace maxim {
                     _back_buffer    { _size },
                     _front_buffer   { _size };
 
-        stream		_stream;
+        maxim::stream
+        			_stream;
         bool        _alternate_buffer_enabled {false};
         bool        _cursor_enabled { true };
 

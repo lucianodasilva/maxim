@@ -25,10 +25,10 @@ namespace maxim::encoding {
 
     void encode_attribute(
         maxim::stream & stream,
-        character_flags const & current,
-        character_flags const & past
+        style_t const & current,
+		style_t const & past
     ) {
-        if (current.data == past.data)
+        if (current._style_flags == past._style_flags)
             return;
 
         stream.write(ansi::attr_prefix);
@@ -70,8 +70,8 @@ namespace maxim::encoding {
 
     void encode_color(
         maxim::stream & stream,
-        character const & current,
-        character const & past
+        style_t const & current,
+		style_t const & past
     ) {
 
         bool
@@ -84,18 +84,26 @@ namespace maxim::encoding {
         stream.write(ansi::color_prefix);
 
         if (forecolor_changed) {
-            stream
-                .write(ansi::color_foreground)
-                .write(encode_as_integer(current.forecolor));
+
+        	if (current.forecolor == colors::system)
+        		stream.write (ansi::default_foreground);
+        	else
+            	stream
+                	.write(ansi::color_foreground)
+                	.write(encode_as_integer(current.forecolor));
 
             if (backcolor_changed)
                 stream.write(";");
         }
 
         if (backcolor_changed) {
-            stream
-                .write(ansi::color_background)
-                .write(encode_as_integer(current.backcolor));
+
+        	if (current.backcolor == colors::system)
+        		stream.write (ansi::default_background);
+        	else
+            	stream
+                	.write(ansi::color_background)
+                	.write(encode_as_integer(current.backcolor));
         }
 
         stream.write(ansi::color_suffix);
@@ -119,9 +127,9 @@ namespace maxim::encoding {
             for (uint32_t index = change.begin; index < change.end; ++index) {
                 auto & current = buffer.at(index);
                 // set attribute changes
-                encode_attribute(out_stream, current.flags, last.flags);
+                encode_attribute(out_stream, current.style, last.style);
                 // set color changes
-                encode_color(out_stream, current, last);
+                encode_color(out_stream, current.style, last.style);
                 // encode text
                 out_stream.write(current.content);
 

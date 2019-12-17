@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <sstream>
+#include <maxim.encoding.hpp>
 
 /*
 struct menu_item {
@@ -153,11 +154,47 @@ int main(int arg_c, char ** arg_v)
 
     app.on_draw += [](application & a, maxim::graphics & g) {
         std::stringstream s;
-
         s << "size: " << g.view.size.width << ", " << g.view.size.height;
-        g.draw_text (s.str(), maxim::point { 1, 1 }, maxim::colors::white, maxim::colors::red);
 
-        g.draw_v_line (maxim::point { 20, 2 }, 40, colors::cyan);
+        constexpr style_t style {
+        	maxim::colors::red,
+        	maxim::colors::white
+        };
+
+        g.draw_text (s.str(), maxim::point { 1, 1 }, style);
+        //g.draw_v_line (maxim::point { 20, 2 }, 40, colors::cyan);
+
+        /*
+        auto & stream = a.device().stream();
+
+        stream
+        	// clear
+        	// .write (encoding::ansi::clear)
+        	// position
+        	.write (encoding::ansi::color_reset)
+			.write (encoding::ansi::move_prefix)
+			.write (2)
+			.write (";")
+			.write (2)
+			.write (encoding::ansi::move_suffix)
+        	// color
+        	.write (encoding::ansi::color_prefix)
+        	.write (encoding::ansi::color_foreground)
+        	.write ((int)colors::green)
+        	.write (encoding::ansi::color_suffix)
+        	// text
+        	.write ("cenas")
+			.write (encoding::ansi::color_prefix)
+			.write (encoding::ansi::color_background)
+			.write ((int)colors::gray)
+			.write (encoding::ansi::color_suffix)
+			.write (" coiso ")
+			// --------------
+			.write (encoding::ansi::color_prefix)
+			//.write (encoding::ansi::color_background)
+			.write ("39;49")
+			.write (encoding::ansi::color_suffix)
+			.write (" yada ");*/
     };
 
     app.device().set_fullscreen(true);

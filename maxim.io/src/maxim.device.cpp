@@ -24,6 +24,10 @@ namespace maxim {
         return _back_buffer;
     }
 
+    maxim::stream & device::stream () {
+    	return _stream;
+    }
+
     void device::set_fullscreen(bool enabled) {
         _stream.reset();
 
@@ -56,6 +60,9 @@ namespace maxim {
 
         _stream.reset ();
         _stream.write(encoding::ansi::clear);
+
+        if (!_cursor_enabled)
+			_stream.write(encoding::ansi::cursor_disable);
 
         _output_driver->send(_stream);
     }

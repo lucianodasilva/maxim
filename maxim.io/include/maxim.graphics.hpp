@@ -30,16 +30,13 @@ namespace maxim {
         void draw_box(
             rect const & rct,
             color_t color,
-            bool solid = true,
-            color_t backcolor = colors::black
+            bool solid = true
         );
 
         void draw_text(
             std::string const & text,
             point const & position,
-            color_t color = colors::white,
-            color_t back_color = colors::black,
-            character_flags const & flags = {}
+            style_t style
         );
 
         void draw_text(
@@ -47,25 +44,21 @@ namespace maxim {
             point const & position,
             int32_t width,
             alignment align,
-            color_t color = colors::white,
-            color_t back_color = colors::black,
-            character_flags const & flags = {}
+            style_t style
         );
 
         void draw_v_line(
             point const & position,
             int32_t length,
             color_t color,
-            bool solid = true,
-            color_t backcolor = colors::black
+            bool solid = true
         );
 
         void draw_h_line(
             point const & position,
             int32_t length,
             color_t color,
-            bool solid = true,
-            color_t backcolor = colors::black
+            bool solid = true
         );
 
         void draw_buffer(
@@ -86,6 +79,15 @@ namespace maxim {
                 return;
 
             _buffer.at(tpos) = c;
+        }
+
+        inline character * get (point const & pos) {
+        	auto tpos = view.position + pos;
+
+			if (!view.contains(tpos))
+				return nullptr;
+
+			return &_buffer.at (tpos);
         }
 
     };

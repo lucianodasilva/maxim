@@ -17,14 +17,11 @@ namespace maxim {
 	void graphics::draw_box(
 		rect const &rct,
 		color_t color,
-		bool solid,
-		color_t backcolor
+		bool solid
 	) {
 		if (solid) {
 			character c = {};
-			c.backcolor = color;
-			c.forecolor = color;
-			c.content = ' ';
+			c.style.backcolor = color;
 
 			for (
 				int32_t y = rct.top();
@@ -44,54 +41,38 @@ namespace maxim {
 				bottom_right = {rct.right(), rct.bottom()};
 
 			// draw lines
-			draw_h_line(top_left, rct.size.width, color, false, backcolor);
-			draw_h_line(bottom_left, rct.size.width, color, false, backcolor);
-			draw_v_line(top_left, rct.size.height, color, false, backcolor);
-			draw_v_line(top_right, rct.size.height, color, false, backcolor);
-
-			// draw corners
-			character c = {
-				' ', // content
-				{
-					false, // bold
-					false, // undelined
-					false, // blink
-					false, // reversed
-					true,  // is graph
-				},
-				backcolor,
-				color
-			};
+			draw_h_line(top_left, rct.size.width, color, false);
+			draw_h_line(bottom_left, rct.size.width, color, false);
+			draw_v_line(top_left, rct.size.height, color, false);
+			draw_v_line(top_right, rct.size.height, color, false);
 
 			auto const &graphs = encoding::ansi::graph_chars;
 
-			c.content = graphs.corner_up_right;
-			set(top_left, c);
+			auto set_corner = [color] (character * c, char content) {
+				if (!c)
+					return;
 
-			c.content = graphs.corner_up_left;
-			set(top_right, c);
+				c->content = content;
+				c->style.is_graph = true;
+				c->style.forecolor = color;
+			};
 
-			c.content = graphs.corner_down_right;
-			set(bottom_left, c);
-
-			c.content = graphs.corner_down_left;
-			set(bottom_right, c);
+			set_corner (get(top_left), graphs.corner_down_right);
+			set_corner (get(top_right), graphs.corner_down_left);
+			set_corner (get(bottom_left), graphs.corner_up_right);
+			set_corner (get(bottom_right), graphs.corner_up_left);
 		}
 	}
 
 	void graphics::draw_text(
 		std::string const &text,
 		point const &position,
-		color_t color,
-		color_t back_color,
-		character_flags const &flags
+		style_t style
 	) {
 
 		character c = {
-			' ',
-			flags,
-			back_color,
-			color
+			style,
+			' '
 		};
 
 		int32_t len = static_cast <int32_t> (text.size());
@@ -107,15 +88,11 @@ namespace maxim {
 		point const &position,
 		int32_t width,
 		alignment align,
-		color_t color,
-		color_t back_color,
-		character_flags const &flags
+		style_t style
 	) {
 		character c = {
-			' ',
-			flags,
-			back_color,
-			color
+			style,
+			' '
 		};
 
 		int32_t
@@ -154,19 +131,16 @@ namespace maxim {
 		point const &position,
 		int32_t length,
 		color_t color,
-		bool solid,
-		color_t backcolor
+		bool solid
 	) {
 		character c = {};
 
 		if (solid) {
-			c.content = ' ';
-			c.backcolor = c.forecolor = color;
+			c.style.backcolor = color;
 		} else {
 			c.content = encoding::ansi::graph_chars.line_vertical;
-			c.flags.is_graph = true;
-			c.backcolor = backcolor;
-			c.forecolor = color;
+			c.style.is_graph = true;
+			c.style.forecolor = color;
 		}
 
 		for (int32_t i = 0; i < length; ++i)
@@ -177,19 +151,16 @@ namespace maxim {
 		point const &position,
 		int32_t length,
 		color_t color,
-		bool solid,
-		color_t backcolor
+		bool solid
 	) {
 		character c = {};
 
 		if (solid) {
-			c.content = ' ';
-			c.backcolor = c.forecolor = color;
+			c.style.backcolor = color;
 		} else {
 			c.content = encoding::ansi::graph_chars.line_horizontal;
-			c.flags.is_graph = true;
-			c.backcolor = backcolor;
-			c.forecolor = color;
+			c.style.is_graph = true;
+			c.style.forecolor = color;
 		}
 
 		for (int32_t i = 0; i < length; ++i)

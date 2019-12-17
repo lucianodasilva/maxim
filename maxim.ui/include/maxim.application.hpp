@@ -37,7 +37,7 @@ namespace maxim {
 
 		maxim::device & device();
 
-		panel * root;
+		panel * root {nullptr};
 
 	private:
 
