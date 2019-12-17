@@ -148,7 +148,7 @@ int main(int arg_c, char ** arg_v)
     app.on_key_down += [](application & a, input::key_info const & args) {
         if (args.key == input::virtual_key::C && args.modifiers == input::modifier_key::control) {
             a.exit();
-        }
+         }
     };
 
     app.on_draw += [](application & a, maxim::graphics & g) {
@@ -156,6 +156,8 @@ int main(int arg_c, char ** arg_v)
 
         s << "size: " << g.view.size.width << ", " << g.view.size.height;
         g.draw_text (s.str(), maxim::point { 1, 1 }, maxim::colors::white, maxim::colors::red);
+
+        g.draw_v_line (maxim::point { 20, 2 }, 40, colors::cyan);
     };
 
     app.device().set_fullscreen(true);
@@ -163,6 +165,8 @@ int main(int arg_c, char ** arg_v)
     app.device().clear_screen();
 
     // make controls
+
+    /*
     grid main_panel;
 
     main_panel.columns = { 10.0_var, 10.0_var, 10.0_var };
@@ -250,6 +254,8 @@ int main(int arg_c, char ** arg_v)
     name_label_9->foreground = maxim::colors::yellow;
 
     app.root = &main_panel;
+    */
+
 	app.run();
 
     return 0;
