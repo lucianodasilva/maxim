@@ -54,9 +54,25 @@ namespace maxim {
         _output_driver->send(_stream);
     }
 
+    void device::reset_attributes () {
+		_stream.reset ();
+		// after all changes commited reset attributes to avoid
+		// terminal corruption on crash
+		_stream.write(encoding::ansi::color_reset);
+		_stream.write(encoding::ansi::attr_reset);
+		_stream.write(encoding::ansi::attr_disable_graph);
+
+		if (!_cursor_enabled)
+			_stream.write(encoding::ansi::cursor_disable);
+
+		_output_driver->send (_stream);
+    }
+
     void device::clear_screen() {
         //TODO: check if sending the clear signal causes flickering and replace this with xterm code for clear_screen
         graphics { _back_buffer }.clear();
+
+        reset_attributes ();
 
         _stream.reset ();
         _stream.write(encoding::ansi::clear);
@@ -91,7 +107,8 @@ namespace maxim {
         _output_driver->send(_stream);
 
         // swap buffers
-        _front_buffer = _back_buffer;
+        //_front_buffer = _back_buffer;
+        _front_buffer.reset ();
 
         _stream.reset();
     }

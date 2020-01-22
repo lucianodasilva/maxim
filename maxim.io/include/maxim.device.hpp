@@ -35,6 +35,7 @@ namespace maxim {
         void set_fullscreen(bool enable);
         void set_cursor_enabled (bool enable);
 
+        void reset_attributes ();
         void clear_screen();
         void begin_present ();
         void end_present ();

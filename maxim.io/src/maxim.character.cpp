@@ -23,7 +23,7 @@ namespace maxim {
             for (uint32_t x = 0; x < _size.width; ++x) {
                 ending_index = line_index + x;
 
-                bool is_same = at(ending_index) == buffer.at(ending_index);
+                bool is_same = *ptr_at(ending_index) == *buffer.ptr_at(ending_index);
 
                 if (!has_changes && is_same) {
                     begin_index = ending_index;

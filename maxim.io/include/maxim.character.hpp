@@ -89,7 +89,7 @@ namespace maxim {
     struct character_buffer {
     public:
 
-        inline character_buffer (maxim::size const & size) :
+        inline explicit character_buffer (maxim::size const & size) :
                 _buffer { static_cast < size_t > (size.width * size.height) },
                 _size { size }
         {}
@@ -98,20 +98,20 @@ namespace maxim {
             _buffer.assign(_buffer.size(), character{});
         }
 
-        inline character & at (point const & p) {
-            return _buffer [coords_to_index(p)];
+        inline character * ptr_at (point const & p) {
+            return ptr_at (coords_to_index(p));
         }
 
-        inline character const & at (point const & p) const {
-            return _buffer [coords_to_index(p)];
+        inline character const * ptr_at (point const & p) const {
+            return ptr_at (coords_to_index(p));
         }
 
-        inline character & at (size_t index) {
-            return _buffer[index];
+        inline character * ptr_at (size_t index) {
+        	return _buffer.data () + index;
         }
 
-        inline character const & at (size_t index) const {
-            return _buffer[index];
+        inline character const * ptr_at (size_t index) const {
+			return _buffer.data() + index;
         }
 
         inline maxim::size const & size() const { return _size; }
@@ -133,14 +133,17 @@ namespace maxim {
             _size = size;
         }
 
+        [[nodiscard]]
         character_change_set calculate_change_set (
                 character_buffer const & buffer
         ) const;
 
-        inline int32_t coords_to_index (point const & p) const {
+        [[nodiscard]]
+        inline std::size_t coords_to_index (point const & p) const {
             return p.y * _size.width + p.x;
         }
 
+        [[nodiscard]]
         inline point index_to_coords (int32_t index) const {
             return {
                     static_cast < int32_t > (index % _size.width),
@@ -155,7 +158,6 @@ namespace maxim {
 
         maxim::size
                 _size;
-
     };
 }
 

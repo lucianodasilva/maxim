@@ -61,33 +61,43 @@ namespace maxim {
             bool solid = true
         );
 
-        void draw_buffer(
-            character_buffer const & buffer,
-            point const & position,
-            rect source = {},
-            bool null_mask = false
-        );
-
     private:
 
-        inline void set( point const & pos, character const & c ) {
-            // transform
-            auto tpos = view.position + pos;
+    	[[nodiscard]]
+    	inline rect transform_and_clip (rect const & src) const {
+    		// transform
+			rect dest {
+				src.position + view.position,
+				src.size
+			};
 
-            // clip
-            if (!view.contains(tpos))
-                return;
+			// intersect with view
+			dest = this->view.intersection (dest);
 
-            _buffer.at(tpos) = c;
+			// intersect with buffer
+			rect buffer_rect {
+					{},
+					_buffer.size ()
+			};
+
+			return buffer_rect.intersection (dest);
+    	}
+
+        inline void translated_set( point const & pos, character const & c ) {
+            auto * ptr = translated_get (pos);
+            if (!ptr)
+            	return;
+
+            *ptr = c;
         }
 
-        inline character * get (point const & pos) {
+        inline character * translated_get (point const & pos) {
         	auto tpos = view.position + pos;
 
 			if (!view.contains(tpos))
 				return nullptr;
 
-			return &_buffer.at (tpos);
+			return _buffer.ptr_at (tpos);
         }
 
     };

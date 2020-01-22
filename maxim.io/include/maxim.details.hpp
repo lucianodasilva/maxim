@@ -34,7 +34,7 @@ namespace maxim {
 
     struct rect {
         maxim::point 	position;
-        maxim::size	size;
+        maxim::size		size;
 
         inline bool is_zero () const { return position.is_zero () && size.is_zero(); }
 
@@ -60,12 +60,12 @@ namespace maxim {
                     std::max(top(), r.top())
             };
 
-            maxim::size size = {
+            maxim::size size_v = {
                     std::min (right(), r.right()) - pos.x,
                     std::min (bottom(), r.bottom()) - pos.y
             };
 
-            return { pos, size };
+            return { pos, size_v };
         }
 
         inline bool contains (point const & p) const {

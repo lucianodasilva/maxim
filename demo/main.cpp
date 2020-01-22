@@ -162,7 +162,10 @@ int main(int arg_c, char ** arg_v)
         };
 
         g.draw_text (s.str(), maxim::point { 1, 1 }, style);
-        //g.draw_v_line (maxim::point { 20, 2 }, 40, colors::cyan);
+
+        g.draw_box (maxim::rect { maxim::point { 1, 3 }, maxim::size { g.view.size.width - 2, 20 } }, maxim::colors::dark_cyan );
+        //g.draw_box (maxim::rect { maxim::point { 1, 24}, maxim::size { g.view.size.width - 2, 20 }}, maxim::colors::dark_red );
+
 
         /*
         auto & stream = a.device().stream();

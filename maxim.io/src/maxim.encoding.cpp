@@ -125,7 +125,7 @@ namespace maxim::encoding {
             encode_move(out_stream, buffer.index_to_coords(change.begin));
 
             for (uint32_t index = change.begin; index < change.end; ++index) {
-                auto & current = buffer.at(index);
+                auto & current = *buffer.ptr_at(index);
                 // set attribute changes
                 encode_attribute(out_stream, current.style, last.style);
                 // set color changes
