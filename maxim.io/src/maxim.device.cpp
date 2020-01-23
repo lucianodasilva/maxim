@@ -6,14 +6,30 @@ namespace maxim {
     void input_event_handler::on_key_up(const maxim::input::key_info &key) {}
     void input_event_handler::on_key_down(const maxim::input::key_info &key) {}
 
+    device::device () {
+		_stream.reset ();
+		_stream.write (encoding::ansi::wrap_disable);
+		_output_driver->send (_stream);
+    }
+
     device::~device() {
 
         // restore default terminal configuration
-        if (_alternate_buffer_enabled)
-            set_fullscreen(false);
+		{
+			_stream.reset ();
 
-        if (!_cursor_enabled)
-            set_cursor_enabled(true);
+			encode_reset_attributes(_stream);
+
+			if (_alternate_buffer_enabled)
+				encode_fullscreen(false, _stream);
+
+			if (!_cursor_enabled)
+				encode_cursor(true, _stream);
+
+			_stream.write (encoding::ansi::wrap_enable);
+
+			_output_driver->send (_stream);
+		}
     }
 
     size const & device::get_size () const {
@@ -29,92 +45,83 @@ namespace maxim {
     }
 
     void device::set_fullscreen(bool enabled) {
-        _stream.reset();
-
-        if (enabled)
-            _stream.write(encoding::ansi::alternate_buffer_enable);
-        else
-            _stream.write(encoding::ansi::alternate_buffer_disable);
+        maxim::stream stream;
 
         _alternate_buffer_enabled = enabled;
 
-        _output_driver->send(_stream);
+        encode_fullscreen(enabled, stream);
+        _output_driver->send (stream);
     }
 
     void device::set_cursor_enabled (bool enabled) {
-        _stream.reset();
-
-        if (enabled)
-            _stream.write(encoding::ansi::cursor_enable);
-        else
-            _stream.write(encoding::ansi::cursor_disable);
+        maxim::stream stream;
 
         _cursor_enabled = enabled;
+        encode_cursor (enabled, stream);
 
-        _output_driver->send(_stream);
-    }
-
-    void device::reset_attributes () {
-		_stream.reset ();
-		// after all changes commited reset attributes to avoid
-		// terminal corruption on crash
-		_stream.write(encoding::ansi::color_reset);
-		_stream.write(encoding::ansi::attr_reset);
-		_stream.write(encoding::ansi::attr_disable_graph);
-
-		if (!_cursor_enabled)
-			_stream.write(encoding::ansi::cursor_disable);
-
-		_output_driver->send (_stream);
+        _output_driver->send(stream);
     }
 
     void device::clear_screen() {
         //TODO: check if sending the clear signal causes flickering and replace this with xterm code for clear_screen
         graphics { _back_buffer }.clear();
 
-        reset_attributes ();
-
         _stream.reset ();
-        _stream.write(encoding::ansi::clear);
 
-        if (!_cursor_enabled)
-			_stream.write(encoding::ansi::cursor_disable);
+        encode_reset_attributes(_stream);
+        _stream.write(encoding::ansi::clear);
 
         _output_driver->send(_stream);
     }
 
-    void device::begin_present() {
-        auto size = _output_driver->get_size();
-
-        if (_size != size) {
-            _size = size;
-            _back_buffer.resize(_size, true);
-            _front_buffer.resize(_size, true);
-            // clear screen to avoid image corruption from automatic terminal buffer wrap
-            clear_screen();
-        }
-
-        _stream.reset();
-    }
-
-    void device::end_present() {
+    void device::present () {
+		/*
         encoding::encode_change_set(
                 _back_buffer,
                 _back_buffer.calculate_change_set (_front_buffer),
                 _stream
-        );
+        );*/
+		_stream.reset();
+
+		encoding::encode (_back_buffer, _stream);
 
         _output_driver->send(_stream);
 
-        // swap buffers
-        //_front_buffer = _back_buffer;
-        _front_buffer.reset ();
-
-        _stream.reset();
+        this->sync_display_settings();
     }
 
     void device::dispatch_input_events(maxim::input_event_handler & handler) const {
         _input_driver->dispatch_events(handler);
+    }
+
+	void device::encode_reset_attributes (maxim::stream & stream) {
+		// after all changes committed reset attributes to avoid
+		// terminal corruption on crash
+		stream.write(encoding::ansi::color_reset);
+		stream.write(encoding::ansi::attr_reset);
+		stream.write(encoding::ansi::attr_disable_graph);
+	}
+
+	void device::encode_cursor(bool value, maxim::stream &stream) {
+    	stream.write ((
+    			value ?
+    			encoding::ansi::cursor_enable :
+    			encoding::ansi::cursor_disable));
+    }
+
+    void device::encode_fullscreen(bool value, maxim::stream &stream) {
+		stream.write ((
+				value ?
+				encoding::ansi::alternate_buffer_enable :
+				encoding::ansi::alternate_buffer_disable));
+    }
+
+    void device::sync_display_settings() {
+    	_size = _output_driver->get_size ();
+
+    	if (_back_buffer.size () != _size) {
+			_back_buffer.resize(_size);
+		}
     }
 
 }

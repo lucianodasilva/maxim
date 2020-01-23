@@ -2,7 +2,7 @@
 #ifndef _maxim_graphics_hpp_
 #define _maxim_graphics_hpp_
 
-#include "maxim.character.hpp"
+#include "maxim.character_buffer.hpp"
 #include "maxim.details.hpp"
 
 #include <tuple>

@@ -19,12 +19,14 @@ namespace maxim {
         inline bool operator == (point const & p) const { return x == p.x && y == p.y; }
         inline bool operator != (point const & p) const { return !operator==(p); }
 
+		[[nodiscard]]
         inline bool is_zero () const { return x == 0 && y == 0; }
     };
 
     struct size {
         int32_t width, height;
 
+		[[nodiscard]]
         inline bool is_zero () const { return width == 0 && height == 0; }
 
         inline bool operator == (size const & s) const { return width == s.width && height == s.height; }
@@ -36,13 +38,19 @@ namespace maxim {
         maxim::point 	position;
         maxim::size		size;
 
+		[[nodiscard]]
         inline bool is_zero () const { return position.is_zero () && size.is_zero(); }
 
+		[[nodiscard]]
         inline int32_t left () const { return position.x; }
+		[[nodiscard]]
         inline int32_t right () const { return position.x + size.width; }
+		[[nodiscard]]
         inline int32_t top () const { return position.y; }
+		[[nodiscard]]
         inline int32_t bottom () const { return position.y + size.height; }
 
+		[[nodiscard]]
         inline bool intersects (rect const & r) const {
             return
                     left () < r.right () &&
@@ -51,6 +59,7 @@ namespace maxim {
                     bottom () > r.top ();
         }
 
+		[[nodiscard]]
         inline rect intersection (rect const & r) const {
             if (!intersects(r))
                 return {};
@@ -68,6 +77,7 @@ namespace maxim {
             return { pos, size_v };
         }
 
+        [[nodiscard]]
         inline bool contains (point const & p) const {
             return
                     p.x >= left() && p.x <= right() &&

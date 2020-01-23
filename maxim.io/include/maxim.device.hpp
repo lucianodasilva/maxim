@@ -24,6 +24,7 @@ namespace maxim {
     struct device {
     public:
 
+    	device ();
         ~device();
 
         [[nodiscard]]
@@ -35,14 +36,19 @@ namespace maxim {
         void set_fullscreen(bool enable);
         void set_cursor_enabled (bool enable);
 
-        void reset_attributes ();
         void clear_screen();
-        void begin_present ();
-        void end_present ();
+        void present ();
 
         void dispatch_input_events (input_event_handler & handler) const;
 
     private:
+
+		static void encode_reset_attributes (maxim::stream & stream);
+
+		static void encode_cursor (bool value, maxim::stream & stream);
+		static void encode_fullscreen (bool value, maxim::stream & stream);
+
+		void sync_display_settings ();
 
         std::unique_ptr < input::driver >
             _input_driver = input::driver::create ();
@@ -53,8 +59,7 @@ namespace maxim {
         size       _size           { _output_driver->get_size() };
 
         character_buffer
-                    _back_buffer    { _size },
-                    _front_buffer   { _size };
+                    _back_buffer    { _size };
 
         maxim::stream
         			_stream;
