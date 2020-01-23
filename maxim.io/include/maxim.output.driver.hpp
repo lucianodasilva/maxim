@@ -24,6 +24,8 @@ namespace maxim {
 
             virtual void send(maxim::stream &stream) const = 0;
 
+            virtual void flush () const = 0;
+
             static std::unique_ptr < driver > create();
         };
     }

@@ -145,6 +145,9 @@ namespace maxim::encoding {
     void encode (character_buffer const & buffer, maxim::stream & out_stream) {
 		auto size = buffer.size ();
 
+		out_stream.write (ansi::color_reset);
+
+
 		character last;
 
 		for (int y = 0; y < size.height; ++y) {
@@ -168,7 +171,8 @@ namespace maxim::encoding {
 
 		// after all changes committed reset attributes to avoid
 		// terminal corruption on crash
-		encode_attribute_reset(out_stream);
+		//encode_attribute_reset(out_stream);
+
     }
 
 }

@@ -43,8 +43,6 @@ namespace maxim {
 
     private:
 
-		static void encode_reset_attributes (maxim::stream & stream);
-
 		static void encode_cursor (bool value, maxim::stream & stream);
 		static void encode_fullscreen (bool value, maxim::stream & stream);
 
