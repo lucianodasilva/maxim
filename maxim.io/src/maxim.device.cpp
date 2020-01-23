@@ -18,7 +18,7 @@ namespace maxim {
 		{
 			_stream.reset ();
 
-			encode_reset_attributes(_stream);
+			//encode_reset_attributes(_stream);
 
 			if (_alternate_buffer_enabled)
 				encode_fullscreen(false, _stream);
@@ -48,8 +48,8 @@ namespace maxim {
         maxim::stream stream;
 
         _alternate_buffer_enabled = enabled;
-
         encode_fullscreen(enabled, stream);
+
         _output_driver->send (stream);
     }
 
