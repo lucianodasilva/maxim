@@ -1,5 +1,6 @@
 #include <maxim.io.hpp>
 #include <thread>
+#include <csignal>
 
 class application : public maxim::input_event_handler {
 public:
@@ -22,16 +23,19 @@ public:
 	void render () {
 		using namespace maxim;
 
-		//device.clear_screen();
-
 		graphics g { device.backbuffer () };
+
+		g.clear ();
 
 		g.draw_h_line (
 				point { 0, 5 },
 				device.get_size().width,
 				colors::purple);
 
-		g.draw_box({10, 10, 100, 100}, colors::red, true);
+		g.draw_box(
+				{10, 10, 100, 100},
+				colors::red,
+				true);
 
 		device.present ();
 	}
@@ -53,6 +57,7 @@ public:
 
 int main(int arg_c, char ** arg_v)
 {
+
 	application app;
 	app.run ();
 
