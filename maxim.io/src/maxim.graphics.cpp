@@ -27,7 +27,7 @@ namespace maxim {
 			return;
 
 		if (solid) {
-			character c = {};
+			character c;
 			c.style.backcolor = color;
 
 			for (int32_t y = clipped.top (); y < clipped.bottom(); ++y) {

@@ -6,11 +6,11 @@
 namespace maxim::encoding {
 
     template < class _t >
-    auto encode_as_integer(_t v) -> decltype(v + 1) {
+    inline auto encode_as_integer(_t v) -> decltype(v + 1) {
         return +v;
     }
 
-    void encode_move(maxim::stream & stream, point const &p) {
+    inline void encode_move(maxim::stream & stream, point const &p) {
         stream
             .write(ansi::move_prefix)
             .write(p.y + 1)
@@ -19,11 +19,15 @@ namespace maxim::encoding {
             .write(ansi::move_suffix);
     }
 
-    void encode_attribute_reset(maxim::stream & stream) {
+	inline void encode_home(maxim::stream & stream) {
+		encode_move(stream, {0,0});
+	}
+
+    inline void encode_attribute_reset(maxim::stream & stream) {
         stream.write(ansi::attr_reset);
     }
 
-    void encode_attribute(
+    inline void encode_attribute(
         maxim::stream & stream,
         style_t const & current,
 		style_t const & past
@@ -68,47 +72,40 @@ namespace maxim::encoding {
 
     }
 
-    void encode_color(
+    inline void encode_color(
         maxim::stream & stream,
         style_t const & current,
 		style_t const & past
     ) {
+    	if (current.forecolor != past.forecolor) {
+			stream.write(ansi::color_prefix);
 
-        bool
-            forecolor_changed = current.forecolor != past.forecolor,
-            backcolor_changed = current.backcolor != past.backcolor;
+			if (current.forecolor == colors::system)
+				stream.write(ansi::default_foreground);
+			else
+				stream
+						.write(ansi::color_foreground)
+						.write(encode_as_integer(current.forecolor));
 
-        if (!forecolor_changed && !backcolor_changed)
-            return;
+			stream.write(ansi::color_suffix);
+		}
 
-        stream.write(ansi::color_prefix);
+    	if (current.backcolor != past.backcolor) {
+			stream.write(ansi::color_prefix);
 
-        if (forecolor_changed) {
+			if (current.backcolor == colors::system)
+				stream.write(ansi::default_background);
+			else
+				stream
+						.write(ansi::color_background)
+						.write(encode_as_integer(current.backcolor));
 
-        	if (current.forecolor == colors::system)
-        		stream.write (ansi::default_foreground);
-        	else
-            	stream
-                	.write(ansi::color_foreground)
-                	.write(encode_as_integer(current.forecolor));
 
-            if (backcolor_changed)
-                stream.write(";");
-        }
-
-        if (backcolor_changed) {
-
-        	if (current.backcolor == colors::system)
-        		stream.write (ansi::default_background);
-        	else
-            	stream
-                	.write(ansi::color_background)
-                	.write(encode_as_integer(current.backcolor));
-        }
-
-        stream.write(ansi::color_suffix);
+			stream.write(ansi::color_suffix);
+		}
     }
 
+    /*
     void encode_change_set (
         character_buffer const &		buffer,
         character_change_set const &	change_set,
@@ -137,11 +134,46 @@ namespace maxim::encoding {
             }
         }
 
-        // after all changes commited reset attributes to avoid
+        // after all changes committed reset attributes to avoid
         // terminal corruption on crash
         out_stream.write(ansi::color_reset);
         out_stream.write(ansi::attr_reset);
         out_stream.write(ansi::attr_disable_graph);
+    }
+    */
+
+    void encode (character_buffer const & buffer, maxim::stream & out_stream) {
+		auto size = buffer.size ();
+
+		// reset attributes
+		out_stream.write(ansi::color_reset);
+		out_stream.write(ansi::attr_reset);
+
+		character last;
+
+		for (int y = 0; y < size.height; ++y) {
+			auto location = point { 0, y };
+
+			encode_move (out_stream, location);
+			auto * ptr = buffer.ptr_at (location);
+
+			for (int x = 0; x < size.width; ++x) {
+				// find and encode changes in style
+				encode_attribute(out_stream, ptr->style, last.style);
+				encode_color (out_stream, ptr->style, last.style);
+
+				// send content
+				out_stream.write (ptr->content);
+
+				last = *ptr;
+				++ptr;
+			}
+		}
+
+		// after all changes committed reset attributes to avoid
+		// terminal corruption on crash
+		out_stream.write(ansi::color_reset);
+		out_stream.write(ansi::attr_reset);
     }
 
 }

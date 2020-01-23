@@ -3,7 +3,7 @@
 #define _maxim_encoding_hpp_
 
 #include "maxim.stream.hpp"
-#include "maxim.character.hpp"
+#include "maxim.character_buffer.hpp"
 #include "maxim.character_change_set.hpp"
 
 namespace maxim::encoding {
@@ -14,11 +14,14 @@ namespace maxim::encoding {
             csi[]                       = "\033[", // control sequence introducer
             sse3[]                      = "\033O", // single shift select of G3
             ris[]						= "\033c", // reset to initial state
+            home[]						= "\033H", // goto to home position
             clear[]                     = "\033[2J",
             alternate_buffer_enable[]   = "\033[?1049h",
             alternate_buffer_disable[]  = "\033[?1049l",
             cursor_enable[]             = "\033[?25h",
             cursor_disable[]            = "\033[?25l",
+            wrap_enable[]				= "\033[?7h",
+            wrap_disable[]				= "\033[?7l",
             move_prefix[]               = "\033[",
             move_suffix[]               = "H",
             attr_prefix[]               = "\033[",
@@ -54,11 +57,15 @@ namespace maxim::encoding {
         };
     }
 
+    /*
     void encode_change_set (
         character_buffer const &		buffer,
         character_change_set const &	change_set,
         maxim::stream &			        out_stream
     );
+     */
+
+    void encode (character_buffer const & buffer, maxim::stream & out_stream);
 }
 
 #endif
