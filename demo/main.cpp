@@ -1,6 +1,5 @@
 #include <maxim.io.hpp>
 #include <thread>
-#include <csignal>
 
 class application : public maxim::input_event_handler {
 public:
@@ -13,8 +12,7 @@ public:
 	void on_key_down (maxim::input::key_info const & key) override {
 		using namespace maxim::input;
 
-		if (key.key == virtual_key::C &&
-			key.modifiers == modifier_key::control)
+		if (key.key == virtual_key::X)
 		{
 			running = false;
 		}
@@ -33,7 +31,7 @@ public:
 				colors::purple);
 
 		g.draw_box(
-				{10, 10, 100, 100},
+				{10, 10, 10, 10},
 				colors::red,
 				true);
 
@@ -57,8 +55,8 @@ public:
 
 int main(int arg_c, char ** arg_v)
 {
-
 	application app;
+
 	app.run ();
 
     return 0;

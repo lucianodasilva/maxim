@@ -8,28 +8,32 @@ namespace maxim {
 
     device::device () {
 		_stream.reset ();
+
+		// setup defaults
 		_stream.write (encoding::ansi::wrap_disable);
+		_stream.write (encoding::ansi::scrolling_disable);
+
 		_output_driver->send (_stream);
     }
 
     device::~device() {
-
+    	_output_driver->flush();
         // restore default terminal configuration
-		{
-			_stream.reset ();
+		_stream.reset ();
 
-			//encode_reset_attributes(_stream);
+		if (_alternate_buffer_enabled)
+			encode_fullscreen(false, _stream);
 
-			if (_alternate_buffer_enabled)
-				encode_fullscreen(false, _stream);
+		if (!_cursor_enabled)
+			encode_cursor(true, _stream);
 
-			if (!_cursor_enabled)
-				encode_cursor(true, _stream);
+		_stream.write (encoding::ansi::wrap_enable);
+		_stream.write (encoding::ansi::scrolling_enable);
+		_stream.write (encoding::ansi::color_reset);
+		_stream.write (encoding::ansi::attr_reset);
+		_stream.write (encoding::ansi::attr_disable_graph);
 
-			_stream.write (encoding::ansi::wrap_enable);
-
-			_output_driver->send (_stream);
-		}
+		_output_driver->send (_stream);
     }
 
     size const & device::get_size () const {
@@ -67,10 +71,7 @@ namespace maxim {
         graphics { _back_buffer }.clear();
 
         _stream.reset ();
-
-        encode_reset_attributes(_stream);
         _stream.write(encoding::ansi::clear);
-
         _output_driver->send(_stream);
     }
 
@@ -94,14 +95,6 @@ namespace maxim {
         _input_driver->dispatch_events(handler);
     }
 
-	void device::encode_reset_attributes (maxim::stream & stream) {
-		// after all changes committed reset attributes to avoid
-		// terminal corruption on crash
-		stream.write(encoding::ansi::color_reset);
-		stream.write(encoding::ansi::attr_reset);
-		stream.write(encoding::ansi::attr_disable_graph);
-	}
-
 	void device::encode_cursor(bool value, maxim::stream &stream) {
     	stream.write ((
     			value ?
@@ -121,6 +114,15 @@ namespace maxim {
 
     	if (_back_buffer.size () != _size) {
 			_back_buffer.resize(_size);
+
+			_stream.reset ();
+			_stream.write (encoding::ansi::wrap_disable);
+			_stream.write (encoding::ansi::scrolling_disable);
+
+			if (!_cursor_enabled)
+				device::encode_cursor (false, _stream);
+
+			_output_driver->send (_stream);
 		}
     }
 

@@ -22,6 +22,10 @@ namespace maxim::output::_unix {
         ::write(STDOUT_FILENO, stream.data(), stream.size());
     }
 
+    void driver::flush() const {
+		tcflush(STDOUT_FILENO, TCOFLUSH);
+	}
+
 }
 
 #endif
