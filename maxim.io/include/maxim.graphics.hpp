@@ -20,12 +20,13 @@ namespace maxim {
     private:
         character_buffer & _buffer;
     public:
-        rect view = {};
+        rect 	view = {};
+        point 	transform = {};
 
         graphics(character_buffer & buffer);
         graphics(character_buffer & buffer, rect const & view);
 
-        void clear();
+        void clear(color_t clear_color = colors::system);
 
         void draw_box(
             rect const & rct,
@@ -65,14 +66,11 @@ namespace maxim {
 
     	[[nodiscard]]
     	inline rect transform_and_clip (rect const & src) const {
-    		// transform
-			rect dest {
-				src.position + view.position,
-				src.size
-			};
-
 			// intersect with view
-			dest = this->view.intersection (dest);
+			auto dest = this->view.intersection (src);
+
+			// transform
+			dest.position = dest.position + transform;
 
 			// intersect with buffer
 			rect buffer_rect {
@@ -82,23 +80,6 @@ namespace maxim {
 
 			return buffer_rect.intersection (dest);
     	}
-
-        inline void translated_set( point const & pos, character const & c ) {
-            auto * ptr = translated_get (pos);
-            if (!ptr)
-            	return;
-
-            *ptr = c;
-        }
-
-        inline character * translated_get (point const & pos) {
-        	auto tpos = view.position + pos;
-
-			if (!view.contains(tpos))
-				return nullptr;
-
-			return _buffer.ptr_at (tpos);
-        }
 
     };
 }

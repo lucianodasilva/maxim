@@ -32,7 +32,44 @@ namespace maxim {
                 cyan        = 0xE,
                 white       = 0xF,
                 system		= 0xFF;
+
+        inline color_t rgb_to_x256 (uint8_t r, uint8_t g, uint8_t b) {
+			constexpr int cv_lookup [6] = {0, 0x5F, 0x87, 0xAF, 0xD7, 0xFF};
+
+			// calculate nearest index
+			auto channel_to_index = [](auto ... c) {
+				return std::make_tuple (c > 115 ? ((c - 35) / 40) : (c > 48 ? 1 : 0)...);
+			};
+
+			auto [ir, ig, ib] = channel_to_index (r, g, b);
+
+			auto avr = (ir + ig + ib / 3);
+			auto gray_index = (avr > 238 ? 23 : (avr - 3) / 10);
+
+			auto
+				cr = cv_lookup[ir],
+				cg = cv_lookup[ig],
+				cb = cv_lookup[ib];
+
+			auto gv = 8 + 10 * gray_index;
+
+			auto sqr = [](auto v1, auto v2) { return (v1 - v2) * (v1 - v2); };
+
+			auto color_dist = sqr (cr, r) + sqr (cg, g) + sqr (cb, b);
+			auto gray_dist = sqr (gv, r) + sqr (gv, g) + sqr (gv, b);
+
+			auto clr = color_dist <= gray_dist ?
+					16 + (36 * ir + 6 * ig + ib) :
+					232 + gray_index;
+
+			if (clr == 255)
+				clr = colors::white;
+
+			return clr;
+        }
     }
+
+    struct style_t_maker;
 
     struct style_t {
 
@@ -51,7 +88,29 @@ namespace maxim {
 
 			uint8_t _style_flags;
 		};
+
+
+		inline static style_t_maker make ();
 	};
+
+	struct style_t_maker {
+	public:
+
+		style_t_maker & backcolor (color_t c) { style.backcolor = c; return *this; }
+		style_t_maker & forecolor (color_t c) { style.forecolor = c; return *this; }
+		style_t_maker & bold (bool v) { style.bold = v; return *this; }
+		style_t_maker & underlined (bool v) { style.underlined = v; return *this; }
+		style_t_maker & blink (bool v) { style.blink = v; return *this; }
+		style_t_maker & reversed (bool v) { style.reversed = v; return *this; }
+		style_t_maker & is_graph (bool v) { style.is_graph = v; return *this; }
+
+		inline operator style_t () const { return style; }
+
+	private:
+		style_t style {};
+	};
+
+	style_t_maker style_t::make() { return {}; }
 
     inline bool operator == (style_t a, style_t b) {
     	return
