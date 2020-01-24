@@ -1,5 +1,60 @@
 #include <maxim.io.hpp>
 #include <thread>
+#include <cmath>
+#include <chrono>
+
+namespace styles {
+
+	maxim::color_t blue { maxim::colors::rgb_to_x256(135,175, 255) };
+	maxim::color_t purple { maxim::colors::rgb_to_x256(91,44, 125) };
+	maxim::color_t pink { maxim::colors::rgb_to_x256(232,34, 72) };
+
+	maxim::color_t dark_dark_gray { maxim::colors::rgb_to_x256 (75, 75, 75)};
+
+	maxim::style_t purple_text = maxim::style_t::make ()
+			.backcolor(blue)
+			.forecolor(purple);
+}
+
+struct progress_bar {
+public:
+
+	void render (maxim::graphics & g) {
+		auto const original_view = g.view;
+
+		auto value_width = static_cast < int > (rint (width * (value / static_cast < float > (max - min))));
+
+		g.draw_box ({position, {width, 1}}, normal.backcolor, true);
+		g.draw_box ( {position, { value_width, 1 }}, highlighted.backcolor, true);
+
+		g.view = { position, { value_width, 1 }};
+		g.draw_text(text, position, width, text_alignment, highlighted);
+
+		g.view = { position + maxim::point { value_width, 0 }, { width - value_width, 1 }};
+		g.draw_text(text, position, width, text_alignment, normal);
+
+		g.view = original_view;
+	}
+
+	int min {0},
+		max {0},
+		value {0};
+
+	maxim::style_t 		normal {},
+						highlighted {};
+
+	maxim::point 		position {};
+	int 				width {0};
+	std::string 		text;
+	maxim::alignment	text_alignment { maxim::alignment::centered };
+};
+
+class panel {
+public:
+
+
+
+};
 
 class application : public maxim::input_event_handler {
 public:
@@ -7,6 +62,17 @@ public:
 	application () {
 		device.set_fullscreen(true);
 		device.set_cursor_enabled(false);
+
+		bar.position = { 10, 10 };
+		bar.width = 50;
+
+		bar.min = 0;
+		bar.max = 10000;
+
+		bar.normal.backcolor = maxim::colors::black;
+		bar.normal.forecolor = maxim::colors::white;
+		bar.highlighted.backcolor = styles::pink;
+		bar.highlighted.forecolor = maxim::colors::black;
 	}
 
 	void on_key_down (maxim::input::key_info const & key) override {
@@ -20,20 +86,29 @@ public:
 
 	void render () {
 		using namespace maxim;
-
 		graphics g { device.backbuffer () };
+		auto size = device.get_size ();
 
 		g.clear ();
 
-		g.draw_h_line (
-				point { 0, 5 },
-				device.get_size().width,
-				colors::purple);
-
-		g.draw_box(
-				{10, 10, 10, 10},
-				colors::red,
+		// top
+		g.draw_box (
+				{ 0, 0, size.width, 5 },
+				styles::blue,
 				true);
+
+
+		// bottom
+		g.draw_box (
+				{0, size.height - 5, size.width, 5 },
+				styles::dark_dark_gray,
+				true);
+
+		bar.position = { 8, size.height - 3 };
+		bar.width = size.width - 16;
+		bar.render (g);
+
+		g.draw_text ("THIS MACHINE WILL BE BRANDED IN 10 SECONDS", { 8, size.height / 2 - 2 }, size.width - 16, maxim::alignment::centered, styles::purple_text );
 
 		device.present ();
 	}
@@ -45,18 +120,28 @@ public:
 
 			render ();
 			std::this_thread::yield ();
-		}
 
+			// update animation
+			using namespace std::chrono;
+
+			auto duration = duration_cast < milliseconds > (high_resolution_clock::now ().time_since_epoch()).count () % 10000;
+
+			bar.value = duration;
+			bar.text = std::to_string (static_cast < int > (10 - ((bar.value / 10000.0F) * 10.0F)) + 1);
+		}
 	}
 
 	maxim::device 	device;
 	bool 			running {true};
+
+	maxim::style_t	text_style;
+
+	progress_bar	bar;
 };
 
 int main(int arg_c, char ** arg_v)
 {
 	application app;
-
 	app.run ();
 
     return 0;

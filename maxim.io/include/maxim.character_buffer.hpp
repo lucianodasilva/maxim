@@ -13,8 +13,8 @@ namespace maxim {
 				_buffer{static_cast < size_t > (size.width * size.height)},
 				_size{size} {}
 
-		inline void reset() {
-			_buffer.assign(_buffer.size(), character{});
+		inline void reset(style_t style = {}) {
+			_buffer.assign(_buffer.size(), character{ style });
 		}
 
 		inline character *ptr_at(point const &p) {

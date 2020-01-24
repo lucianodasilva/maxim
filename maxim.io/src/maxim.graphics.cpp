@@ -12,8 +12,11 @@ namespace maxim {
 	graphics::graphics(character_buffer &buffer, rect const &view)
 		: _buffer{buffer}, view{view} {}
 
-	void graphics::clear() {
-		_buffer.reset();
+	void graphics::clear(color_t clear_color) {
+		style_t s;
+		s.backcolor = clear_color;
+
+		_buffer.reset(s);
 	}
 
 	void graphics::draw_box(
@@ -121,7 +124,7 @@ namespace maxim {
 			return;
 
 		// find text offset
-		auto tpos = view.position + position;
+		auto tpos = position + transform;
 
 		character c = {
 			style,
@@ -142,12 +145,13 @@ namespace maxim {
 		}
 
 		// pad left
+		/*
 		c.content = ' ';
 		for (int32_t i = 0; i < left_pad; ++i) {
 			auto p = tpos + point { i, 0};
 			if (clipped.contains (p))
 				*_buffer.ptr_at (p) = c;
-		}
+		}*/
 
 		// text
 		for (int32_t i = 0; i < len; ++i) {
@@ -158,6 +162,7 @@ namespace maxim {
 				*_buffer.ptr_at (p) = c;
 		}
 
+		/*
 		c.content = ' ';
 
 		// pad right
@@ -165,7 +170,7 @@ namespace maxim {
 			auto p = tpos + point { i, 0};
 			if (clipped.contains (p))
 				*_buffer.ptr_at (p) = c;
-		}
+		}*/
 	}
 
 	void graphics::draw_v_line(
