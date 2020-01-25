@@ -93,6 +93,13 @@ namespace maxim {
 		inline static style_t_maker make ();
 	};
 
+	inline bool operator == (style_t a, style_t b) {
+		return
+			a._style_flags == b._style_flags &&
+			a.backcolor == b.backcolor &&
+			a.forecolor == b.forecolor;
+	}
+
 	struct style_t_maker {
 	public:
 
@@ -106,18 +113,13 @@ namespace maxim {
 
 		inline operator style_t () const { return style; }
 
+		inline style_t build () const { return style; }
+
 	private:
 		style_t style {};
 	};
 
 	style_t_maker style_t::make() { return {}; }
-
-    inline bool operator == (style_t a, style_t b) {
-    	return
-    		a._style_flags == b._style_flags &&
-    		a.backcolor == b.backcolor &&
-    		a.forecolor == b.forecolor;
-    }
 
     struct character {
 		style_t style 	{};

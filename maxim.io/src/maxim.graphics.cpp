@@ -144,15 +144,6 @@ namespace maxim {
 			left_pad = half_width - half_len;
 		}
 
-		// pad left
-		/*
-		c.content = ' ';
-		for (int32_t i = 0; i < left_pad; ++i) {
-			auto p = tpos + point { i, 0};
-			if (clipped.contains (p))
-				*_buffer.ptr_at (p) = c;
-		}*/
-
 		// text
 		for (int32_t i = 0; i < len; ++i) {
 			c.content = text[i];
@@ -162,15 +153,6 @@ namespace maxim {
 				*_buffer.ptr_at (p) = c;
 		}
 
-		/*
-		c.content = ' ';
-
-		// pad right
-		for (int32_t i = left_pad + len; i < width; ++i) {
-			auto p = tpos + point { i, 0};
-			if (clipped.contains (p))
-				*_buffer.ptr_at (p) = c;
-		}*/
 	}
 
 	void graphics::draw_v_line(
