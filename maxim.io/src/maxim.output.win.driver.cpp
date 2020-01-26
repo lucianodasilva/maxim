@@ -61,6 +61,10 @@ namespace maxim::output::win {
 		);
 	}
 
+	void driver::flush() const {
+		// TODO: ???
+	}
+
 }
 
 #endif

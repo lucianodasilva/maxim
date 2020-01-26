@@ -13,7 +13,7 @@ namespace maxim {
 				_buffer{static_cast < size_t > (size.width * size.height)},
 				_size{size} {}
 
-		inline void reset(style_t style = {}) {
+		inline void reset(style_t style = style_t ()) {
 			_buffer.assign(_buffer.size(), character{ style });
 		}
 

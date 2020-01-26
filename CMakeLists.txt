@@ -30,6 +30,9 @@ project (maxim)
 
 add_library_dir(maxim.io STATIC)
 
+add_library_dir(maxim.ui STATIC
+        PUBLIC maxim.io)
+
 if (MAXIM_BUILD_DEMO)
-    add_executable_dir(demo PUBLIC maxim.io)
+    add_executable_dir(demo PUBLIC maxim.io maxim.ui)
 endif()

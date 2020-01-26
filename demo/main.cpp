@@ -1,7 +1,11 @@
 #include <maxim.io.hpp>
-#include <thread>
+#include <maxim.ui.hpp>
+
 #include <cmath>
 #include <chrono>
+#include <thread>
+
+#include <memory>
 
 namespace styles {
 
@@ -11,11 +15,12 @@ namespace styles {
 
 	maxim::color_t dark_dark_gray { maxim::colors::rgb_to_x256 (75, 75, 75)};
 
-	maxim::style_t purple_text = maxim::style_t::make ()
+	maxim::style_t purple_text = maxim::make_style ()
 			.backcolor(blue)
 			.forecolor(purple);
 }
 
+/*
 struct progress_bar {
 public:
 
@@ -138,11 +143,58 @@ public:
 
 	progress_bar	bar;
 };
+*/
 
 int main(int arg_c, char ** arg_v)
 {
+	using namespace maxim;
+
 	application app;
-	app.run ();
+	auto & device = app.device ();
+
+	device.set_fullscreen(true);
+	device.set_cursor_enabled (false);
+
+	// setup controls
+	grid root;
+
+	root.columns = { 15.0_const, 10.0_var, 15.0_const };
+	root.rows = { 1.0_var };
+
+	auto * l1 = root.create_element < label > ();
+
+	l1->columns = grid::range (0);
+	l1->text = "--- [1] ---";
+	l1->style = make_style()
+		.backcolor(colors::cyan)
+		.forecolor(colors::black);
+
+	auto * l2 = root.create_element < label > ();
+
+	l2->columns = grid::range (1);
+	l2->text = "--- [2] ---";
+	l2->style = make_style()
+		.backcolor(colors::red)
+		.forecolor(colors::green);
+
+	auto * l3 = root.create_element < label > ();
+
+	l3->columns = grid::range (2);
+	l3->text = "--- [3] ---";
+	l3->style = make_style()
+		.backcolor(colors::yellow)
+		.forecolor(colors::pink);
+
+	// set as active
+	app.root = &root;
+
+	app.on_key_down += [](application & sender, input::key_info e) {
+		if (e.key == input::virtual_key::Q)
+			sender.exit ();
+	};
+
+	app.run();
+
 
     return 0;
 }
