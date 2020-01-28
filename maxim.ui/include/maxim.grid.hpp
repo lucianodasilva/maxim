@@ -21,16 +21,18 @@ namespace maxim {
         float       value;
         value_type  type;
 
-        float       layout_sum;
-        float       layout_value;
+        int
+                    layout_begin,
+                    layout_end;
     };
 
-    constexpr grid_part_size operator "" _const (long double value) {
-        return { static_cast < float > (value), value_type::constant, .0F };
+
+    constexpr grid_part_size operator "" _const ( long double value) {
+        return { static_cast < float > (value), value_type::constant, 0, 0 };
     }
 
     constexpr grid_part_size operator "" _var (long double value) {
-        return { static_cast < float > (value), value_type::variable, .0F };
+        return { static_cast < float > (value), value_type::variable, 0, 0 };
     }
 
     class grid : public panel {
@@ -64,8 +66,8 @@ namespace maxim {
         };
 
         std::vector < grid_part_size >
-                columns,
-                rows;
+            columns { 1.0_var },
+            rows { 1.0_var };
 
         void paint (graphics & g, rect const & bounds) override;
 

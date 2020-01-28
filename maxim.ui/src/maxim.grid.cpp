@@ -5,7 +5,7 @@
 
 namespace maxim {
 
-    float grid::calc_partition_sum(value_type type, std::vector<grid_part_size> const & partitions) {
+    float grid::calc_partition_sum (value_type type, std::vector<grid_part_size> const & partitions) {
         float sum {};
 
         for (auto & part : partitions) {
@@ -17,6 +17,10 @@ namespace maxim {
     }
 
     void grid::update_layout_partitions (int size, std::vector<grid_part_size> & partitions) {
+        
+        if (partitions.empty())
+            return;
+
         auto dim_const = calc_partition_sum(value_type::constant, partitions);
         auto dim_var = calc_partition_sum(value_type::variable, partitions);
 
@@ -28,15 +32,19 @@ namespace maxim {
         float sum { .0F };
 
         for (auto & part : partitions) {
-            part.layout_sum = sum;
+            part.layout_begin = static_cast <int> (std::round(sum));
 
             if (part.type == value_type::constant)
-                part.layout_value = part.value;
+                sum += part.value;
             else
-                part.layout_value = rem_var * (part.value / dim_var);
-
-            sum += part.layout_value;
+                sum += rem_var * (part.value / dim_var);
         }
+
+        for (int i = 0; i < partitions.size() - 1; ++i) {
+            partitions[i].layout_end = partitions[i + 1].layout_begin;
+        }
+
+        partitions.back().layout_end = size;
     }
 
     void grid::paint(maxim::graphics & g, const maxim::rect &bounds) {
@@ -69,13 +77,13 @@ namespace maxim {
                         0,
                         rows.size() - 1);
 
-            auto element_bounds = maxim::rect {
+            auto element_bounds = maxim::rect{
                 bounds.position + maxim::point {
-                    static_cast < int > (std::round (columns [col_from].layout_sum)),
-                    static_cast < int > (std::round (rows [row_from].layout_sum))
+                    columns [col_from].layout_begin,
+                    rows [row_from].layout_begin
                 }, maxim::size {
-                    static_cast < int > (std::round (columns [col_to].layout_sum - columns [col_from].layout_sum + columns [col_to].layout_value)),
-                    static_cast < int > (std::round (rows [row_to].layout_sum - rows [row_from].layout_sum + rows  [row_to].layout_value))
+                    columns [col_to].layout_end - columns [col_from].layout_begin,
+                    rows [row_to].layout_end - rows[row_from].layout_begin
                 }
             };
 

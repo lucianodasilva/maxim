@@ -158,12 +158,13 @@ int main(int arg_c, char ** arg_v)
 	// setup controls
 	grid root;
 
-	root.columns = { 15.0_const, 10.0_var, 15.0_const };
-	root.rows = { 1.0_var };
+	root.columns = { 10.0_var, 10.0_var, 10.0_var, 10.0_var };
+	root.rows = { 5.0_const, 1.0_var };
 
 	auto * l1 = root.create_element < label > ();
 
-	l1->columns = grid::range (0);
+	l1->columns = grid::range (0, 1);
+	l1->rows = grid::range(0, 1);
 	l1->text = "--- [1] ---";
 	l1->style = make_style()
 		.backcolor(colors::cyan)
@@ -171,7 +172,8 @@ int main(int arg_c, char ** arg_v)
 
 	auto * l2 = root.create_element < label > ();
 
-	l2->columns = grid::range (1);
+	l2->columns = grid::range (2);
+	l2->rows = grid::range(0);
 	l2->text = "--- [2] ---";
 	l2->style = make_style()
 		.backcolor(colors::red)
@@ -179,7 +181,8 @@ int main(int arg_c, char ** arg_v)
 
 	auto * l3 = root.create_element < label > ();
 
-	l3->columns = grid::range (2);
+	l3->columns = grid::range (3);
+	l3->rows = grid::range(0, 1);
 	l3->text = "--- [3] ---";
 	l3->style = make_style()
 		.backcolor(colors::yellow)
