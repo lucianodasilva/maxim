@@ -9,9 +9,9 @@ namespace maxim {
     class label : public element {
     public:
 
-        property < maxim::color_t > foreground;
-        property < alignment >      text_alignment;
-        property < std::string >    text;
+        property < maxim::color_t > 		foreground;
+        property < maxim::text_alignment >	text_alignment;
+        property < std::string >    		text;
 
         void paint (graphics & g, rect const & bounds) override;
 

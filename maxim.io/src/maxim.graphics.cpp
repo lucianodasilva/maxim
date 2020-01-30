@@ -107,11 +107,11 @@ namespace maxim {
 	}
 
 	void graphics::draw_text(
-		std::string const &text,
-		point const &position,
-		int32_t width,
-		alignment align,
-		style_t style
+			std::string const &text,
+			point const &position,
+			int32_t width,
+			style_t style,
+			text_alignment align
 	) {
 		rect clipped = transform_and_clip({
 			  position,
@@ -135,9 +135,90 @@ namespace maxim {
 			len = std::min(static_cast <int32_t> (text.size()), width),
 			left_pad{0};
 
-		if (align == alignment::right) {
+		if (align == text_alignment::right) {
 			left_pad = width - len;
-		} else if (align == alignment::centered) {
+		} else if (align == text_alignment::centered) {
+			auto half_width = width / 2;
+			auto half_len = len / 2;
+
+			left_pad = half_width - half_len;
+		}
+
+		// text
+		for (int32_t i = 0; i < len; ++i) {
+			c.content = text[i];
+
+			auto p = tpos + point { left_pad + i, 0};
+			if (clipped.contains (p))
+				*_buffer.ptr_at (p) = c;
+		}
+
+	}
+
+
+	void graphics::draw_text(
+			std::string const &text,
+			rect const & bounds,
+			style_t style,
+			text_alignment align,
+			bool wrap
+	) {
+		auto position = bounds.position + transform;
+		auto size = bounds.size;
+
+		auto text_size = text.size ();
+		auto text_position = position;
+		int	line_pos_inc = 1;
+
+		rect clipped = transform_and_clip(bounds);
+
+		if (clipped.is_zero())
+			return;
+
+		if (wrap) {
+			auto lines = text_size / size.width;
+			auto remainder = text_size % size.width;
+
+			if (remainder)
+				++lines;
+
+			if (enum_has (align, text_alignment::bottom)) {
+				text_position = position + point { 0, static_cast < int > (size.height - 1 - lines) };
+				line_pos_inc = -1;
+			}
+		} else {
+			if (enum_has (align, text_alignment::bottom))
+				text_position = position + point { 0, size.height - 1};
+
+			if (enum_has (align, text_alignment::right)) {
+
+			}
+
+
+		}
+
+
+
+
+
+
+
+
+		// find text offset
+		auto tpos = position + transform;
+
+		character c = {
+				style,
+				' '
+		};
+
+		int32_t
+				len = std::min(static_cast <int32_t> (text.size()), width),
+				left_pad{0};
+
+		if (align == text_alignment::right) {
+			left_pad = width - len;
+		} else if (align == text_alignment::centered) {
 			auto half_width = width / 2;
 			auto half_len = len / 2;
 

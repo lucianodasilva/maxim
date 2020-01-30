@@ -86,6 +86,16 @@ namespace maxim {
         }
     };
 
+    // enum helpers
+    template < typename _enum_t, typename std::enable_if_t < std::is_enum_v < _enum_t >, int > = 0 >
+    inline bool enum_has (_enum_t origin, _enum_t value) {
+    	using under_t = std::underlying_type_t < _enum_t >;
+
+    	auto cast_origin = static_cast < under_t > (origin);
+    	auto cast_value = static_cast < under_t > (value);
+
+    	return (cast_origin & cast_value) == cast_value;
+    }
 }
 
 #endif

@@ -10,10 +10,12 @@
 
 namespace maxim {
 
-    enum class alignment {
-        left,
-        centered,
-        right
+    enum class text_alignment : uint8_t {
+    	centered 	= 0x00U,
+    	top 		= 0x01U << 1U,
+    	bottom 		= 0x01U << 2U,
+        left		= 0x01U << 3U,
+        right 		= 0x01U << 4U
     };
 
     struct graphics {
@@ -23,7 +25,7 @@ namespace maxim {
         rect 	view = {};
         point 	transform = {};
 
-        graphics(character_buffer & buffer);
+        explicit graphics(character_buffer & buffer);
         graphics(character_buffer & buffer, rect const & view);
 
         void clear(color_t clear_color = colors::system);
@@ -41,12 +43,19 @@ namespace maxim {
         );
 
         void draw_text(
-            std::string const & text,
-            point const & position,
-            int32_t width,
-            alignment align,
-            style_t style
+				std::string const & text,
+				point const & position,
+				int32_t width,
+				style_t style,
+				text_alignment align = text_alignment::centered
         );
+
+        void draw_text (
+        		std::string const & text,
+        		rect const & bounds,
+				style_t style,
+        		text_alignment align = text_alignment::centered,
+        		bool wrap = true);
 
         void draw_v_line(
             point const & position,
