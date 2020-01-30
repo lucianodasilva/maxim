@@ -11,11 +11,25 @@
 namespace maxim {
 
     enum class text_alignment : uint8_t {
-    	centered 	= 0x00U,
-    	top 		= 0x01U << 1U,
-    	bottom 		= 0x01U << 2U,
-        left		= 0x01U << 3U,
-        right 		= 0x01U << 4U
+        center,
+        near,
+        far
+    };
+
+    enum class text_trimming : uint8_t {
+        character,
+        word,
+        ellipsis_word,
+        ellipsis_character
+    };
+
+    struct text_style_t {
+    public:
+        text_alignment  alignment;
+        text_alignment  line_alignment;
+        text_trimming   trimming;
+        char const      elipsis_char { '…' };
+        bool            wrap;
     };
 
     struct graphics {
@@ -43,19 +57,18 @@ namespace maxim {
         );
 
         void draw_text(
-				std::string const & text,
-				point const & position,
-				int32_t width,
-				style_t style,
-				text_alignment align = text_alignment::centered
+			std::string const & text,
+			point const & position,
+			int32_t width,
+			style_t style,
+            text_style_t text_style
         );
 
         void draw_text (
-        		std::string const & text,
-        		rect const & bounds,
-				style_t style,
-        		text_alignment align = text_alignment::centered,
-        		bool wrap = true);
+        	std::string const & text,
+        	rect const & bounds,
+			style_t style,
+        	text_style_t text_style);
 
         void draw_v_line(
             point const & position,
@@ -72,6 +85,11 @@ namespace maxim {
         );
 
     private:
+
+        inline std::tuple < int, int > find_next_line(
+            std::string const& text,
+            int begin,
+            text_alignment alignment);
 
     	[[nodiscard]]
     	inline rect transform_and_clip (rect const & src) const {

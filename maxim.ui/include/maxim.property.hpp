@@ -18,8 +18,7 @@ namespace maxim {
 
         property_changed_event < _t > on_property_changed;
 
-        property () = default;
-
+        property() = default;
         inline property (property const & origin) :
             _value { origin._value }
         {};

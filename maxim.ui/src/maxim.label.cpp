@@ -7,6 +7,8 @@ namespace maxim {
         element::paint (g, bounds);
 
         // render text
+
+        /*
         g.draw_text(
                 text.get(),
                 bounds.position,
@@ -14,6 +16,7 @@ namespace maxim {
                 text_alignment.get(),
                 style.get()
         );
+        */
     }
 
 }

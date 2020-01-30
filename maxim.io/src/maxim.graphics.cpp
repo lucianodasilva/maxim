@@ -111,7 +111,7 @@ namespace maxim {
 			point const &position,
 			int32_t width,
 			style_t style,
-			text_alignment align
+			text_style_t text_style
 	) {
 		rect clipped = transform_and_clip({
 			  position,
@@ -134,7 +134,7 @@ namespace maxim {
 		int32_t
 			len = std::min(static_cast <int32_t> (text.size()), width),
 			left_pad{0};
-
+		/*
 		if (align == text_alignment::right) {
 			left_pad = width - len;
 		} else if (align == text_alignment::centered) {
@@ -152,7 +152,7 @@ namespace maxim {
 			if (clipped.contains (p))
 				*_buffer.ptr_at (p) = c;
 		}
-
+		*/
 	}
 
 
@@ -160,79 +160,54 @@ namespace maxim {
 			std::string const &text,
 			rect const & bounds,
 			style_t style,
-			text_alignment align,
-			bool wrap
+			text_style_t text_style
 	) {
 		auto position = bounds.position + transform;
 		auto size = bounds.size;
 
 		auto text_size = text.size ();
 		auto text_position = position;
-		int	line_pos_inc = 1;
 
 		rect clipped = transform_and_clip(bounds);
 
 		if (clipped.is_zero())
 			return;
 
-		if (wrap) {
+		if (text_style.wrap) {
 			auto lines = text_size / size.width;
 			auto remainder = text_size % size.width;
 
 			if (remainder)
 				++lines;
 
-			if (enum_has (align, text_alignment::bottom)) {
-				text_position = position + point { 0, static_cast < int > (size.height - 1 - lines) };
-				line_pos_inc = -1;
+			switch (text_style.line_alignment) {
+			case (text_alignment::near):
+				text_position = position;
+				break;
+			case (text_alignment::far):
+				text_position = position + point{ 0, static_cast <int> (size.height - 1 - lines) };
+				break;
+			default:
+				text_position = position + point{ 0, static_cast <int> (size.height - 1 - (lines / 2)) };
+				break;
 			}
+
+			int index = 0;
+			while (index < text.size()) {
+				auto [ 
+					line_begin,
+					line_end
+				] = find_next_line(text, index, text_style.alignment);
+
+				index = line_end;
+
+			}
+		
 		} else {
-			if (enum_has (align, text_alignment::bottom))
-				text_position = position + point { 0, size.height - 1};
-
-			if (enum_has (align, text_alignment::right)) {
-
-			}
-
+			
 
 		}
 
-
-
-
-
-
-
-
-		// find text offset
-		auto tpos = position + transform;
-
-		character c = {
-				style,
-				' '
-		};
-
-		int32_t
-				len = std::min(static_cast <int32_t> (text.size()), width),
-				left_pad{0};
-
-		if (align == text_alignment::right) {
-			left_pad = width - len;
-		} else if (align == text_alignment::centered) {
-			auto half_width = width / 2;
-			auto half_len = len / 2;
-
-			left_pad = half_width - half_len;
-		}
-
-		// text
-		for (int32_t i = 0; i < len; ++i) {
-			c.content = text[i];
-
-			auto p = tpos + point { left_pad + i, 0};
-			if (clipped.contains (p))
-				*_buffer.ptr_at (p) = c;
-		}
 
 	}
 
