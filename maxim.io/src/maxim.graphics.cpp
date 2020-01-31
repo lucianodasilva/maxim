@@ -162,18 +162,24 @@ namespace maxim {
 			style_t style,
 			text_style_t text_style
 	) {
+
+		// transform
 		auto position = bounds.position + transform;
 		auto size = bounds.size;
 
 		auto text_size = text.size ();
 		auto text_position = position;
 
+		// clip
 		rect clipped = transform_and_clip(bounds);
 
 		if (clipped.is_zero())
 			return;
 
+		character c { style };
+
 		if (text_style.wrap) {
+			// calculate wrap rect
 			auto lines = text_size / size.width;
 			auto remainder = text_size % size.width;
 
@@ -192,17 +198,33 @@ namespace maxim {
 				break;
 			}
 
-			int index = 0;
-			while (index < text.size()) {
+			int offset = 0;
+			for (int line = 0; line < lines; ++line) {
+
 				auto [ 
 					line_begin,
 					line_end
-				] = find_next_line(text, index, text_style.alignment);
+				] = get_next_line(text, offset, size.width);
 
-				index = line_end;
+				auto line_position = get_line_position (
+						text_position,
+						size,
+						text_style.alignment,
+						line,
+						line_end - line_begin);
 
+				// write to buffer
+				for (int i = line_begin; i < line_end; ++i) {
+					c.content = text[i];
+
+					if (clipped.contains (line_position))
+						*_buffer.ptr_at (line_position) = c;
+
+					++line_position.x;
+				}
+
+				offset = line_end;
 			}
-		
 		} else {
 			
 

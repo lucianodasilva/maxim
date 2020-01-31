@@ -165,7 +165,7 @@ int main(int arg_c, char ** arg_v)
 
 	l1->columns = grid::range (0, 1);
 	l1->rows = grid::range(0, 1);
-	l1->text = "--- [1] ---";
+	l1->text = "Lorem ipsum dolor sit amet, ut posse tempor sit, quo cu aliquid assueverit voluptatibus. Eu pri inimicus iracundia evertitur, ne ius eloquentiam mediocritatem. Usu te ullum reprehendunt. Eu eam stet reque postea. Cu modus sententiae repudiandae mea, graeci possim dissentiunt quo eu, unum meis feugait ei vel|";
 	l1->style = make_style()
 		.backcolor(colors::cyan)
 		.forecolor(colors::black);
@@ -174,7 +174,7 @@ int main(int arg_c, char ** arg_v)
 
 	l2->columns = grid::range (2);
 	l2->rows = grid::range(0);
-	l2->text = "--- [2] ---";
+	l2->text = "Harum insolens assueverit qui an. Cu essent eleifend voluptatum sea. Sed et velit splendide. No vim dicam legimus habemus. Vix percipit evertitur moderatius in, reformidans philosophia te ius, maiorum dissentias duo no. Solum adipisci praesent cum no, in mel vivendo docendi fastidii, ancillae officiis ei vim. Omnis senserit vis te|";
 	l2->style = make_style()
 		.backcolor(colors::red)
 		.forecolor(colors::green);
@@ -183,7 +183,7 @@ int main(int arg_c, char ** arg_v)
 
 	l3->columns = grid::range (3);
 	l3->rows = grid::range(0, 1);
-	l3->text = "--- [3] ---";
+	l3->text = "Ei eam option euripidis, ea ullum meliore vis, ex nemore mediocrem cotidieque nam. Ex persecuti complectitur eam, errem accusata intellegebat pro ut. An nullam consulatu vis, quo et meis graeci percipitur. Probo intellegam scriptorem vel id. Eam te ferri efficiantur instructior, mel ea nihil integre ullamcorper|";
 	l3->style = make_style()
 		.backcolor(colors::yellow)
 		.forecolor(colors::pink);

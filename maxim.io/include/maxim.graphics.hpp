@@ -27,8 +27,9 @@ namespace maxim {
     public:
         text_alignment  alignment;
         text_alignment  line_alignment;
-        text_trimming   trimming;
-        char const      elipsis_char { '…' };
+        // - TO BE IMPLEMENTED -
+        //text_trimming   trimming;
+        //char const      elipsis_char { '' };
         bool            wrap;
     };
 
@@ -86,10 +87,43 @@ namespace maxim {
 
     private:
 
-        inline std::tuple < int, int > find_next_line(
+        static inline auto get_next_line(
             std::string const& text,
             int begin,
-            text_alignment alignment);
+            int line_width)
+		{
+			if (begin + line_width < text.size ()) {
+
+				int end = begin + line_width;
+
+				while (std::isgraph(text[end - 1])) {
+					--end;
+
+					if (end == 0)
+						return std::make_tuple(begin, line_width);
+				}
+
+				return std::make_tuple(begin, end);
+			} else {
+				return std::make_tuple (begin, static_cast < int > (text.size () - begin));
+			}
+        }
+
+		static inline point get_line_position (point const & text_position, size const & text_size, text_alignment alignment, int line, int line_width) {
+			int x = 0;
+
+			switch (alignment) {
+			case (text_alignment::center):
+				x = text_size.width / 2 - line_width / 2;
+			case(text_alignment::far):
+				x = text_size.width - line_width;
+			default:
+				x = 0;
+				break;
+			}
+
+			return text_position + point { x, line};
+        }
 
     	[[nodiscard]]
     	inline rect transform_and_clip (rect const & src) const {
