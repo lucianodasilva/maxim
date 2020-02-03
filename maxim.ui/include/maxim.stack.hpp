@@ -28,6 +28,11 @@ namespace maxim {
 
     };
 
+    class horizontal_stack : public stack {
+    public:
+
+    };
+
 }
 
 #endif

@@ -5,24 +5,24 @@
 
 namespace maxim {
 
-    float grid::calc_partition_sum (value_type type, std::vector<grid_part_size> const & partitions) {
+    float grid::calc_partition_sum (length_kind type, std::vector<length_t> const & partitions) {
         float sum {};
 
         for (auto & part : partitions) {
-            if (part.type == type)
+            if (part.kind == type)
                 sum += part.value;
         }
 
         return sum;
     }
 
-    void grid::update_layout_partitions (int size, std::vector<grid_part_size> & partitions) {
+    void grid::update_layout_partitions (int size, std::vector<length_t> & partitions) {
         
         if (partitions.empty())
             return;
 
-        auto dim_const = calc_partition_sum(value_type::constant, partitions);
-        auto dim_var = calc_partition_sum(value_type::variable, partitions);
+        auto dim_const = calc_partition_sum(length_kind::constant, partitions);
+        auto dim_var = calc_partition_sum(length_kind::variable, partitions);
 
         auto rem_var = static_cast < float > (size) - dim_const;
 
@@ -34,7 +34,7 @@ namespace maxim {
         for (auto & part : partitions) {
             part.layout_begin = static_cast <int> (std::round(sum));
 
-            if (part.type == value_type::constant)
+            if (part.kind == length_kind::constant)
                 sum += part.value;
             else
                 sum += rem_var * (part.value / dim_var);

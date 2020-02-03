@@ -145,6 +145,30 @@ public:
 };
 */
 
+struct visual_properties {
+	maxim::style_t 		style;
+	maxim::text_style_t text;
+};
+
+enum struct visual_style_type : uint8_t {
+	top_panel,
+	bottom_panel,
+	progress_bar,
+	disabled_progress_bar
+};
+
+template < typename _visual_style_t >
+struct theme {
+public:
+
+	inline std::shared_ptr < visual_properties > get_properties () {
+
+	}
+
+private:
+	std::unordered_map < _visual_style_t, std::shared_ptr < visual_properties > > _properties;
+};
+
 int main(int arg_c, char ** arg_v)
 {
 	using namespace maxim;
@@ -159,12 +183,12 @@ int main(int arg_c, char ** arg_v)
 	grid root;
 
 	root.columns = { 10.0_var, 10.0_var, 10.0_var, 10.0_var };
-	root.rows = { 5.0_const, 1.0_var };
+	root.rows = { 5.0_fixed, 1.0_var };
 
 	auto * l1 = root.create_element < label > ();
 
-	l1->columns = grid::range (0, 1);
-	l1->rows = grid::range(0, 1);
+	l1->columns = {0, 1};
+	l1->rows = {0, 1};
 	l1->text = "Lorem ipsum dolor sit amet, ut posse tempor sit, quo cu aliquid assueverit voluptatibus. Eu pri inimicus iracundia evertitur, ne ius eloquentiam mediocritatem. Usu te ullum reprehendunt. Eu eam stet reque postea. Cu modus sententiae repudiandae mea, graeci possim dissentiunt quo eu, unum meis feugait ei vel|";
 	l1->style = make_style()
 		.backcolor(colors::cyan)
@@ -172,8 +196,8 @@ int main(int arg_c, char ** arg_v)
 
 	auto * l2 = root.create_element < label > ();
 
-	l2->columns = grid::range (2);
-	l2->rows = grid::range(0);
+	l2->columns = 2;
+	l2->rows = 0;
 	l2->text = "Harum insolens assueverit qui an. Cu essent eleifend voluptatum sea. Sed et velit splendide. No vim dicam legimus habemus. Vix percipit evertitur moderatius in, reformidans philosophia te ius, maiorum dissentias duo no. Solum adipisci praesent cum no, in mel vivendo docendi fastidii, ancillae officiis ei vim. Omnis senserit vis te|";
 	l2->style = make_style()
 		.backcolor(colors::red)
@@ -181,8 +205,8 @@ int main(int arg_c, char ** arg_v)
 
 	auto * l3 = root.create_element < label > ();
 
-	l3->columns = grid::range (3);
-	l3->rows = grid::range(0, 1);
+	l3->columns = 3;
+	l3->rows = {0, 1};
 	l3->text = "Ei eam option euripidis, ea ullum meliore vis, ex nemore mediocrem cotidieque nam. Ex persecuti complectitur eam, errem accusata intellegebat pro ut. An nullam consulatu vis, quo et meis graeci percipitur. Probo intellegam scriptorem vel id. Eam te ferri efficiantur instructior, mel ea nihil integre ullamcorper|";
 	l3->style = make_style()
 		.backcolor(colors::yellow)
