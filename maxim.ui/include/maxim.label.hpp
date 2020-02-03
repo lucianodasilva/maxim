@@ -10,7 +10,7 @@ namespace maxim {
     public:
 
         property < maxim::color_t > 		foreground;
-        property < maxim::text_alignment >	text_alignment;
+        property < maxim::text_style_t >	text_style;
         property < std::string >    		text;
 
         void paint (graphics & g, rect const & bounds) override;

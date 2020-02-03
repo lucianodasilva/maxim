@@ -75,35 +75,14 @@ namespace maxim {
 		point const &position,
 		style_t style
 	) {
-		rect clipped = transform_and_clip({
-			position,
-			{
-				static_cast < int32_t > (text.size ()),
-				1
-			}});
-
-		if (clipped.is_zero())
-			return;
-
-		// find text offset
-		auto xoffset = clipped.position.x - (view.position + position).x;
-
-		// trim to zero
-		if (xoffset < 0)
-			xoffset = 0;
-
-		character c = {
-			style,
-			' '
-		};
-
-		character * ptr = _buffer.ptr_at ({clipped.position});
-
-		for (int32_t i = 0; i < clipped.size.width; ++i) {
-			c.content = text[i + xoffset];
-			*ptr = c;
-			++ptr;
-		}
+		this->draw_text (
+				text,
+				{
+					position,
+					{ static_cast < int > (text.size()), 1 }},
+				style,
+				text_style_t_maker ().build ()
+				);
 	}
 
 	void graphics::draw_text(
@@ -113,48 +92,79 @@ namespace maxim {
 			style_t style,
 			text_style_t text_style
 	) {
-		rect clipped = transform_and_clip({
-			  position,
-			  {
-				  width,
-				  1
-			  }});
-
-		if (clipped.is_zero())
-			return;
-
-		// find text offset
-		auto tpos = position + transform;
-
-		character c = {
-			style,
-			' '
-		};
-
-		int32_t
-			len = std::min(static_cast <int32_t> (text.size()), width),
-			left_pad{0};
-		/*
-		if (align == text_alignment::right) {
-			left_pad = width - len;
-		} else if (align == text_alignment::centered) {
-			auto half_width = width / 2;
-			auto half_len = len / 2;
-
-			left_pad = half_width - half_len;
-		}
-
-		// text
-		for (int32_t i = 0; i < len; ++i) {
-			c.content = text[i];
-
-			auto p = tpos + point { left_pad + i, 0};
-			if (clipped.contains (p))
-				*_buffer.ptr_at (p) = c;
-		}
-		*/
+		this->draw_text (
+				text,
+				{ position, width, 1 },
+				style,
+				text_style);
 	}
 
+	inline auto get_next_line(
+			std::string const& text,
+			int begin,
+			int line_width)
+	{
+		if (begin + line_width < text.size ()) {
+
+			int end = begin + line_width;
+
+			while (end > 0 && std::isgraph(text[end - 1]))
+				--end;
+
+			if (end - begin <= 0)
+				return std::make_tuple(begin, begin + line_width);
+
+			return std::make_tuple(begin, end);
+		} else {
+			return std::make_tuple (begin, static_cast < int > (text.size ()));
+		}
+	}
+
+	inline int get_line_count (std::string const & text, int line_width) {
+		int offset {0};
+		int line_count {0};
+
+		int begin {0};
+		int end {0};
+
+		while (end < text.size ()) {
+			std::tie (begin, end) = get_next_line(text, offset, line_width);
+			offset = end;
+			++line_count;
+		}
+
+		return line_count;
+	}
+
+	inline point get_text_position (point const & position, size const & text_size, text_alignment line_alignment, int line_count) {
+		switch (line_alignment) {
+			case (text_alignment::near):
+				return position;
+			case (text_alignment::far):
+				return position + point{ 0, static_cast <int> (text_size.height - line_count) };
+			default:
+				return position + point{ 0, static_cast <int> (text_size.height / 2 - (line_count / 2)) };
+		}
+
+	}
+
+	inline point get_line_position (point const & text_position, size const & text_size, text_alignment alignment, int line, int line_width) {
+		int x = 0;
+
+		switch (alignment) {
+			case (text_alignment::center):
+				x = text_size.width / 2 - line_width / 2;
+				break;
+			case(text_alignment::far):
+				x = text_size.width - line_width;
+				break;
+			default:
+				x = 0;
+				break;
+		}
+
+		return text_position + point { x, line };
+	}
 
 	void graphics::draw_text(
 			std::string const &text,
@@ -162,6 +172,8 @@ namespace maxim {
 			style_t style,
 			text_style_t text_style
 	) {
+
+		this->draw_box (bounds, style.backcolor);
 
 		// transform
 		auto position = bounds.position + transform;
@@ -180,27 +192,16 @@ namespace maxim {
 
 		if (text_style.wrap) {
 			// calculate wrap rect
-			auto lines = text_size / size.width;
-			auto remainder = text_size % size.width;
+			auto lines = get_line_count (text, size.width);
 
-			if (remainder)
-				++lines;
-
-			switch (text_style.line_alignment) {
-			case (text_alignment::near):
-				text_position = position;
-				break;
-			case (text_alignment::far):
-				text_position = position + point{ 0, static_cast <int> (size.height - 1 - lines) };
-				break;
-			default:
-				text_position = position + point{ 0, static_cast <int> (size.height - 1 - (lines / 2)) };
-				break;
-			}
+			text_position = get_text_position(
+					position,
+					size,
+					text_style.line_alignment,
+					lines);
 
 			int offset = 0;
 			for (int line = 0; line < lines; ++line) {
-
 				auto [ 
 					line_begin,
 					line_end
@@ -226,10 +227,32 @@ namespace maxim {
 				offset = line_end;
 			}
 		} else {
-			
+			text_position = get_text_position(
+					position,
+					size,
+					text_style.line_alignment,
+					1);
 
+			int left_pad = 0;
+
+			if (text_style.alignment == text_alignment::far) {
+				left_pad = size.width - text_size;
+			} else if (text_style.alignment == text_alignment::center) {
+				auto half_width = size.width / 2;
+				auto half_len = text_size / 2;
+
+				left_pad = half_width - half_len;
+			}
+
+			// text
+			for (int i = 0; i < text_size; ++i) {
+				c.content = text[i];
+
+				auto p = text_position + point { left_pad + i, 0};
+				if (clipped.contains (p))
+					*_buffer.ptr_at (p) = c;
+			}
 		}
-
 
 	}
 

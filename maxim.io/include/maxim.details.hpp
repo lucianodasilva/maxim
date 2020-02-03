@@ -80,8 +80,8 @@ namespace maxim {
         [[nodiscard]]
         inline bool contains (point const & p) const {
             return
-                    p.x >= left() && p.x <= right() &&
-                    p.y >= top() && p.y <= bottom();
+                    p.x >= left() && p.x < right() &&
+                    p.y >= top() && p.y < bottom();
 
         }
     };

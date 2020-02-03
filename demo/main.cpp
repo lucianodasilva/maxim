@@ -187,6 +187,8 @@ int main(int arg_c, char ** arg_v)
 	l3->style = make_style()
 		.backcolor(colors::yellow)
 		.forecolor(colors::pink);
+	l3->text_style = make_text_style ()
+		.line_alignment (text_alignment::center);
 
 	// set as active
 	app.root = &root;

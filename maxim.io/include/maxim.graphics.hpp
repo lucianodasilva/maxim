@@ -25,13 +25,31 @@ namespace maxim {
 
     struct text_style_t {
     public:
-        text_alignment  alignment;
-        text_alignment  line_alignment;
+        text_alignment  alignment { text_alignment::near };
+        text_alignment  line_alignment { text_alignment::near };
         // - TO BE IMPLEMENTED -
         //text_trimming   trimming;
         //char const      elipsis_char { '' };
-        bool            wrap;
+        bool            wrap { false };
     };
+
+    struct text_style_t_maker {
+    public:
+
+    	inline text_style_t_maker & alignment (text_alignment v) { _style.alignment = v; return *this; }
+    	inline text_style_t_maker & line_alignment (text_alignment v) { _style.line_alignment = v; return *this; }
+		inline text_style_t_maker & wrap (bool v) { _style.wrap = v; return *this; }
+
+		inline operator text_style_t () const { return build (); }
+
+		[[nodiscard]]
+		inline text_style_t build () const { return _style; }
+
+    private:
+    	text_style_t _style;
+    };
+
+    inline text_style_t_maker make_text_style () { return {}; }
 
     struct graphics {
     private:
@@ -86,44 +104,6 @@ namespace maxim {
         );
 
     private:
-
-        static inline auto get_next_line(
-            std::string const& text,
-            int begin,
-            int line_width)
-		{
-			if (begin + line_width < text.size ()) {
-
-				int end = begin + line_width;
-
-				while (std::isgraph(text[end - 1])) {
-					--end;
-
-					if (end == 0)
-						return std::make_tuple(begin, line_width);
-				}
-
-				return std::make_tuple(begin, end);
-			} else {
-				return std::make_tuple (begin, static_cast < int > (text.size () - begin));
-			}
-        }
-
-		static inline point get_line_position (point const & text_position, size const & text_size, text_alignment alignment, int line, int line_width) {
-			int x = 0;
-
-			switch (alignment) {
-			case (text_alignment::center):
-				x = text_size.width / 2 - line_width / 2;
-			case(text_alignment::far):
-				x = text_size.width - line_width;
-			default:
-				x = 0;
-				break;
-			}
-
-			return text_position + point { x, line};
-        }
 
     	[[nodiscard]]
     	inline rect transform_and_clip (rect const & src) const {
