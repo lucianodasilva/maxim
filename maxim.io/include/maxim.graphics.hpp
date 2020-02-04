@@ -8,6 +8,11 @@
 #include <tuple>
 #include <string>
 
+#ifdef _WIN32
+#undef far
+#undef near
+#endif
+
 namespace maxim {
 
     enum class text_alignment : uint8_t {
@@ -27,7 +32,7 @@ namespace maxim {
     public:
         text_alignment  alignment { text_alignment::near };
         text_alignment  line_alignment { text_alignment::near };
-        // - TO BE IMPLEMENTED -
+        // TODO: implement text trimming
         //text_trimming   trimming;
         //char const      elipsis_char { '' };
         bool            wrap { false };
