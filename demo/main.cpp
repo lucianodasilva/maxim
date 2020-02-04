@@ -11,15 +11,21 @@ namespace styles {
 
 	maxim::color_t dark_dark_gray { maxim::colors::rgb_to_x256 (75, 75, 75)};
 
-	maxim::style_t purple_text = maxim::style_t::make ()
+	maxim::style_t purple_text = maxim::make_style()
 			.backcolor(blue)
 			.forecolor(purple);
+
 }
 
 struct progress_bar {
 public:
 
 	void render (maxim::graphics & g) {
+		auto text_style = maxim::make_text_style ()
+				.line_alignment (maxim::text_alignment::near)
+				.alignment (maxim::text_alignment::center)
+				.wrap (false);
+
 		auto const original_view = g.view;
 
 		auto value_width = static_cast < int > (rint (width * (value / static_cast < float > (max - min))));
@@ -28,25 +34,24 @@ public:
 		g.draw_box ( {position, { value_width, 1 }}, highlighted.backcolor, true);
 
 		g.view = { position, { value_width, 1 }};
-		g.draw_text(text, position, width, text_alignment, highlighted);
+		g.draw_text(text, position, width, highlighted, text_style);
 
 		g.view = { position + maxim::point { value_width, 0 }, { width - value_width, 1 }};
-		g.draw_text(text, position, width, text_alignment, normal);
+		g.draw_text(text, position, width, normal, text_style);
 
 		g.view = original_view;
 	}
 
-	int min {0},
-		max {0},
-		value {0};
+	int 			min {0},
+					max {0},
+					value {0};
 
-	maxim::style_t 		normal {},
-						highlighted {};
+	maxim::style_t 	normal {},
+					highlighted {};
 
-	maxim::point 		position {};
-	int 				width {0};
-	std::string 		text;
-	maxim::alignment	text_alignment { maxim::alignment::centered };
+	maxim::point 	position {};
+	int 			width {0};
+	std::string 	text;
 };
 
 class panel {
@@ -108,7 +113,7 @@ public:
 		bar.width = size.width - 16;
 		bar.render (g);
 
-		g.draw_text ("THIS MACHINE WILL BE BRANDED IN 10 SECONDS", { 8, size.height / 2 - 2 }, size.width - 16, maxim::alignment::centered, styles::purple_text );
+		g.draw_text ("THIS MACHINE WILL BE BRANDED IN 10 SECONDS", { 8, size.height / 2 - 2 }, size.width - 16, styles::purple_text, maxim::make_text_style() );
 
 		device.present ();
 	}

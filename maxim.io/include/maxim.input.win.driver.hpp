@@ -16,7 +16,7 @@ namespace maxim::input::win {
 		driver();
 
         virtual ~driver();
-        virtual std::vector<key_event_args> get_input_events() const override;
+        virtual void dispatch_events(input_event_handler& handler) const override;
 
     private:
 		DWORD	_stdin_original_mode;

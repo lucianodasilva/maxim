@@ -69,8 +69,6 @@ namespace maxim {
         }
     }
 
-    struct style_t_maker;
-
     struct style_t {
 
 		color_t backcolor { colors::system };
@@ -86,11 +84,9 @@ namespace maxim {
 				int             : 0; // fill to next byte
 			};
 
-			uint8_t _style_flags;
+			uint8_t _style_flags {0};
 		};
 
-
-		inline static style_t_maker make ();
 	};
 
 	inline bool operator == (style_t a, style_t b) {
@@ -103,27 +99,27 @@ namespace maxim {
 	struct style_t_maker {
 	public:
 
-		style_t_maker & backcolor (color_t c) { style.backcolor = c; return *this; }
-		style_t_maker & forecolor (color_t c) { style.forecolor = c; return *this; }
-		style_t_maker & bold (bool v) { style.bold = v; return *this; }
-		style_t_maker & underlined (bool v) { style.underlined = v; return *this; }
-		style_t_maker & blink (bool v) { style.blink = v; return *this; }
-		style_t_maker & reversed (bool v) { style.reversed = v; return *this; }
-		style_t_maker & is_graph (bool v) { style.is_graph = v; return *this; }
+		inline style_t_maker & backcolor (color_t c) { style.backcolor = c; return *this; }
+		inline style_t_maker & forecolor (color_t c) { style.forecolor = c; return *this; }
+		inline style_t_maker & bold (bool v) { style.bold = v; return *this; }
+		inline style_t_maker & underlined (bool v) { style.underlined = v; return *this; }
+		inline style_t_maker & blink (bool v) { style.blink = v; return *this; }
+		inline style_t_maker & reversed (bool v) { style.reversed = v; return *this; }
+		inline style_t_maker & is_graph (bool v) { style.is_graph = v; return *this; }
 
 		inline operator style_t () const { return style; }
 
 		inline style_t build () const { return style; }
 
 	private:
-		style_t style {};
+		style_t style;
 	};
 
-	style_t_maker style_t::make() { return {}; }
+	inline style_t_maker make_style () { return {}; }
 
     struct character {
-		style_t style 	{};
-        char content 	{' '};
+		style_t style;
+        char content {' '};
     };
 
     struct graph_chars {
