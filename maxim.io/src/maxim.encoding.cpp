@@ -105,7 +105,6 @@ namespace maxim::encoding {
 		}
     }
 
-    /*
     void encode_change_set (
         character_buffer const &		buffer,
         character_change_set const &	change_set,
@@ -137,10 +136,7 @@ namespace maxim::encoding {
         // after all changes committed reset attributes to avoid
         // terminal corruption on crash
         out_stream.write(ansi::color_reset);
-        out_stream.write(ansi::attr_reset);
-        out_stream.write(ansi::attr_disable_graph);
     }
-    */
 
     void encode (character_buffer const & buffer, maxim::stream & out_stream) {
 		auto size = buffer.size ();
@@ -171,8 +167,7 @@ namespace maxim::encoding {
 
 		// after all changes committed reset attributes to avoid
 		// terminal corruption on crash
-		//encode_attribute_reset(out_stream);
-
+		out_stream.write(ansi::color_reset);
     }
 
 }

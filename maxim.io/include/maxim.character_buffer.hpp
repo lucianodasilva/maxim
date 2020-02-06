@@ -42,10 +42,10 @@ namespace maxim {
 			_size = size;
 		}
 
-		// [[nodiscard]]
-		// character_change_set calculate_change_set(
-		//	 	character_buffer const &buffer
-		// ) const;
+		[[nodiscard]]
+		character_change_set calculate_change_set(
+			 	character_buffer const &buffer
+		) const;
 
 		[[nodiscard]]
 		inline std::size_t coords_to_index(point const &p) const {
