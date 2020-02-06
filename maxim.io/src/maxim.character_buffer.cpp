@@ -2,7 +2,8 @@
 
 namespace maxim {
 
-/*
+
+
 	character_change_set character_buffer::calculate_change_set (
 			character_buffer const & buffer
 	) const {
@@ -10,39 +11,35 @@ namespace maxim {
 		if (_size != buffer._size)
 			throw std::runtime_error ("changes between different sized buffers not supported");
 
-		character_change_set changes;
+		character_change_set 	changes;
 
-		for (uint32_t y = 0; y < _size.height; ++y) {
-			uint32_t
-					line_index = _size.width * y,
-					begin_index = line_index,
-					ending_index = begin_index;
+		for (std::size_t y = 0; y < _size.height; ++y) {
+			std::size_t
+					line_start = y * _size.width,
+					line_end = line_start + _size.width;
 
-			bool has_changes = false;
+			for (std::size_t x = 0; x < _size.width; ++x) {
+				std::size_t index = line_start + x;
 
-			for (uint32_t x = 0; x < _size.width; ++x) {
-				ending_index = line_index + x;
+				// check if line is the same
+				if (*ptr_at(index) != *buffer.ptr_at(index)) {
 
-				bool is_same = *ptr_at(ending_index) == *buffer.ptr_at(ending_index);
+					// look ahead to find end of change span
+					std::size_t cs_index = index;
 
-				if (!has_changes && is_same) {
-					begin_index = ending_index;
-				} else {
-					has_changes = true;
+					for (;
+						cs_index < line_end && *ptr_at(index) != *buffer.ptr_at(index);
+						++cs_index) {}
 
-					if (is_same) {
-						changes.push_back({begin_index + 1, ending_index});
-						begin_index = ending_index;
-						has_changes = false;
-					}
+					changes.push_back({index, cs_index});
+
+					// jump ahead
+					x += cs_index - index;
 				}
 			}
-
-			if (has_changes)
-				changes.push_back({begin_index + 1, ending_index + 1});
 		}
 
 		return changes;
 	}
-*/
+
 }

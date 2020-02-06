@@ -143,6 +143,10 @@ namespace maxim {
             a.style == b.style;
     }
 
+    inline bool operator != (character const & a, character const & b) {
+    	return !(a == b);
+    }
+
 }
 
 #endif

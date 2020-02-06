@@ -75,16 +75,22 @@ namespace maxim {
         _output_driver->send(_stream);
     }
 
-    void device::present () {
-		/*
-        encoding::encode_change_set(
-                _back_buffer,
-                _back_buffer.calculate_change_set (_front_buffer),
-                _stream
-        );*/
+    void device::present (bool full) {
+
 		_stream.reset();
 
-		encoding::encode (_back_buffer, _stream);
+
+    	if (full) {
+			encoding::encode (_back_buffer, _stream);
+		} else {
+			encoding::encode_change_set(
+					_back_buffer,
+					_back_buffer.calculate_change_set (_fore_buffer),
+					_stream
+			);
+
+			std::swap (_back_buffer, _fore_buffer);
+		}
 
         _output_driver->send(_stream);
 
@@ -114,8 +120,10 @@ namespace maxim {
 
     	if (_back_buffer.size () != _size) {
 			_back_buffer.resize(_size);
+			_fore_buffer.resize(_size);
 
 			_stream.reset ();
+			_stream.write (encoding::ansi::clear);
 			_stream.write (encoding::ansi::wrap_disable);
 			_stream.write (encoding::ansi::scrolling_disable);
 

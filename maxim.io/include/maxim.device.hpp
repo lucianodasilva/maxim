@@ -37,7 +37,7 @@ namespace maxim {
         void set_cursor_enabled (bool enable);
 
         void clear_screen();
-        void present ();
+        void present (bool full = false);
 
         void dispatch_input_events (input_event_handler & handler) const;
 
@@ -57,7 +57,8 @@ namespace maxim {
         size       _size           { _output_driver->get_size() };
 
         character_buffer
-                    _back_buffer    { _size };
+                    _back_buffer    { _size },
+                    _fore_buffer	{ _size };
 
         maxim::stream
         			_stream;
