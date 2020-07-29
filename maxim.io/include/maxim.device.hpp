@@ -46,8 +46,6 @@ namespace maxim {
 		static void encode_cursor (bool value, maxim::stream & stream);
 		static void encode_fullscreen (bool value, maxim::stream & stream);
 
-		void sync_display_settings ();
-
         std::unique_ptr < input::driver >
             _input_driver = input::driver::create ();
 

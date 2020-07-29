@@ -76,13 +76,26 @@ namespace maxim {
     }
 
     void device::present (bool full) {
-
 		_stream.reset();
 
+		// sync display settings
+		_size = _output_driver->get_size ();
 
-    	if (full) {
-			encoding::encode (_back_buffer, _stream);
-		} else {
+		if (_size != _back_buffer.size ()) {
+			_back_buffer.resize(_size);
+			_fore_buffer.resize(_size);
+
+			_stream.write (encoding::ansi::clear);
+			_stream.write (encoding::ansi::wrap_disable);
+			_stream.write (encoding::ansi::scrolling_disable);
+
+			if (!_cursor_enabled)
+				device::encode_cursor (false, _stream);
+
+			return;
+		}
+
+    	if (!full) {
 			encoding::encode_change_set(
 					_back_buffer,
 					_back_buffer.calculate_change_set (_fore_buffer),
@@ -90,11 +103,11 @@ namespace maxim {
 			);
 
 			std::swap (_back_buffer, _fore_buffer);
+		} else {
+			encoding::encode (_back_buffer, _stream);
 		}
 
         _output_driver->send(_stream);
-
-        this->sync_display_settings();
     }
 
     void device::dispatch_input_events(maxim::input_event_handler & handler) const {
@@ -113,25 +126,6 @@ namespace maxim {
 				value ?
 				encoding::ansi::alternate_buffer_enable :
 				encoding::ansi::alternate_buffer_disable));
-    }
-
-    void device::sync_display_settings() {
-    	_size = _output_driver->get_size ();
-
-    	if (_back_buffer.size () != _size) {
-			_back_buffer.resize(_size);
-			_fore_buffer.resize(_size);
-
-			_stream.reset ();
-			_stream.write (encoding::ansi::clear);
-			_stream.write (encoding::ansi::wrap_disable);
-			_stream.write (encoding::ansi::scrolling_disable);
-
-			if (!_cursor_enabled)
-				device::encode_cursor (false, _stream);
-
-			_output_driver->send (_stream);
-		}
     }
 
 }
