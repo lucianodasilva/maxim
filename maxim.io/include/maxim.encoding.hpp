@@ -61,13 +61,11 @@ namespace maxim::encoding {
         };
     }
 
-    /*
     void encode_change_set (
         character_buffer const &		buffer,
         character_change_set const &	change_set,
         maxim::stream &			        out_stream
     );
-     */
 
     void encode (character_buffer const & buffer, maxim::stream & out_stream);
 }

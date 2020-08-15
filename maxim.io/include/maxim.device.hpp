@@ -37,7 +37,7 @@ namespace maxim {
         void set_cursor_enabled (bool enable);
 
         void clear_screen();
-        void present ();
+        void present (bool full = false);
 
         void dispatch_input_events (input_event_handler & handler) const;
 
@@ -45,8 +45,6 @@ namespace maxim {
 
 		static void encode_cursor (bool value, maxim::stream & stream);
 		static void encode_fullscreen (bool value, maxim::stream & stream);
-
-		void sync_display_settings ();
 
         std::unique_ptr < input::driver >
             _input_driver = input::driver::create ();
@@ -57,7 +55,8 @@ namespace maxim {
         size       _size           { _output_driver->get_size() };
 
         character_buffer
-                    _back_buffer    { _size };
+                    _back_buffer    { _size },
+                    _fore_buffer	{ _size };
 
         maxim::stream
         			_stream;

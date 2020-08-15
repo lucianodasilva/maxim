@@ -54,7 +54,7 @@ namespace maxim {
     	text_style_t _style;
     };
 
-    inline text_style_t_maker make_text_style () { return {}; }
+    inline constexpr text_style_t_maker make_text_style () { return {}; }
 
     struct graphics {
     private:
