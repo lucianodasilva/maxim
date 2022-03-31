@@ -161,9 +161,11 @@ template < typename _visual_style_t >
 struct theme {
 public:
 
+	/*
 	inline std::shared_ptr < visual_properties > get_properties () {
-
+		return _properties;
 	}
+	 */
 
 private:
 	std::unordered_map < _visual_style_t, std::shared_ptr < visual_properties > > _properties;
@@ -215,11 +217,29 @@ int main(int arg_c, char ** arg_v)
 		.line_alignment (text_alignment::center);
 
 	// set as active
-	app.root = &root;
+	//app.root = &root;
 
 	app.on_key_down += [](application & sender, input::key_info e) {
 		if (e.key == input::virtual_key::Q)
 			sender.exit ();
+	};
+	
+	app.on_draw += [](application & sender, graphics & g) {
+
+		g.draw_box (
+			rect {
+				{ 0, 0 },
+				{ static_cast < int > (g.view.size.width * 0.3F), g.view.size.height }
+			},
+			colors::cyan,
+			true);
+
+		g.draw_text (
+			std::to_string (g.view.size.height) +
+			"x" +
+			std::to_string (g.view.size.width),
+			point { 2, 2 },
+			styles::purple_text);
 	};
 
 	app.run();
