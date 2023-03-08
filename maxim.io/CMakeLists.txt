@@ -1,57 +1,24 @@
 
-dir_target_name (target_name)
+append_source (./include maxim-io-include-files)
+append_source (./src maxim-io-source-files)
 
-target_compile_features(
-    ${target_name}
-    PUBLIC
-    cxx_std_17)
+# create target
+add_library (maxim.io
+        ${maxim-io-include-files}
+        ${maxim-io-source-files})
 
-if (MAXIM_BUILD_TEST_COVERAGE)
-    if (UNIX)
-        # enable code coverage flags
-        target_compile_options(
-                ${target_name} PUBLIC
-                -fprofile-arcs
-                -ftest-coverage
-                --coverage)
+target_include_directories(maxim.io PUBLIC
+        ./include/)
 
-        target_link_libraries(
-                ${target_name} PUBLIC
-                gcov
-        )
+# setup compile options for threading on gnu and clang
+set(THREADS_PREFER_PTHREAD_FLAG ON) # Without this flag CMake may resort to just '-lpthread'
+find_package(Threads)
 
-        find_program(lcov_path lcov)
-        find_program(genhtml_path genhtml)
+# add libraries
+target_link_libraries (
+        maxim.io PUBLIC
+        $<$<CXX_COMPILER_ID:GNU,CLANG>:Threads::Threads>)
 
-        if (NOT lcov_path OR NOT genhtml_path)
-            message (FATAL_ERROR "lcov or genhtml not found!")
-        endif()
-
-        # TODO: move to external script file
-        add_custom_target(${target_name}_coverage
-                WORKING_DIRECTORY $<TARGET_FILE_DIR:${target_name}>
-                # clean stuffs
-                COMMAND echo \"Cleaning coverage counters\"
-                COMMAND ${lcov_path} --directory . --zerocounters --quiet --rc lcov_branch_coverage=1
-                # get counters from compilation
-                COMMAND echo \"Gathering pre-execution coverage counters\"
-                COMMAND ${lcov_path} --directory . --initial --capture --output-file initial.cov --quiet
-                # execute tests to generate runtime counters
-                COMMAND echo \"Execute tests...\"
-                COMMAND $<TARGET_FILE:${target_name}_test>
-                # filter results
-                COMMAND echo \"Gathering pos-execution coverage counters\"
-                COMMAND ${lcov_path} --directory . --capture --output-file exec.cov --quiet --rc lcov_branch_coverage=1
-                COMMAND ${lcov_path} --add-tracefile initial.cov --add-tracefile exec.cov --output-file full.cov --quiet --rc lcov_branch_coverage=1
-
-                COMMAND echo \"Filtering...\"
-                COMMAND ${lcov_path} --extract full.cov '${CMAKE_CURRENT_LIST_DIR}/*' --output-file filtered.cov --quiet --rc lcov_branch_coverage=1
-                COMMAND ${lcov_path} --remove filtered.cov '${CMAKE_CURRENT_LIST_DIR}/test/*' --output-file filtered.cov --quiet --rc lcov_branch_coverage=1
-                # generate html report
-                COMMAND echo \"Generating html report\"
-                COMMAND ${genhtml_path} filtered.cov --output-directory ./cov_report --demangle-cpp --rc lcov_branch_coverage=1 --quiet
-                COMMAND echo \"Open 'file://$<TARGET_FILE_DIR:${target_name}_test>/cov_report/index.html' for the coverage report\"
-                COMMAND ${lcov_path} --summary filtered.cov --rc lcov_branch_coverage=1)
-
-    endif()
+if (MAXIM_BUILD_TEST)
+    add_subdirectory(test)
 endif()

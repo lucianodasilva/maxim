@@ -3,8 +3,9 @@
 #define _maxim_input_hpp_
 
 #include <cinttypes>
-#include <type_traits>
 #include <map>
+#include <functional>
+#include <type_traits>
 
 namespace maxim::input {
     // virtual key codes

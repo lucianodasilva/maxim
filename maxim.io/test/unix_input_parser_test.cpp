@@ -1,6 +1,6 @@
 #ifdef __linux__
 
-#include <catch2/catch.hpp>
+#include <catch.hpp>
 
 #include <maxim.io.hpp>
 #include <maxim.input.unix.termio_parser.hpp>

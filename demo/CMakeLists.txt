@@ -1,6 +1,9 @@
-dir_target_name (target_name)
+
+append_source (. maxim-demo-source-files)
+
+add_executable(maxim-demo ${maxim-demo-source-files})
 
 target_link_libraries (
-        ${target_name}
+        maxim-demo
         PUBLIC
-            maxim.device)
+            maxim.io)

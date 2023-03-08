@@ -6,7 +6,7 @@
 #include <maxim.input.unix.key_state_emulator.hpp>
 #include <functional>
 
-#include <catch2/catch.hpp>
+#include <catch.hpp>
 
 void wait_for_expiration () {
     using namespace maxim::input;
