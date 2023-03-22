@@ -19,6 +19,10 @@ target_link_libraries (
         maxim.io PUBLIC
         $<$<CXX_COMPILER_ID:GNU,CLANG>:Threads::Threads>)
 
+target_compile_features (
+        maxim.io PUBLIC cxx_std_17
+)
+
 if (MAXIM_BUILD_TEST)
     add_subdirectory(test)
 endif()

@@ -5,8 +5,19 @@
 
 #include <termio.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <iostream>
 
 namespace maxim::output::_unix {
+
+    driver::driver () {
+        struct stat stats {};
+        if (fstat (STDOUT_FILENO, &stats) == -1) {
+            throw std::runtime_error ("FStat Failure");
+        }
+
+        setvbuf(stdout, nullptr, _IONBF, 0);
+    }
 
     size driver::get_size() const {
         winsize w = {};
@@ -18,9 +29,30 @@ namespace maxim::output::_unix {
         };
     }
 
-    void driver::send(maxim::stream &stream) const {
-        ::write(STDOUT_FILENO, stream.data(), stream.size());
-    }
+    void driver::send(view < char > data) const {
+        // TODO: figure this one out better
+        //std::cout << std::string (data.data (), data.size()) << '\0' << std::flush;
+
+         for (auto const c : data) {
+             putchar(c);
+         }
+
+//        auto rem = data.size ();
+//
+//        do {
+//            // tcflush(STDOUT_FILENO, TCOFLUSH);
+//            // fflush(stdout);
+//            auto ret_code = fwrite(data.begin () + (data.size () - rem), 1, rem, stdout);
+//            //auto ret_code = ::write(STDOUT_FILENO, data.begin() + (data.size () - rem), rem);
+//
+//            if (ret_code > 0) {
+//                rem -= ret_code;
+//            } else {
+//                // error;
+//                break;
+//            }
+//        } while (rem > 0);
+        }
 
 }
 

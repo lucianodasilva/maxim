@@ -3,53 +3,84 @@
 #define _maxim_character_hpp_
 
 #include <cinttypes>
+#include <cmath>
 #include <vector>
 #include <tuple>
 
-#include "maxim.character_change_set.hpp"
 #include "maxim.details.hpp"
 
 namespace maxim {
 
-    using color_t = uint8_t;
+    struct color {
+    public:
+        uint8_t r, g, b;
 
-    namespace colors {
-        constexpr color_t const
-                black       = 0x0,
-                dark_red    = 0x1,
-                dark_green  = 0x2,
-                dark_yellow = 0x3,
-                dark_blue   = 0x4,
-                purple      = 0x5,
-                dark_cyan   = 0x6,
-                gray        = 0x7,
-                dark_gray   = 0x8,
-                red         = 0x9,
-                green       = 0xA,
-                yellow      = 0xB,
-                blue        = 0xC,
-                pink        = 0xD,
-                cyan        = 0xE,
-                white       = 0xF;
+        [[nodiscard]] uint8_t to_256 () const;
+        [[nodiscard]] uint8_t to_8 () const;
+    };
+
+    [[nodiscard]] inline bool operator == (color const v1, color const v2) {
+        return v1.r == v2.r && v1.g == v2.g && v1.b == v2.b;
     }
 
-    union character_flags {
+    [[nodiscard]] inline bool operator != (color const v1, color const v2) {
+        return !operator==(v1, v2);
+    }
+
+    namespace colors {
+
+        constexpr color const
+            black {},
+            dark_red    { 170, 0, 0 },
+            dark_green  { 0, 170, 0 },
+            dark_yellow { 170, 85, 0 },
+            dark_blue   { 0, 0, 170 },
+            purple      { 170, 0, 170 },
+            dark_cyan   { 0, 170, 170 },
+            gray        { 170, 170, 170},
+            dark_gray   { 85, 85, 85 },
+            red         { 255, 85, 85 },
+            green       { 85, 255, 85 },
+            yellow      { 255, 255, 85 },
+            blue        { 85, 85, 255 },
+            pink        { 255, 85, 255 },
+            cyan        { 85, 255, 255 },
+            white       { 255, 255, 255 };
+    }
+
+    union attribute_flags {
         struct {
             bool bold       : 1;
             bool underlined : 1;
             bool blink      : 1;
             bool reversed   : 1;
             bool is_graph   : 1;
-            int             : 0; // fill to next byte
+            int             : 0; // padding
         };
-        uint8_t data = {};
+
+        uint8_t _bitflag {0};
     };
 
+    [[nodiscard]] inline bool operator == (attribute_flags const v1, attribute_flags const v2) {
+        return v1._bitflag == v2._bitflag;
+    }
+
+    struct attributes {
+        color           backcolor;
+        color           forecolor;
+        attribute_flags flags;
+    };
+
+    [[nodiscard]] inline bool operator == (attributes const & v1, attributes const & v2) {
+        return
+            v1.backcolor == v2.backcolor &&
+            v1.forecolor == v2.forecolor &&
+            v1.flags     == v2.flags;
+    }
+
     struct character {
-        char content            = ' ';
-        character_flags flags   = {};
-        color_t backcolor       = colors::black;
-        color_t forecolor       = colors::white;
+		maxim::attributes   attributes;
+        char                content;
     };
 
     struct graph_chars {
@@ -67,84 +98,12 @@ namespace maxim {
                 horizontal_down;
     };
 
-    inline bool operator == (character const & c1, character const & c2) {
+    inline bool operator == (character const & v1, character const & v2) {
         return
-            c1.content == c2.content &&
-            c1.flags.data == c2.flags.data &&
-            c1.backcolor == c2.backcolor &&
-            c1.forecolor == c2.forecolor;
+            v1.attributes   == v2.attributes &&
+            v1.content      == v2.content;
     }
 
-    struct character_buffer {
-    public:
-
-        inline character_buffer (maxim::size const & size) :
-                _buffer { static_cast < size_t > (size.width * size.height) },
-                _size { size }
-        {}
-
-        inline void reset () {
-            _buffer.assign(_buffer.size(), character{});
-        }
-
-        inline character & at (point const & p) {
-            return _buffer [coords_to_index(p)];
-        }
-
-        inline character const & at (point const & p) const {
-            return _buffer [coords_to_index(p)];
-        }
-
-        inline character & at (size_t index) {
-            return _buffer[index];
-        }
-
-        inline character const & at (size_t index) const {
-            return _buffer[index];
-        }
-
-        inline maxim::size const & size() const { return _size; }
-
-        inline void resize (maxim::size const & size) {
-            std::vector < character > resized (
-                    static_cast <size_t>(size.width * size.height));
-
-            for (int32_t i = 0; i < size.height; ++i) {
-                std::copy(
-                        _buffer.begin() += (size.width * i),
-                        _buffer.begin() += ((size.width * i) + size.width),
-                        resized.begin() += (size.width * i)
-                );
-            }
-
-            _buffer = resized;
-            _size = size;
-        }
-
-        character_change_set calculate_change_set (
-                character_buffer const & buffer
-        ) const;
-
-        inline int32_t coords_to_index (point const & p) const {
-            return p.y * _size.width + p.x;
-        }
-
-        inline point index_to_coords (int32_t index) const {
-            return {
-                    static_cast < int32_t > (index % _size.width),
-                    static_cast < int32_t > (index / _size.width)
-            };
-        }
-
-    private:
-
-        std::vector < character >
-                _buffer;
-
-        maxim::size
-                _size;
-
-    };
 }
 
 #endif

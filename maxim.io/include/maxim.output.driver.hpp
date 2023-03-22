@@ -2,6 +2,7 @@
 #ifndef _maxim_output_driver_hpp_
 #define _maxim_output_driver_hpp_
 
+#include "maxim.span.hpp"
 #include "maxim.details.hpp"
 #include "maxim.input.hpp"
 
@@ -22,7 +23,7 @@ namespace maxim {
 
             virtual size get_size() const = 0;
 
-            virtual void send(maxim::stream &stream) const = 0;
+            virtual void send(view < char > data) const = 0;
 
             static std::unique_ptr < driver > create();
         };

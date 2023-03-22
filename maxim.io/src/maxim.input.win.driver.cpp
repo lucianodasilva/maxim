@@ -1,10 +1,16 @@
 #ifdef WIN32
 
+#define NOMINMAX
+
 #include "maxim.input.win.driver.hpp"
+#include "maxim.device.hpp"
+
+#include <exception>
+#include <stdexcept>
 
 namespace maxim::input::win {
 
-	driver::driver()
+	sec_driver::sec_driver()
 	{
 		// enable direct input
 		_stdin_handle = GetStdHandle(STD_INPUT_HANDLE);
@@ -27,7 +33,7 @@ namespace maxim::input::win {
 			throw std::runtime_error("Failed setting console input mode");
 	}
 
-	driver::~driver() {
+	sec_driver::~sec_driver() {
 		// restore original console input
 		if (_stdin_handle != INVALID_HANDLE_VALUE)
 			SetConsoleMode(
@@ -36,9 +42,9 @@ namespace maxim::input::win {
 			);
 	}
 
-	std::vector <key_event_args> driver::get_input_events() const {
+	void sec_driver::dispatch_events(maxim::input_event_handler& handler) const {
 		if (_stdin_handle == INVALID_HANDLE_VALUE)
-			return {};
+			return;
 
 		DWORD len = 0;
 		GetNumberOfConsoleInputEvents(
@@ -56,30 +62,29 @@ namespace maxim::input::win {
 		))
 			throw std::runtime_error("Failed to read console input");
 
-		std::vector <key_event_args> event_args;
-		event_args.reserve(len);
-
 		for (decltype(len) i = 0; i < len; ++i) {
 			auto & input = native_input[i];
 
 			if (input.EventType == KEY_EVENT) {
-				event_args.push_back(
-					key_event_args{
-						{
-							static_cast <char32_t> (input.Event.KeyEvent.uChar.AsciiChar),
-							static_cast <virtual_key> (input.Event.KeyEvent.wVirtualKeyCode),
-							cast_to_modifier(input.Event.KeyEvent.dwControlKeyState)
-						},
-						input.Event.KeyEvent.bKeyDown == TRUE
-					}
-				);
+
+				key_info info{
+					static_cast <char32_t> (input.Event.KeyEvent.uChar.AsciiChar),
+					static_cast <virtual_key> (input.Event.KeyEvent.wVirtualKeyCode),
+					cast_to_modifier(input.Event.KeyEvent.dwControlKeyState)
+				};
+
+				if (input.Event.KeyEvent.bKeyDown == TRUE) {
+					handler.on_key_down(info);
+				}
+				else {
+					handler.on_key_up(info);
+				}
+
 			}
 		}
-
-		return event_args;
 	}
 
-	modifier_key driver::cast_to_modifier(DWORD const & key_event) {
+	modifier_key sec_driver::cast_to_modifier(DWORD const & key_event) {
 		modifier_key key = {};
 		auto mod = key_event;
 

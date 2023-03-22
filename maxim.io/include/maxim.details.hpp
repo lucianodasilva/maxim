@@ -1,81 +1,108 @@
 #pragma once
-#ifndef _maxim_details_hpp_
-#define _maxim_details_hpp_
+#ifndef MAXIM_DETAILS_HPP
+#define MAXIM_DETAILS_HPP
 
 #include <cinttypes>
 #include <algorithm>
+#include <stdexcept>
+#include <vector>
 
 namespace maxim {
 
     struct point {
         int32_t x, y;
 
-        inline point operator + (point const & v) const { return { x + v.x, y + v.y }; }
-        inline point operator - (point const & v) const { return { x - v.x, y - v.y }; }
-        inline point operator * (point const & v) const { return { x * v.x, y * v.y }; }
-        inline point operator * (int32_t s) const { return { x * s, y * s }; }
-        inline point operator / (point const & v) const { return { x / v.x, y / v.y }; }
-        inline point operator / (int32_t s) const { return { x / s, y / s }; }
-        inline bool operator == (point const & p) const { return x == p.x && y == p.y; }
-        inline bool operator != (point const & p) const { return !operator==(p); }
+        inline point operator + (point const & value) const { return { x + value.x, y + value.y }; }
+        inline point operator - (point const & value) const { return { x - value.x, y - value.y }; }
+        inline point operator * (point const & value) const { return { x * value.x, y * value.y }; }
+        inline point operator * (int32_t scalar) const { return { x * scalar, y * scalar }; }
+        inline point operator / (point const & value) const { return { x / value.x, y / value.y }; }
+        inline point operator / (int32_t scalar) const { return { x / scalar, y / scalar }; }
+        inline bool operator == (maxim::point const & other) const { return x == other.x && y == other.y; }
+        inline bool operator != (maxim::point const & other) const { return !operator==(other); }
 
+		[[nodiscard]]
         inline bool is_zero () const { return x == 0 && y == 0; }
     };
 
     struct size {
         int32_t width, height;
 
+		[[nodiscard]]
         inline bool is_zero () const { return width == 0 && height == 0; }
 
-        inline bool operator == (size const & s) const { return width == s.width && height == s.height; }
-        inline bool operator != (size const & s) const { return !operator==(s); }
+        inline bool operator == (maxim::size const & size) const { return width == size.width && height == size.height; }
+        inline bool operator != (maxim::size const & size) const { return !operator==(size); }
 
     };
 
     struct rect {
         maxim::point 	position;
-        maxim::size	size;
+        maxim::size		size;
 
+		[[nodiscard]]
         inline bool is_zero () const { return position.is_zero () && size.is_zero(); }
 
+		[[nodiscard]]
         inline int32_t left () const { return position.x; }
+		[[nodiscard]]
         inline int32_t right () const { return position.x + size.width; }
+		[[nodiscard]]
         inline int32_t top () const { return position.y; }
+		[[nodiscard]]
         inline int32_t bottom () const { return position.y + size.height; }
+        [[nodiscard]]
+        inline int32_t width () const { return size.width; }
+        [[nodiscard]]
+        inline int32_t height () const { return size.height; }
 
-        inline bool intersects (rect const & r) const {
+		[[nodiscard]]
+        inline bool intersects (maxim::rect const & other) const {
             return
-                    left () < r.right () &&
-                    top () < r.bottom () &&
-                    right () > r.left () &&
-                    bottom () > r.top ();
+                    left () < other.right () &&
+                    top () < other.bottom () &&
+                    right () > other.left () &&
+                    bottom () > other.top ();
         }
 
-        inline rect intersection (rect const & r) const {
-            if (!intersects(r))
+		[[nodiscard]]
+        inline rect intersection (rect const & other) const {
+            if (!intersects(other)) {
                 return {};
+            }
 
-            point pos = {
-                    std::max(left(), r.left()),
-                    std::max(top(), r.top())
+            point const POS = {
+                    std::max(left(), other.left()),
+                    std::max(top(), other.top())
             };
 
-            maxim::size size = {
-                    std::min (right(), r.right()) - pos.x,
-                    std::min (bottom(), r.bottom()) - pos.y
+            maxim::size const SIZE_V = {
+                    std::min (right(), other.right()) - POS.x,
+                    std::min (bottom(), other.bottom()) - POS.y
             };
 
-            return { pos, size };
+            return { POS, SIZE_V };
         }
 
-        inline bool contains (point const & p) const {
+        [[nodiscard]]
+        inline bool contains (point const & pnt) const {
             return
-                    p.x >= left() && p.x <= right() &&
-                    p.y >= top() && p.y <= bottom();
+                    pnt.x >= left() && pnt.x < right() &&
+                    pnt.y >= top() && pnt.y < bottom();
 
         }
     };
 
+    // enum helpers
+    template < typename enum_t, typename std::enable_if_t < std::is_enum_v < enum_t >, int > = 0 >
+    inline bool enum_has (enum_t origin, enum_t value) { // NOLINT
+    	using under_t = std::underlying_type_t < enum_t >;
+
+    	auto cast_origin = static_cast < under_t > (origin);
+    	auto cast_value = static_cast < under_t > (value);
+
+    	return (cast_origin & cast_value) == cast_value;
+    }
 }
 
 #endif

@@ -1,5 +1,5 @@
 #include "maxim.input.unix.termio_parser.hpp"
-#include "maxim.encoding.hpp"
+#include "maxim.encoder.hpp"
 
 namespace maxim::input::_unix {
 
@@ -82,8 +82,8 @@ namespace maxim::input::_unix {
     key_info termio_parse (span & source) {
 
         // check for special keys
-        if (source.match (encoding::ansi::csi)) {
-            auto next = source + sequence_len (encoding::ansi::csi);
+        if (source.match (ansi::csi)) {
+            auto next = source + sequence_len (ansi::csi);
 
             virtual_key key = match_special_keys_csi(next);
             modifier_key mod{modifier_key::none};
@@ -108,8 +108,8 @@ namespace maxim::input::_unix {
             }
         }
 
-        if (source.match (encoding::ansi::sse3)) {
-            auto next = source + sequence_len (encoding::ansi::csi);
+        if (source.match (ansi::sse3)) {
+            auto next = source + sequence_len (ansi::csi);
 
             virtual_key key = match_special_keys_sse3 (next);
             modifier_key mod{modifier_key::none};

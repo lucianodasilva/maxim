@@ -31,12 +31,12 @@ namespace maxim {
 	struct event_dispatcher : details::event_dispatcher_traits < _mutex_t > {
 	public:
 
-		static void dispatch(details::event_dispatcher_task && t) {
+		static void dispatch(details::event_dispatcher_task && value_t) {
 			static event_dispatcher dispatcher{};
 
 			{
 				std::unique_lock < typename base_t::mutex_t > lock(dispatcher._task_mutex);
-				dispatcher._tasks.push_back(std::move(t));
+				dispatcher._tasks.push_back(std::move(value_t));
 			}
 
 			dispatcher._task_condition.notify_one();

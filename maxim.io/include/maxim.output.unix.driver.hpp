@@ -12,11 +12,12 @@ namespace maxim {
         class driver : public maxim::output::driver {
         public:
 
-            virtual ~driver() = default;
+            driver ();
+            ~driver() override = default;
 
-            virtual size get_size() const override;
+            size get_size() const override;
 
-            virtual void send(maxim::stream &stream) const override;
+            void send(view < char > data) const override;
 
         };
     }

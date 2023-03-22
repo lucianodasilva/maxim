@@ -21,9 +21,9 @@ TEST_CASE("calculate change set", "[character_buffer calculate_change_set]") {
         point const change_position { 3, 3};
         auto const change_index = compare_buffer.coords_to_index(change_position);
 
-        auto & c = compare_buffer.at (change_position);
+        auto & c = *compare_buffer.ptr_at (change_position);
 
-        c.forecolor = colors::cyan;
+        c.attributes.forecolor = colors::cyan;
 
         auto result = compare_buffer.calculate_change_set(empty_buffer);
 
@@ -41,11 +41,11 @@ TEST_CASE("calculate change set", "[character_buffer calculate_change_set]") {
         point const change_position_2 { 4, 3};
         auto const change_index = compare_buffer.coords_to_index(change_position_1);
 
-        auto & c1 = compare_buffer.at (change_position_1);
-        auto & c2 = compare_buffer.at (change_position_2);
+        auto & c1 = *compare_buffer.ptr_at (change_position_1);
+        auto & c2 = *compare_buffer.ptr_at (change_position_2);
 
-        c1.forecolor = colors::cyan;
-        c2.forecolor = colors::cyan;
+        c1.attributes.forecolor = colors::cyan;
+        c2.attributes.forecolor = colors::cyan;
 
         auto result = compare_buffer.calculate_change_set(empty_buffer);
 

@@ -3,45 +3,75 @@
 
 namespace maxim {
 
-    character_change_set character_buffer::calculate_change_set (
-            character_buffer const & buffer
-    ) const {
+    uint8_t color::to_256 () const {
+        constexpr int cv_lookup [6] = {0, 0x5F, 0x87, 0xAF, 0xD7, 0xFF};
 
-        if (_size != buffer._size)
-            throw std::runtime_error ("changes between different sized buffers not supported");
+        // calculate nearest index
+        auto channel_to_index = [](auto ... c) {
+            return std::make_tuple (c > 115 ? ((c - 35) / 40) : (c > 48 ? 1 : 0)...);
+        };
 
-        character_change_set changes;
+        auto [ir, ig, ib] = channel_to_index (r, g, b);
 
-        for (uint32_t y = 0; y < _size.height; ++y) {
-            uint32_t
-                    line_index = _size.width * y,
-                    begin_index = line_index,
-                    ending_index = begin_index;
+        auto avr = (ir + ig + ib / 3);
+        auto gray_index = (avr > 238 ? 23 : (avr - 3) / 10);
 
-            bool has_changes = false;
+        auto
+            cr = cv_lookup[ir],
+            cg = cv_lookup[ig],
+            cb = cv_lookup[ib];
 
-            for (uint32_t x = 0; x < _size.width; ++x) {
-                ending_index = line_index + x;
+        auto gv = 8 + 10 * gray_index;
 
-                bool is_same = at(ending_index) == buffer.at(ending_index);
+        auto sqr = [](auto v1, auto v2) { return (v1 - v2) * (v1 - v2); };
 
-                if (!has_changes && is_same) {
-                    begin_index = ending_index;
-                } else {
-                    has_changes = true;
+        auto color_dist = sqr (cr, r) + sqr (cg, g) + sqr (cb, b);
+        auto gray_dist = sqr (gv, r) + sqr (gv, g) + sqr (gv, b);
 
-                    if (is_same) {
-                        changes.push_back({begin_index + 1, ending_index});
-                        begin_index = ending_index;
-                        has_changes = false;
-                    }
-                }
-            }
+        auto clr = color_dist <= gray_dist ?
+                   16 + (36 * ir + 6 * ig + ib) :
+                   232 + gray_index;
 
-            if (has_changes)
-                changes.push_back({begin_index + 1, ending_index + 1});
+        return clr;
+    }
+
+    uint8_t color::to_8 () const {
+        auto value = to_256();
+
+        if (value < 8) {
+            return 30 + value;
         }
 
-        return changes;
+        if (value < 16) {
+            return 90 + (value - 8);
+        }
+
+        uint8_t tr, tg, tb;
+
+        if (value >= 232) {
+            tr = tg = tb = (((value - 232) * 10) + 8) / 255;
+        } else {
+            value -= 16;
+            auto const rem = value % 16;
+
+            tr = value / 36 / 5;
+            tg = rem / 6 / 5;
+            tb = (rem % 6) / 5;
+        }
+
+        auto const max_chan = std::max ({tr, tg, tb}) * 2;
+
+        if (max_chan == 0) {
+            return 30;
+        }
+
+        value = 30 + (tb << 2) | (tg << 1) | tr;
+
+        if (max_chan == 2) {
+            value += 60;
+        }
+
+        return value;
     }
+
 }

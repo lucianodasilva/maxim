@@ -1,101 +1,124 @@
 #pragma once
-#ifndef _maxim_stream_hpp_
-#define _maxim_stream_hpp_
+#ifndef MAXIM_STREAM_HPP
+#define MAXIM_STREAM_HPP
 
 #include <iterator>
 #include <limits>
 #include <type_traits>
 #include <vector>
 
+#include "maxim.details.hpp"
+
 namespace maxim {
+
+    constexpr std::size_t STREAM_TRIM_THRESHOLD = 1024;
+
+    template<typename value_t, typename common_t = std::decay_t<value_t> >
+    [[nodiscard]] inline std::enable_if_t<
+            std::is_integral_v<common_t>,
+            size_t
+    > digit_count(value_t value) {
+        if (value == 0) {
+            return 1;
+        }
+
+        size_t digits = 0;
+
+        if (value < 0) {
+            digits = 1;
+        }
+
+        while (value) {
+            value /= 10;
+            ++digits;
+        }
+
+        return digits;
+    }
+
     struct stream {
     public:
 
-        inline stream & write (char v) {
-            _buffer.push_back(v);
+        inline stream &write(char value) {
+            _buffer.push_back(value);
             return *this;
         }
 
-        template < class _t >
-        inline std::enable_if_t <
-                !(std::is_same<
-                    std::remove_all_extents_t <_t>,
-                    char
-                >::value) && std::numeric_limits<_t>::is_integer,
+        template<typename value_t, typename common_t = std::decay_t<value_t> >
+        inline std::enable_if_t<
+                !std::is_same_v<common_t, char> &&
+                std::is_integral_v<common_t>,
                 stream &
-        > write (_t v) {
-            auto count = digit_count(v);
+        > write(value_t value) {
+            auto count = digit_count(value);
 
-            size_t index = _buffer.size();
+            if (count == 0) {
+                return *this;
+            }
+
+            std::size_t const INDEX = _buffer.size();
             // resize for new string
             _buffer.resize(_buffer.size() + count);
 
-            if (v < _t(0))
-                _buffer[index] = '-';
+            if (value < value_t(0)) {
+                _buffer[INDEX] = '-';
+            }
 
-            while(count) {
-                _buffer[index + (count - 1)] = '0' + char (v % 10);
-                v /= 10;
+            while (count) {
+                _buffer[INDEX + (count - 1)] = '0' + char(value % 10);
+                value /= 10;
                 --count;
             }
 
             return *this;
         }
 
-        template < size_t n >
-        inline stream & write (char const (&str)[n]) {
+        template<std::size_t COUNT>
+        inline stream & write(char const (&str)[COUNT]) { // NOLINT: signature is not "array" usage
+            if constexpr (COUNT == 0) {
+                return *this;
+            }
+
             _buffer.insert(
                     std::end(_buffer),
                     std::begin(str),
-                    std::begin(str) + (n - 1)
+                    std::begin(str) + (COUNT - 1)
             );
 
             return *this;
         }
 
-        template < class _t >
-        inline stream & optional_write(bool enabled, _t && v) {
-            if (enabled)
-                write(v);
+        template<typename ... args_t>
+        inline stream &write_sequence(args_t &&... args) {
+            (write(args), ...);
+            return *this;
+        }
+
+
+        template<typename value_t>
+        inline stream &maybe_write(bool enabled, value_t && value) {
+            if (enabled) {
+                write(value);
+            }
 
             return *this;
         }
 
         inline void reset() {
             _buffer.resize(0);
+
+            if (_buffer.capacity() > STREAM_TRIM_THRESHOLD) {
+                _buffer.clear();
+            }
         }
 
-        inline char * data() {
-            return _buffer.data();
-        }
-
-        inline size_t size() const {
-            return _buffer.size();
+        inline view <char> data() {
+            return view < char >(_buffer);
         }
 
     private:
 
-        template < class _t >
-        static inline std::enable_if_t <std::numeric_limits<_t>::is_integer, size_t >
-            digit_count (_t v)
-        {
-            if (v == 0)
-                return 1;
-
-            size_t digits = 0;
-
-            if (v < 0)
-                ++digits;
-
-            while (v) {
-                v /= 10;
-                ++digits;
-            }
-
-            return digits;
-        }
-
-        std::vector < char > _buffer;
+        std::vector<char> _buffer;
     };
 }
 
