@@ -55,9 +55,9 @@ namespace maxim {
     encoder & encoder::emmit_color_4bit (struct color const & fg, struct color const & bg) {
         _stream.write_sequence (
             ansi::color_prefix,
-            (int)fg.to_8(),
+            (int)fg.to_ansi_8(),
             ansi::separator,
-            (int)(bg.to_8() + 10),
+            (int)(bg.to_ansi_8() + 10),
             ansi::color_suffix);
 
         return *this;
@@ -67,13 +67,13 @@ namespace maxim {
         _stream.write_sequence(
             ansi::color_prefix,
             ansi::color_foreground,
-            (int)fg.to_256(),
+            (int)fg.to_ansi_256(),
             ansi::color_suffix);
 
         _stream.write_sequence(
             ansi::color_prefix,
             ansi::color_background,
-            (int)bg.to_256(),
+            (int)bg.to_ansi_256(),
             ansi::color_suffix);
 
         return *this;
@@ -123,15 +123,15 @@ namespace maxim {
             auto location = point { 0, y };
 
             this->emmit_position (location);
-            auto * ptr = buffer.ptr_at (location);
+            auto * ptr = buffer.data_at (location);
 
             for (int x = 0; x < size.width; ++x) {
 
                 if (last) {
                     // find and encode changes in attributes
-                    this->attribute_diff(last->attributes, ptr->attributes);
+                    this->attribute_diff(*last, *ptr);
                 } else {
-                    this->emmit_color(ptr->attributes.forecolor, ptr->attributes.backcolor);
+                    this->emmit_color(ptr->forecolor, ptr->backcolor);
                 }
 
                 // send content, replace zero with space
@@ -145,9 +145,13 @@ namespace maxim {
         return *this;
     }
 
-    encoder & encoder::attribute_diff(const attributes &before, const attributes &now) {
-        if (now == before)
+    encoder & encoder::attribute_diff(character const & before,character const & now) {
+
+        if (now.flags == before.flags &&
+            character_color_match(now, before))
+        {
             return *this;
+        }
 
         // begin attribute data
         _stream.write (ansi::attr_prefix);
@@ -188,42 +192,5 @@ namespace maxim {
 
         return *this;
     }
-
-    /*
-    void encode_change_set (
-        character_buffer const &		buffer,
-        character_change_set const &	change_set,
-        maxim::stream &			out_stream
-    ) {
-        if (change_set.empty())
-            return;
-
-        encode_attribute_reset(out_stream);
-        character last = {};
-
-        for (auto & change : change_set) {
-            // move to starting point of change
-            encode_move(out_stream, buffer.index_to_coords(change.begin));
-
-            for (uint32_t index = change.begin; index < change.end; ++index) {
-                auto & current = *buffer.ptr_at(index);
-                // set attribute changes
-                encode_attribute(out_stream, current.style, last.style);
-                // set color changes
-                encode_color(out_stream, current.style, last.style);
-                // encode text
-                out_stream.write(current.content);
-
-                last = current;
-            }
-        }
-
-        // after all changes committed reset attributes to avoid
-        // terminal corruption on crash
-        out_stream.write(ansi::color_reset);
-        out_stream.write(ansi::attr_reset);
-        out_stream.write(ansi::attr_disable_graph);
-    }
-    */
 
 }

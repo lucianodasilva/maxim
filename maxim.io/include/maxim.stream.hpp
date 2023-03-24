@@ -13,16 +13,19 @@ namespace maxim {
 
     constexpr std::size_t STREAM_TRIM_THRESHOLD = 1024;
 
-    template<typename value_t, typename common_t = std::decay_t<value_t> >
-    [[nodiscard]] inline std::enable_if_t<
-            std::is_integral_v<common_t>,
-            size_t
-    > digit_count(value_t value) {
+    /// Function to count the number of digits in a number
+    /// \param value The number to count the digits of
+    /// \ return The number of digits in the number
+    template<
+        typename value_t, 
+        std::enable_if_t < std::is_integral_v < std::decay_t < value_t >>, int > = 0 >
+    [[nodiscard]] 
+    inline std::size_t digit_count(value_t value) {
         if (value == 0) {
             return 1;
         }
 
-        size_t digits = 0;
+        std::size_t digits = 0;
 
         if (value < 0) {
             digits = 1;
@@ -39,17 +42,18 @@ namespace maxim {
     struct stream {
     public:
 
-        inline stream &write(char value) {
+        inline stream & write(char value) {
             _buffer.push_back(value);
             return *this;
         }
 
-        template<typename value_t, typename common_t = std::decay_t<value_t> >
-        inline std::enable_if_t<
-                !std::is_same_v<common_t, char> &&
-                std::is_integral_v<common_t>,
-                stream &
-        > write(value_t value) {
+        template<
+            typename value_t,
+            std::enable_if_t < 
+                std::is_integral_v < std::decay_t < value_t > > &&
+                !std::is_same_v < std::decay_t < value_t >, char >,
+                int > = 0 >
+        inline stream & write(value_t value) {
             auto count = digit_count(value);
 
             if (count == 0) {
@@ -112,8 +116,8 @@ namespace maxim {
             }
         }
 
-        inline view <char> data() {
-            return view < char >(_buffer);
+        inline maxim::view <char> data() {
+            return view(_buffer);
         }
 
     private:

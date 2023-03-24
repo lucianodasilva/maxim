@@ -10,56 +10,52 @@ namespace maxim {
 	struct character_buffer {
 	public:
 
-		inline explicit character_buffer(maxim::size const &size) :
-				_buffer{static_cast < size_t > (size.width * size.height)},
-				_size{size} {}
+		using character_type	= maxim::character;
+		using reference			= character_type &;
+		using pointer			= character_type *;
+		using const_pointer		= character_type const *;
 
-		inline void reset(struct color color) {
-			_buffer.assign(_buffer.size(), character { color });
+		inline explicit character_buffer(maxim::size size) :
+				_buffer{static_cast < size_t > (size.width * size.height)},
+				_size{size}
+		{}
+
+		inline void reset(maxim::color color = maxim::colors::black) {
+			_buffer.assign(_buffer.size(), character{ color });
 		}
 
-        inline character at (point const & p) const {
+		inline pointer data () { return _buffer.data (); }
+		inline const_pointer data () const { return _buffer.data (); }
+
+        inline reference at (point p) {
             auto idx = coords_to_index(p);
 
             if (idx > _buffer.size ()) {
-                return {};
+				throw std::out_of_range("Point out of buffer bounds!");
             }
 
             return _buffer [idx];
         }
 
-		inline character *ptr_at(point const &p) {
-			return ptr_at(coords_to_index(p));
+		inline pointer data_at(point p) {
+			return _buffer.data() + coords_to_index(p);
 		}
 
-		inline character const *ptr_at(point const &p) const {
-			return ptr_at(coords_to_index(p));
+		inline const_pointer data_at(point p) const {
+			return _buffer.data() + coords_to_index(p);
 		}
 
-		inline character *ptr_at(size_t index) {
-			return _buffer.data() + index;
-		}
+		inline maxim::size size() const { return _size; }
 
-		inline character const *ptr_at(size_t index) const {
-			return _buffer.data() + index;
-		}
-
-		inline maxim::size const &size() const { return _size; }
-
-		inline void resize(maxim::size const &size) {
-			std::vector <character> resized(static_cast <size_t>(size.width * size.height));
-
-			_buffer = resized;
+		inline void resize(maxim::size size) {
+			_buffer.resize(static_cast <size_t>(size.width * size.height));
 			_size = size;
+
+			reset();
 		}
 
 		[[nodiscard]]
-		character_change_set calculate_change_set(
-		 	character_buffer const &buffer
-		) const;
-
-		[[nodiscard]]
-		inline std::size_t coords_to_index(point const &p) const {
+		inline std::size_t coords_to_index(point p) const {
 			return p.y * _size.width + p.x;
 		}
 
@@ -73,11 +69,8 @@ namespace maxim {
 
 	private:
 
-		std::vector <character>
-				_buffer;
-
-		maxim::size
-				_size;
+		std::vector <character_type> _buffer;
+		maxim::size					 _size;
 	};
 }
 

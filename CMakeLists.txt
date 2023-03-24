@@ -1,17 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
 # build options
-option (MAXIM_BUILD_DEMO "Build Drivers debug executable"                       FALSE)
-option (MAXIM_BUILD_TEST "Compile Drivers unit tests"                           FALSE)
-option (MAXIM_BUILD_ALL "Compile all targets"                                   FALSE)
-
-if (MAXIM_BUILD_ALL)
-    set (MAXIM_BUILD_DEMO ON)
-    set (MAXIM_BUILD_TEST ON)
-endif()
+option (MAXIM_BUILD_DEMO "Build debug executable"       FALSE)
+option (MAXIM_BUILD_TEST "Compile Drivers unit tests"   FALSE)
 
 # include tools
 include (cmake/tools.cmake)
+include (FetchContent)
 
 project (maxim)
 

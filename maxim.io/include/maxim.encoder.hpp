@@ -3,7 +3,6 @@
 #define _maxim_encoder_hpp_
 
 #include "maxim.character_buffer.hpp"
-#include "maxim.character_change_set.hpp"
 #include "maxim.output.driver.hpp"
 #include "maxim.stream.hpp"
 
@@ -58,19 +57,20 @@ namespace maxim {
             color_suffix[]              = "m",
             separator[]                 = ";";
 
-        constexpr graph_chars graph_chars {
-            'x', // line_vertical
-            'q', // line_horizontal
-            'n', // cross_lines
-            'j', // corner_up_left
-            'm', // corner_up_right
-            'k', // corner_down_left
-            'l', // corner_down_right
-            'u', // vertical_left
-            't', // vertical_right
-            'v', // horizontal_up
-            'w', // horizontal_down
-        };
+        namespace graph_chars {
+            constexpr char
+                line_vertical       {'x'},
+                line_horizontal     {'q'},
+                cross_lines         {'n'},
+                corner_up_left      {'j'},
+                corner_up_right     {'m'},
+                corner_down_left    {'k'},
+                corner_down_right   {'l'},
+                vertical_left       {'u'},
+                vertical_right      {'t'},
+                horizontal_up       {'v'},
+                horizontal_down     {'w'};
+        }
     }
 
     struct encoder {
@@ -101,17 +101,17 @@ namespace maxim {
         inline void reset () { _stream.reset (); }
 
         inline void send_out (output::driver * driver) {
-            if (!driver)
+            if (!driver) {
                 return;
+            }
 
             driver->send (_stream.data ());
-
             _stream.reset();
         }
 
     private:
 
-        encoder & attribute_diff (attributes const & before, attributes const & now);
+        encoder & attribute_diff (character const & before, character const & now);
 
         maxim::stream   _stream;
         color_mode      _color_mode = color_mode::truecolor;

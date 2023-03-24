@@ -3,7 +3,7 @@
 
 namespace maxim {
 
-    uint8_t color::to_256 () const {
+    uint8_t color::to_ansi_256 () const {
         constexpr int cv_lookup [6] = {0, 0x5F, 0x87, 0xAF, 0xD7, 0xFF};
 
         // calculate nearest index
@@ -35,8 +35,8 @@ namespace maxim {
         return clr;
     }
 
-    uint8_t color::to_8 () const {
-        auto value = to_256();
+    uint8_t color::to_ansi_8 () const {
+        auto value = to_ansi_256();
 
         if (value < 8) {
             return 30 + value;

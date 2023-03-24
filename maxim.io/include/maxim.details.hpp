@@ -3,33 +3,49 @@
 #define MAXIM_DETAILS_HPP
 
 #include <cinttypes>
-#include <algorithm>
-#include <stdexcept>
-#include <vector>
+#include <las.h>
 
 namespace maxim {
+    // yeah i know... i just wanna have the same namespace all over
+    using namespace las;
 
     struct point {
-        int32_t x, y;
-
+    public:
         inline point operator + (point const & value) const { return { x + value.x, y + value.y }; }
+        inline point operator += (point const & value) { x += value.x; y += value.y; return *this; }
+
         inline point operator - (point const & value) const { return { x - value.x, y - value.y }; }
+        inline point operator -= (point const & value) { x -= value.x; y -= value.y; return *this; }
+
         inline point operator * (point const & value) const { return { x * value.x, y * value.y }; }
+        inline point operator *= (point const & value) { x *= value.x; y *= value.y; return *this; }
+
         inline point operator * (int32_t scalar) const { return { x * scalar, y * scalar }; }
+        inline point operator *= (int32_t scalar) { x *= scalar; y *= scalar; return *this; }
+
         inline point operator / (point const & value) const { return { x / value.x, y / value.y }; }
+        inline point operator /= (point const & value) { x /= value.x; y /= value.y; return *this; }
+
         inline point operator / (int32_t scalar) const { return { x / scalar, y / scalar }; }
+        inline point operator /= (int32_t scalar) { x /= scalar; y /= scalar; return *this; }
+
         inline bool operator == (maxim::point const & other) const { return x == other.x && y == other.y; }
         inline bool operator != (maxim::point const & other) const { return !operator==(other); }
 
 		[[nodiscard]]
-        inline bool is_zero () const { return x == 0 && y == 0; }
+        inline bool zero () const { return x == 0 && y == 0; }
+
+        int32_t x;
+        int32_t y;
     };
+
+
 
     struct size {
         int32_t width, height;
 
 		[[nodiscard]]
-        inline bool is_zero () const { return width == 0 && height == 0; }
+        inline bool zero () const { return width == 0 && height == 0; }
 
         inline bool operator == (maxim::size const & size) const { return width == size.width && height == size.height; }
         inline bool operator != (maxim::size const & size) const { return !operator==(size); }
@@ -37,11 +53,9 @@ namespace maxim {
     };
 
     struct rect {
-        maxim::point 	position;
-        maxim::size		size;
 
 		[[nodiscard]]
-        inline bool is_zero () const { return position.is_zero () && size.is_zero(); }
+        inline bool zero () const { return position.zero () && size.zero(); }
 
 		[[nodiscard]]
         inline int32_t left () const { return position.x; }
@@ -85,24 +99,16 @@ namespace maxim {
         }
 
         [[nodiscard]]
-        inline bool contains (point const & pnt) const {
+        inline bool contains (point pnt) const {
             return
                     pnt.x >= left() && pnt.x < right() &&
                     pnt.y >= top() && pnt.y < bottom();
 
         }
+
+        maxim::point 	position;
+        maxim::size		size;
     };
-
-    // enum helpers
-    template < typename enum_t, typename std::enable_if_t < std::is_enum_v < enum_t >, int > = 0 >
-    inline bool enum_has (enum_t origin, enum_t value) { // NOLINT
-    	using under_t = std::underlying_type_t < enum_t >;
-
-    	auto cast_origin = static_cast < under_t > (origin);
-    	auto cast_value = static_cast < under_t > (value);
-
-    	return (cast_origin & cast_value) == cast_value;
-    }
 }
 
 #endif

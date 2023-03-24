@@ -5,98 +5,94 @@
 
 namespace maxim {
 
-	graphics::graphics(character_buffer &buffer) :
-		_buffer{buffer},
-		view{{}, buffer.size()} {}
+	graphics::graphics(character_buffer& buffer, rect clip, point transform) :
+		_buffer(buffer),
+		_clip(clip),
+		_transform(transform)
+	{}
 
-	graphics::graphics(character_buffer &buffer, rect const &view)
-		: _buffer{buffer}, view{view} {}
+	graphics::graphics(character_buffer& buffer, point transform) :
+		graphics(buffer, {}, transform)
+	{}
 
-	void graphics::clear(struct color clear_color) {
+	graphics::graphics(character_buffer& buffer, rect clip) :
+		graphics(buffer, clip, {})
+	{}
+
+	graphics::graphics(character_buffer& buffer) :
+		graphics(buffer, {}, {})
+	{}
+
+	void graphics::clear(maxim::color clear_color) {
 		_buffer.reset(clear_color);
 	}
 
-    void graphics::draw_point (maxim::point const & position, struct color color) {
-        // transform
-        auto dest = position + transform;
+    void graphics::draw_point (maxim::point position, maxim::color color) {
+		auto tc_pos = transform_and_clip(position);
 
-        if (view.contains (dest)) {
-            character c;
-            c.attributes.backcolor = color;
+		if (!tc_pos) {
+			return;
+		}
 
-            *_buffer.ptr_at (dest) = c;
-        }
+		auto& c_ref = _buffer.at(tc_pos.value());
+		
+		c_ref = {}; // clear
+		c_ref.backcolor = color;
     }
 
-    void graphics::draw_char (maxim::point const & position, struct color color, char c, attribute_flags flags) {
-        // transform
-        auto dest = position + transform;
+    void graphics::draw_char (maxim::point position, maxim::color color, char c, flags flags) {
+		auto tc_pos = transform_and_clip(position);
 
-        if (view.contains (dest)) {
-            auto * cref = _buffer.ptr_at (dest);
+		auto& c_ref = _buffer.at(tc_pos.value());
 
-            cref->attributes.forecolor = color;
-            cref->attributes.flags = flags;
-            cref->content = c;
-        }
+		c_ref.forecolor = color;
+		c_ref.flags = flags;
+		c_ref.content = c;
     }
 
-	void graphics::draw_box(
-		rect const &rct,
-		struct color color,
-		bool solid
-	) {
-		rect clipped = transform_and_clip(rct);
+	void graphics::draw_box(rect rct, maxim::color color,bool solid) {
+		rect tc_rect = transform_and_clip(rct);
 
-		if (clipped.is_zero())
+		if (tc_rect.zero())
 			return;
 
 		if (solid) {
 			character c {};
-			c.attributes.backcolor = color;
+			c.backcolor = color;
 
-			for (int32_t y = clipped.top (); y < clipped.bottom(); ++y) {
-				auto * ptr = _buffer.ptr_at ({clipped.left (), y});
-				std::fill(ptr, ptr + clipped.size.width, c);
+			for (int32_t y = tc_rect.top (); y < tc_rect.bottom(); ++y) {
+				auto * ptr = _buffer.data_at ({tc_rect.left (), y});
+				std::fill_n(ptr, tc_rect.size.width, c);
 			}
 
 		} else {
 
 			point
-				top_left = clipped.position,
-				top_right = {clipped.right(), clipped.top()},
-				bottom_left = {clipped.left(), clipped.bottom()},
-				bottom_right = {clipped.right(), clipped.bottom()};
+				top_left = tc_rect.position,
+				top_right = {tc_rect.right(), tc_rect.top()},
+				bottom_left = {tc_rect.left(), tc_rect.bottom()},
+				bottom_right = {tc_rect.right(), tc_rect.bottom()};
 
 			// draw lines
-			draw_h_line(top_left, clipped.size.width, color, false);
-			draw_h_line(bottom_left, clipped.size.width, color, false);
-			draw_v_line(top_left, clipped.size.height, color, false);
-			draw_v_line(top_right, clipped.size.height, color, false);
+			draw_h_line(top_left, tc_rect.size.width, color, false);
+			draw_h_line(bottom_left, tc_rect.size.width, color, false);
+			draw_v_line(top_left, tc_rect.size.height, color, false);
+			draw_v_line(top_right, tc_rect.size.height, color, false);
 
-			auto const &graphs = ansi::graph_chars;
-
-			auto set_corner = [color] (character * c, char content) {
-				if (!c)
-					return;
-
-				c->content = content;
-				c->attributes.flags.is_graph = true;
-				c->attributes.forecolor = color;
+			auto set_corner = [color] (character & c, char content) {
+				c.content = content;
+				c.flags.is_graph = true;
+				c.forecolor = color;
 			};
 
-			set_corner (_buffer.ptr_at(top_left), graphs.corner_down_right);
-			set_corner (_buffer.ptr_at(top_right), graphs.corner_down_left);
-			set_corner (_buffer.ptr_at(bottom_left), graphs.corner_up_right);
-			set_corner (_buffer.ptr_at(bottom_right), graphs.corner_up_left);
+			set_corner (_buffer.at(top_left), ansi::graph_chars::corner_down_right);
+			set_corner (_buffer.at(top_right), ansi::graph_chars::corner_down_left);
+			set_corner (_buffer.at(bottom_left), ansi::graph_chars::corner_up_right);
+			set_corner (_buffer.at(bottom_right), ansi::graph_chars::corner_up_left);
 		}
 	}
 
-	void graphics::draw_text(
-		std::string const &text,
-		point const &position,
-		struct color color
-	) {
+	void graphics::draw_text(std::string_view text, point position, maxim::color color) {
 		this->draw_text (
 				text,
 				{
@@ -104,62 +100,51 @@ namespace maxim {
 					{ static_cast < int > (text.size()), 1 }
 				},
                 color,
-				text_attributes {}
+				text_options {}
 				);
 	}
 
-	void graphics::draw_text(
-			std::string const &text,
-			point const &position,
-			int32_t width,
-            struct color color,
-			text_attributes attributes
-	) {
+	void graphics::draw_text(std::string_view text,point position,int32_t width,maxim::color color,text_options flags){
 		this->draw_text (
 				text,
 				{ position, width, 1 },
                 color,
-				attributes);
+				flags);
 	}
 
-	inline auto get_next_line(
-			std::string const& text,
-			int begin,
-			int line_width)
-	{
-		if (begin + line_width < text.size ()) {
-
-			int end = begin + line_width;
-
-			while (end > 0 && std::isgraph(text[end - 1]))
-				--end;
-
-			if (end - begin <= 0)
-				return std::make_tuple(begin, begin + line_width);
-
-			return std::make_tuple(begin, end);
-		} else {
-			return std::make_tuple (begin, static_cast < int > (text.size ()));
+	inline static std::string_view calc_next_line(std::string_view text, int line_width){
+		
+		if (text.size() > line_width) {
+			text = text.substr(0, line_width);
 		}
+
+		for (auto it = text.rbegin(); it != text.rend(); ++it) {
+			if (!std::isgraph(*it)) {
+				return text.substr(0, std::distance(text.begin(), it.base()));
+			}
+		}
+
+		return text;
 	}
 
-	inline int get_line_count (std::string const & text, int line_width) {
-		int offset {0};
-		int line_count {0};
+	inline static int calc_line_count (std::string_view text, int line_width) {
+		int line_count = 0;
 
-		int begin {0};
-		int end {0};
+		// while we still have text in this view
+		while (!text.empty()) {
+			// get next line
+			auto line = calc_next_line(text, line_width);
 
-		while (end < text.size ()) {
-			std::tie (begin, end) = get_next_line(text, offset, line_width);
-			offset = end;
+			// consume line
+			text.substr(line.size());
+
 			++line_count;
 		}
 
 		return line_count;
 	}
 
-	inline point get_text_position (point const & position, size const & text_size, alignment line_alignment, int line_count) {
+	inline point calc_text_position (point const & position, size const & text_size, alignment line_alignment, int line_count) {
 		switch (line_alignment) {
 			case (alignment::near):
 				return position;
@@ -170,7 +155,7 @@ namespace maxim {
 		}
 	}
 
-	inline point get_line_position (point const & text_position, size const & text_size, alignment alignment, int line, int line_width) {
+	inline point calc_text_line_position (point text_position, size text_size, alignment alignment, int line_index, int line_width) {
 		int x = 0;
 
 		switch (alignment) {
@@ -185,18 +170,13 @@ namespace maxim {
 				break;
 		}
 
-		return text_position + point { x, line };
+		return text_position + point { x, line_index };
 	}
 
-	void graphics::draw_text(
-			std::string const &text,
-			rect const & bounds,
-            struct color color,
-			text_attributes attributes
-	) {
+	void graphics::draw_text(std::string_view text, rect bounds, maxim::color color, text_options options){
 		// transform
-		auto position = bounds.position + transform;
-		auto size = bounds.size;
+		auto position = _transform + bounds.position;
+		bounds = transform_and_clip(bounds);
 
 		auto text_size = text.size ();
 		auto text_position = position;
@@ -207,14 +187,14 @@ namespace maxim {
 		if (clipped.is_zero())
 			return;
 
-		if (attributes.wrap) {
+		if (options.wrap) {
 			// calculate wrap rect
 			auto lines = get_line_count (text, size.width);
 
 			text_position = get_text_position(
 					position,
 					size,
-					attributes.v_align,
+					flags.v_align,
 					lines);
 
 			int offset = 0;
@@ -227,17 +207,17 @@ namespace maxim {
 				auto line_position = get_line_position (
 						text_position,
 						size,
-						attributes.h_align,
+						flags.h_align,
 						line,
 						line_end - line_begin);
 
 				// write to buffer
 				for (int i = line_begin; i < line_end; ++i) {
 					if (clipped.contains (line_position)) {
-                        auto * ch = _buffer.ptr_at (line_position);
-                        ch->attributes.forecolor = color;
-                        ch->attributes.flags = attributes.flags;
-                        ch->content = text [i];
+                        auto & ch = _buffer.at (line_position);
+                        ch.forecolor = color;
+                        ch.flags = flags.flags;
+                        ch.content = text [i];
                     }
 
 					++line_position.x;
@@ -249,14 +229,14 @@ namespace maxim {
 			text_position = get_text_position(
 					position,
 					size,
-					attributes.v_align,
+					flags.v_align,
 					1);
 
 			int left_pad = 0;
 
-			if (attributes.h_align == alignment::far) {
+			if (flags.h_align == alignment::far) {
 				left_pad = size.width - text_size;
-			} else if (attributes.h_align == alignment::center) {
+			} else if (flags.h_align == alignment::center) {
 				auto half_width = size.width / 2;
 				auto half_len = text_size / 2;
 
@@ -269,10 +249,10 @@ namespace maxim {
 				auto p = text_position + point { left_pad + i, 0};
 
 				if (clipped.contains (p)) {
-                    auto *ch = _buffer.ptr_at(p);
-                    ch->attributes.forecolor = color;
-                    ch->attributes.flags = attributes.flags;
-                    ch->content = text[i];
+                    auto & ch = _buffer.at(p);
+                    ch.forecolor = color;
+                    ch.flags = options.flags;
+                    ch.content = text[i];
                 }
 			}
 		}
@@ -293,11 +273,11 @@ namespace maxim {
 		character c = {};
 
 		if (solid) {
-			c.attributes.backcolor = color;
+			c.flags.backcolor = color;
 		} else {
 			c.content = ansi::graph_chars.line_vertical;
-			c.attributes.flags.is_graph = true;
-			c.attributes.forecolor = color;
+			c.flags.flags_as_int.is_graph = true;
+			c.flags.forecolor = color;
 		}
 
 		for (int32_t y = clipped.top (); y < clipped.bottom(); ++y) {
@@ -319,15 +299,31 @@ namespace maxim {
 		character c = {};
 
 		if (solid) {
-			c.attributes.backcolor = color;
+			c.flags.backcolor = color;
 		} else {
 			c.content = ansi::graph_chars.line_horizontal;
-			c.attributes.flags.is_graph = true;
-			c.attributes.forecolor = color;
+			c.flags.flags_as_int.is_graph = true;
+			c.flags.forecolor = color;
 		}
 
 		auto * ptr = _buffer.ptr_at (clipped.position);
 		std::fill (ptr, ptr + clipped.size.width, c);
+	}
+
+	point graphics::transform() const {
+		return _transform;
+	}
+
+	void graphics::transform(point value) {
+		_transform = value;
+	}
+
+	rect graphics::clip() const {
+		return _clip;
+	}
+
+	void graphics::clip(rect value) {
+		_clip = value;
 	}
 
 }
