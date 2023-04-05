@@ -1,8 +1,7 @@
 #pragma once
-#ifndef _maxim_output_driver_hpp_
-#define _maxim_output_driver_hpp_
+#ifndef MAXIM_OUTPUT_DRIVER_HPP
+#define MAXIM_OUTPUT_DRIVER_HPP
 
-#include "maxim.span.hpp"
 #include "maxim.details.hpp"
 #include "maxim.input.hpp"
 
@@ -21,7 +20,7 @@ namespace maxim {
 
             virtual ~driver() = default;
 
-            virtual size get_size() const = 0;
+            virtual size terminal_size() const = 0;
 
             virtual void send(view < char > data) const = 0;
 

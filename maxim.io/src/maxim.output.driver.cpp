@@ -3,7 +3,7 @@
 #ifdef __linux__
 #	include "maxim.output.unix.driver.hpp"
 	std::unique_ptr < maxim::output::driver > maxim::output::driver::create() {
-	return std::make_unique < maxim::output::_unix::driver >();
+	return std::make_unique < maxim::output::unix::driver >();
 	}
 #endif
 

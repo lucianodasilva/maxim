@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_character_hpp_
-#define _maxim_character_hpp_
+#ifndef MAXIM_CHARACTER_HPP
+#define MAXIM_CHARACTER_HPP
 
 #include <cinttypes>
 #include <cmath>
@@ -20,34 +20,34 @@ namespace maxim {
     };
 
     [[nodiscard]] 
-    inline bool operator == (color const v1, color const v2) {
-        return v1.r == v2.r && v1.g == v2.g && v1.b == v2.b;
+    inline bool operator == (color const LHV, color const RHV) {
+        return LHV.r == RHV.r && LHV.g == RHV.g && LHV.b == RHV.b;
     }
 
     [[nodiscard]]
-    inline bool operator != (color const v1, color const v2) {
-        return !operator==(v1, v2);
+    inline bool operator != (color const LHV, color const RHV) {
+        return !operator==(LHV, RHV);
     }
 
     namespace colors {
 
         constexpr color const
-            black {},
-            dark_red    { 170, 0, 0 },
-            dark_green  { 0, 170, 0 },
-            dark_yellow { 170, 85, 0 },
-            dark_blue   { 0, 0, 170 },
-            purple      { 170, 0, 170 },
-            dark_cyan   { 0, 170, 170 },
-            gray        { 170, 170, 170},
-            dark_gray   { 85, 85, 85 },
-            red         { 255, 85, 85 },
-            green       { 85, 255, 85 },
-            yellow      { 255, 255, 85 },
-            blue        { 85, 85, 255 },
-            pink        { 255, 85, 255 },
-            cyan        { 85, 255, 255 },
-            white       { 255, 255, 255 };
+            BLACK {},
+            DARK_RED    {170, 0, 0 },
+            DARK_GREEN  {0, 170, 0 },
+            DARK_YELLOW {170, 85, 0 },
+            DARK_BLUE   { 0, 0, 170 },
+            PURPLE      { 170, 0, 170 },
+            DARK_CYAN   { 0, 170, 170 },
+            GRAY        { 170, 170, 170},
+            DARK_GRAY   { 85, 85, 85 },
+            RED         { 255, 85, 85 },
+            GREEN       { 85, 255, 85 },
+            YELLOW      { 255, 255, 85 },
+            BLUE        { 85, 85, 255 },
+            PINK        { 255, 85, 255 },
+            CYAN        { 85, 255, 255 },
+            WHITE       { 255, 255, 255 };
     }
 
     union flags {

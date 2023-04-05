@@ -1,153 +1,143 @@
 #pragma once
-#ifndef _maxim_input_hpp_
-#define _maxim_input_hpp_
+#ifndef MAXIM_INPUT_HPP
+#define MAXIM_INPUT_HPP
 
 #include <cinttypes>
 #include <type_traits>
 #include <unordered_map>
 
+#include "maxim.details.hpp"
+
 namespace maxim::input {
+
     // virtual key codes
-    enum class virtual_key : uint8_t {
-        none = 0x00,
-        backspace = 0x08,
-        tab = 0x09,
+    enum struct key : uint16_t {
+        none    = 0x00,
+        backspace
+                = 0x08,
+        tab     = 0x09,
 
-        clear = 0x0C,
-        enter = 0x0D,
+        clear   = 0x0C,
+        enter   = 0x0D,
 
-        escape = 0x1B,
-        space = 0x20,
+        escape  = 0x1B,
+        space   = 0x20,
 
         page_up = 0x21,
-        page_down = 0x22,
+        page_down
+                = 0x22,
 
-        end = 0x23,
-        home = 0x24,
+        end     = 0x23,
+        home    = 0x24,
 
-        left = 0x25,
-        up = 0x26,
-        right = 0x27,
-        down = 0x28,
+        left    = 0x25,
+        up      = 0x26,
+        right   = 0x27,
+        down    = 0x28,
 
-        insert = 0x2D,
-        del = 0x2E,
+        insert  = 0x2D,
+        del     = 0x2E,
 
-        A = 0x41,
-        B = 0x42,
-        C = 0x43,
-        D = 0x44,
-        E = 0x45,
-        F = 0x46,
-        G = 0x47,
-        H = 0x48,
-        I = 0x49,
-        J = 0x4A,
-        K = 0x4B,
-        L = 0x4C,
-        M = 0x4D,
-        N = 0x4E,
-        O = 0x4F,
-        P = 0x50,
-        Q = 0x51,
-        R = 0x52,
-        S = 0x53,
-        T = 0x54,
-        U = 0x55,
-        V = 0x56,
-        W = 0x57,
-        X = 0x58,
-        Y = 0x59,
-        Z = 0x5A,
+        n0      = 0x30,
+        n1      = 0x31,
+        n2      = 0x32,
+        n3      = 0x33,
+        n4      = 0x34,
+        n5      = 0x35,
+        n6      = 0x36,
+        n7      = 0x37,
+        n8      = 0x38,
+        n9      = 0x39,
 
-        f1 = 0x70,
-        f2 = 0x71,
-        f3 = 0x72,
-        f4 = 0x73,
-        f5 = 0x74,
-        f6 = 0x75,
-        f7 = 0x76,
-        f8 = 0x77,
-        f9 = 0x78,
-        f10 = 0x79,
-        f11 = 0x80,
-        f12 = 0x81
+        a       = 0x41,
+        b       = 0x42,
+        c       = 0x43,
+        d       = 0x44,
+        e       = 0x45,
+        f       = 0x46,
+        g       = 0x47,
+        h       = 0x48,
+        i       = 0x49,
+        j       = 0x4A,
+        k       = 0x4B,
+        l       = 0x4C,
+        m       = 0x4D,
+        n       = 0x4E,
+        o       = 0x4F,
+        p       = 0x50,
+        q       = 0x51,
+        r       = 0x52,
+        s       = 0x53,
+        t       = 0x54,
+        u       = 0x55,
+        v       = 0x56,
+        w       = 0x57,
+        x       = 0x58,
+        y       = 0x59,
+        z       = 0x5A,
+
+        f1      = 0x70,
+        f2      = 0x71,
+        f3      = 0x72,
+        f4      = 0x73,
+        f5      = 0x74,
+        f6      = 0x75,
+        f7      = 0x76,
+        f8      = 0x77,
+        f9      = 0x78,
+        f10     = 0x79,
+        f11     = 0x80,
+        f12     = 0x81,
+
+        shift   = 0x100,
+        control = 0x200,
+        alt     = 0x400,
     };
 
-    enum class modifier_key : uint8_t {
-        none    = 0b0000,
-        shift   = 0b0001,
-        control = 0b0010,
-        alt     = 0b0100
-    };
+    constexpr inline key operator|(key lhv, key rhv) noexcept {
+        using under_type = std::underlying_type_t<key>;
 
-    inline modifier_key operator | (modifier_key v1, modifier_key v2) {
-        using under_type = std::underlying_type_t < modifier_key >;
-
-        return static_cast <modifier_key> (
-            static_cast <under_type> (v1) |
-            static_cast <under_type> (v2)
+        return static_cast <key> (
+                static_cast <under_type> (lhv) |
+                static_cast <under_type> (rhv)
         );
     }
 
-    inline modifier_key operator & (modifier_key v1, modifier_key v2) {
-        using under_type = std::underlying_type_t < modifier_key >;
+    constexpr inline key operator&(key lhv, key rhv) noexcept {
+        using under_type = std::underlying_type_t<key>;
 
-        return static_cast <modifier_key> (
-            static_cast <under_type> (v1) &
-            static_cast <under_type> (v2)
+        return static_cast <key> (
+                static_cast <under_type> (lhv) &
+                static_cast <under_type> (rhv)
         );
     }
 
     struct key_info {
-        char32_t		char_value;
-        virtual_key		key;
-        modifier_key	modifiers;
+        char        char_value;
+        input::key  key;
 
-        inline explicit operator bool () noexcept {
-            return char_value || key != virtual_key::none;
+        inline explicit operator bool() const noexcept {
+            return (char_value != 0U) || key != key::none;
         }
     };
 
-    inline bool operator==(key_info const &v1, key_info const &v2) noexcept {
+    inline bool operator==(key_info const &lhv, key_info const &rhv) noexcept {
         return
-            v1.char_value == v2.char_value &&
-            v1.key == v2.key &&
-            v1.modifiers == v2.modifiers;
-    }
-
-    // hasher and equality operator for key_event_args
-    namespace details {
-
-        // hash combination util
-        template<class ... hash_v_tv>
-        std::size_t hash_combine(hash_v_tv const &... values) {
-            std::size_t h = 0;
-            // sink
-            using sink = int[];
-            (void) sink{
-                0, ((h ^= std::hash<hash_v_tv>()(values) + 0x9e3779b9 + (h << 6) + (h >> 2)), 0)...
-            };
-
-            return h;
-        }
-
+                lhv.char_value == rhv.char_value &&
+                lhv.key == rhv.key;
     }
 }
 
+
 namespace std
 {
-	template <>
-	struct hash <maxim::input::key_info>
-	{
-		std::size_t operator ()(maxim::input::key_info const & info) const noexcept{
-			return maxim::input::details::hash_combine(
-				info.char_value,
-				static_cast < std::underlying_type_t <maxim::input::virtual_key> > (info.key),
-				static_cast < std::underlying_type_t <maxim::input::modifier_key> > (info.modifiers)
-			);
-		}
-	};
+    template <>
+    struct hash <maxim::input::key_info>
+    {
+        std::size_t operator ()(maxim::input::key_info const & info) const noexcept{
+            return std::hash < maxim::input::key > () (info.key);
+        }
+    };
 }
 
 #endif

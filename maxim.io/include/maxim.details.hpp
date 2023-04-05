@@ -5,6 +5,8 @@
 #include <cinttypes>
 #include <las.h>
 
+#undef unix
+
 namespace maxim {
     // yeah i know... i just wanna have the same namespace all over
     using namespace las;

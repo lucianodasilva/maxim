@@ -1,44 +1,42 @@
 #include "maxim.input.unix.key_state_emulator.hpp"
 #include "maxim.device.hpp"
 
-namespace maxim::input::_unix {
+namespace maxim::input::unix {
 
     void key_state_emulator::timeout_and_dispatch(maxim::input_event_handler & handler) {
         using namespace std::chrono;
         auto now = high_resolution_clock::now();
 
-        auto it = _key_states.begin();
-
-        while (it != _key_states.end()) {
+        // run through all keys and remove them + raise key up event, if they are timed out
+        for (auto it = _pressed_keys.begin(); it != _pressed_keys.end();) {
             auto time = it->second;
             auto time_span = duration_cast<milliseconds>(now - time).count();
 
-            if (time_span > key_delay_ms) {
+            if (time_span > KEY_DELAY_MS) {
                 // on timeout dispatch and erase from state
-                auto key = it->first;
-                it = _key_states.erase (it);
+                auto info = it->first;
+                handler.on_key_up (info);
 
-                handler.on_key_up (key);
+                it = _pressed_keys.erase(it);
             } else {
                 ++it;
             }
         }
     }
 
-    void key_state_emulator::evaluate_and_dispatch(maxim::input::key_info key, maxim::input_event_handler & handler) {
+    void key_state_emulator::evaluate_and_dispatch(maxim::input::key_info info, maxim::input_event_handler & handler) {
         using namespace std::chrono;
         auto now = high_resolution_clock::now();
 
         // set or reset counter for key combination
-        if (key.char_value != 0 || key.key != virtual_key::none) {
+        if (info) {
+            auto key_it = _pressed_keys.find(info);
 
-            auto key_it = _key_states.find(key);
+            if (key_it == _pressed_keys.end()) {
+                _pressed_keys[info] = now;
 
-            if (key_it == _key_states.end()) {
-                _key_states[key] = now;
-
-                // dispatch
-                handler.on_key_down (key);
+                // dispatch key down event
+                handler.on_key_down (info);
             } else {
                 key_it->second = now;
             }

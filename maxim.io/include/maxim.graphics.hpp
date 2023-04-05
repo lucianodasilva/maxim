@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_graphics_hpp_
-#define _maxim_graphics_hpp_
+#ifndef MAXIM_GRAPHICS_HPP
+#define MAXIM_GRAPHICS_HPP
 
 #include "maxim.character.hpp"
 #include "maxim.character_buffer.hpp"
@@ -57,7 +57,7 @@ namespace maxim {
 
         explicit graphics(character_buffer& buffer);
 
-        void clear(maxim::color clear_color = colors::black);
+        void clear(maxim::color clear_color = colors::BLACK);
 
         void draw_point (point position, maxim::color color);
         void draw_char (point position, maxim::color color, char c, maxim::flags flags = {});
@@ -76,12 +76,12 @@ namespace maxim {
 
         void draw_v_line(point position, int32_t length, maxim::color color, bool solid = true);
 
-        void draw_h_line(point position,int32_t length, maxim::color color, bool solid = true);
+        void draw_h_line(point position, int32_t length, maxim::color color, bool solid = true);
 
-        point transform() const;
+        [[nodiscard]] point transform() const;
         void transform(point transform);
 
-        rect clip() const;
+        [[nodiscard]] rect clip() const;
         void clip(rect transform);
 
     private:

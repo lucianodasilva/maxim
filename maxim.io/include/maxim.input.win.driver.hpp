@@ -1,8 +1,8 @@
 #pragma once
 
 #ifdef WIN32
-#ifndef _maxim_input_win_driver_hpp_
-#define _maxim_input_win_driver_hpp_
+#ifndef MAXIM_INPUT_WIN_DRIVER_HPP
+#define MAXIM_INPUT_WIN_DRIVER_HPP
 
 #include "maxim.input.sec_driver.hpp"
 

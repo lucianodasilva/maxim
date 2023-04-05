@@ -3,7 +3,7 @@
 FetchContent_Declare(
     las
     GIT_REPOSITORY https://github.com/lucianodasilva/las.git
-    GIT_TAG        5fa2f6d)
+    GIT_TAG        68b87578)
     
 FetchContent_MakeAvailable(las)
 

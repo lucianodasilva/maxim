@@ -1,19 +1,17 @@
 #include "maxim.encoder.hpp"
-#include "maxim.character.hpp"
-#include "maxim.stream.hpp"
 
 namespace maxim {
 
     encoder & encoder::emmit_clear () {
-        _stream.write (ansi::clear);
+        _stream.write (ansi::CLEAR);
         return *this;
     }
 
     encoder & encoder::emmit_position(point const & p) {
         _stream.write_sequence(
-            ansi::move_prefix,
-            p.y + 1, ansi::separator, p.x + 1,
-            ansi::move_suffix);
+            ansi::MOVE_PREFIX,
+            p.y + 1, ansi::SEPARATOR, p.x + 1,
+            ansi::MOVE_PREFIX);
 
         return *this;
     }
@@ -23,74 +21,74 @@ namespace maxim {
     }
 
     encoder & encoder::emmit_attribute_reset() {
-        _stream.write (ansi::attr_reset);
+        _stream.write (ansi::ATTR_RESET);
         return *this;
     }
 
     encoder & encoder::emmit_cursor(bool value) {
-        _stream.write (value ? ansi::cursor_enable : ansi::cursor_disable);
+        _stream.write (value ? ansi::CURSOR_ENABLE : ansi::CURSOR_DISABLE);
         return *this;
     }
 
     encoder & encoder::emmit_graph(bool value) {
-        _stream.write (value ? ansi::attr_enable_graph : ansi::attr_disable_graph);
+        _stream.write (value ? ansi::ATTR_ENABLE_GRAPH : ansi::ATTR_DISABLE_GRAPH);
         return *this;
     }
 
     encoder & encoder::emmit_wrap (bool value) {
-        _stream.write (value ? ansi::wrap_enable : ansi::wrap_disable);
+        _stream.write (value ? ansi::WRAP_ENABLE : ansi::WRAP_DISABLE);
         return *this;
     }
 
     encoder & encoder::emmit_scrolling(bool value) {
-        _stream.write (value ? ansi::scrolling_enable : ansi::scrolling_disable);
+        _stream.write (value ? ansi::SCROLLING_ENABLE : ansi::SCROLLING_DISABLE);
         return *this;
     }
 
     encoder & encoder::emmit_alternate_buffer(bool value) {
-        _stream.write (value ? ansi::alternate_buffer_enable : ansi::alternate_buffer_disable);
+        _stream.write (value ? ansi::ALTERNATE_BUFFER_ENABLE : ansi::ALTERNATE_BUFFER_DISABLE);
         return *this;
     }
 
     encoder & encoder::emmit_color_4bit (struct color const & fg, struct color const & bg) {
         _stream.write_sequence (
-            ansi::color_prefix,
+            ansi::COLOR_PREFIX,
             (int)fg.to_ansi_8(),
-            ansi::separator,
+            ansi::SEPARATOR,
             (int)(bg.to_ansi_8() + 10),
-            ansi::color_suffix);
+            ansi::COLOR_SUFFIX);
 
         return *this;
     }
 
     encoder & encoder::emmit_color_8bit (struct color const & fg, struct color const & bg) {
         _stream.write_sequence(
-            ansi::color_prefix,
-            ansi::color_foreground,
+            ansi::COLOR_PREFIX,
+            ansi::COLOR_FOREGROUND,
             (int)fg.to_ansi_256(),
-            ansi::color_suffix);
+            ansi::COLOR_SUFFIX);
 
         _stream.write_sequence(
-            ansi::color_prefix,
-            ansi::color_background,
+            ansi::COLOR_PREFIX,
+            ansi::COLOR_BACKGROUND,
             (int)bg.to_ansi_256(),
-            ansi::color_suffix);
+            ansi::COLOR_SUFFIX);
 
         return *this;
     }
 
     encoder & encoder::emmit_color_24bit(struct color const & fg, struct color const & bg) {
         _stream.write_sequence(
-            ansi::color_prefix,
-            ansi::color_foreground_24,
-            (int)fg.r, ansi::separator, (int)fg.g, ansi::separator, (int)fg.b,
-            ansi::color_suffix);
+            ansi::COLOR_PREFIX,
+            ansi::COLOR_BACKGROUND_24,
+            (int)fg.r, ansi::SEPARATOR, (int)fg.g, ansi::SEPARATOR, (int)fg.b,
+            ansi::COLOR_SUFFIX);
 
         _stream.write_sequence(
-            ansi::color_prefix,
-            ansi::color_background_24,
-            (int)bg.r, ansi::separator, (int)bg.g, ansi::separator, (int)bg.b,
-            ansi::color_suffix);
+            ansi::COLOR_PREFIX,
+            ansi::COLOR_BACKGROUND_24,
+            (int)bg.r, ansi::SEPARATOR, (int)bg.g, ansi::SEPARATOR, (int)bg.b,
+            ansi::COLOR_SUFFIX);
 
         return *this;
     }
@@ -107,7 +105,7 @@ namespace maxim {
     }
 
     encoder & encoder::emmit_color_reset () {
-        _stream.write (ansi::color_reset);
+        _stream.write (ansi::COLOR_RESET);
         return *this;
     }
 
@@ -123,11 +121,11 @@ namespace maxim {
             auto location = point { 0, y };
 
             this->emmit_position (location);
-            auto * ptr = buffer.data_at (location);
+            auto const * ptr = buffer.data_at (location);
 
             for (int x = 0; x < size.width; ++x) {
 
-                if (last) {
+                if (last != nullptr) {
                     // find and encode changes in attributes
                     this->attribute_diff(*last, *ptr);
                 } else {
@@ -147,40 +145,43 @@ namespace maxim {
 
     encoder & encoder::attribute_diff(character const & before,character const & now) {
 
+        // write to stream with optional disabled prefix
+        auto attr_write = [&stream = this->_stream](bool state, auto && attr) {
+            if (!state) {
+                stream.write(ansi::ATTR_DISABLE_PREFIX);
+            }
+
+            stream.write (attr);
+        };
+
+        // check if flags and colors are the same
         if (now.flags == before.flags &&
-            character_color_match(now, before))
+            has_same_colors(now, before))
         {
             return *this;
         }
 
         // begin attribute data
-        _stream.write (ansi::attr_prefix);
+        _stream.write (ansi::ATTR_PREFIX);
 
         if (now.flags.bold != before.flags.bold) {
-            _stream
-                .maybe_write (!now.flags.bold, ansi::attr_disable_prefix)
-                .write(ansi::attr_bold);
+            attr_write (now.flags.bold, ansi::ATTR_BOLD);
         }
 
         if (now.flags.underlined != before.flags.underlined) {
-            _stream
-                .maybe_write (!now.flags.underlined, ansi::attr_disable_prefix)
-                .write(ansi::attr_underline);
+            attr_write (now.flags.underlined, ansi::ATTR_UNDERLINE);
         }
 
         if (now.flags.blink != before.flags.blink) {
-            _stream
-                .maybe_write(!now.flags.blink, ansi::attr_disable_prefix)
-                .write(ansi::attr_blink);
+            attr_write (now.flags.blink, ansi::ATTR_BLINK);
         }
 
         if (now.flags.reversed != before.flags.reversed) {
-            _stream
-                .maybe_write(!now.flags.reversed, ansi::attr_disable_prefix)
-                .write(ansi::attr_reversed);
+            attr_write (now.flags.reversed, ansi::ATTR_REVERSED);
         }
 
-        _stream.write(ansi::attr_suffix);
+        // end attribute data
+        _stream.write(ansi::ATTR_SUFFIX);
 
         if (now.flags.is_graph != before.flags.is_graph) {
             emmit_graph (now.flags.is_graph);

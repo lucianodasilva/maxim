@@ -1,9 +1,11 @@
 #pragma once
-#ifndef _maxim_character_buffer_hpp_
-#define _maxim_character_buffer_hpp_
+#include "las/view.hpp"
+#ifndef MAXIM_CHARACTER_BUFFER_HPP
+#define MAXIM_CHARACTER_BUFFER_HPP
+
+#include <cstddef>
 
 #include "maxim.character.hpp"
-#include "maxim.character_change_set.hpp"
 
 namespace maxim {
 
@@ -14,21 +16,31 @@ namespace maxim {
 		using reference			= character_type &;
 		using pointer			= character_type *;
 		using const_pointer		= character_type const *;
+        using view_type         = maxim::view < character_type >;
+        using const_view_type   = maxim::view < character_type const >;
 
 		inline explicit character_buffer(maxim::size size) :
 				_buffer{static_cast < size_t > (size.width * size.height)},
 				_size{size}
 		{}
 
-		inline void reset(maxim::color color = maxim::colors::black) {
+		inline void reset(maxim::color color = maxim::colors::BLACK) {
 			_buffer.assign(_buffer.size(), character{ color });
 		}
 
-		inline pointer data () { return _buffer.data (); }
-		inline const_pointer data () const { return _buffer.data (); }
+        [[nodiscard]]
+		inline view_type data () {
+            return { _buffer.data(), _buffer.size() };
+        }
 
-        inline reference at (point p) {
-            auto idx = coords_to_index(p);
+		[[nodiscard]]
+        inline const_view_type data () const {
+            return {_buffer.data(), _buffer.size()};
+        }
+
+        [[nodiscard]]
+        inline reference at (maxim::point point) {
+            auto idx = coords_to_index(point);
 
             if (idx > _buffer.size ()) {
 				throw std::out_of_range("Point out of buffer bounds!");
@@ -37,26 +49,29 @@ namespace maxim {
             return _buffer [idx];
         }
 
-		inline pointer data_at(point p) {
-			return _buffer.data() + coords_to_index(p);
+        [[nodiscard]]
+		inline pointer data_at(maxim::point point) {
+			return _buffer.data() + coords_to_index(point);
 		}
 
-		inline const_pointer data_at(point p) const {
-			return _buffer.data() + coords_to_index(p);
+		[[nodiscard]]
+        inline const_pointer data_at(maxim::point point) const {
+			return _buffer.data() + coords_to_index(point);
 		}
 
+        [[nodiscard]]
 		inline maxim::size size() const { return _size; }
 
 		inline void resize(maxim::size size) {
-			_buffer.resize(static_cast <size_t>(size.width * size.height));
+			_buffer.resize(static_cast < buffer_type::size_type > (size.width) * size.height);
 			_size = size;
 
 			reset();
 		}
 
 		[[nodiscard]]
-		inline std::size_t coords_to_index(point p) const {
-			return p.y * _size.width + p.x;
+		inline std::size_t coords_to_index(maxim::point point) const {
+			return point.y * _size.width + point.x;
 		}
 
 		[[nodiscard]]
@@ -69,9 +84,11 @@ namespace maxim {
 
 	private:
 
-		std::vector <character_type> _buffer;
-		maxim::size					 _size;
+        using buffer_type = std::vector < character_type >;
+
+		buffer_type _buffer;
+		maxim::size	_size;
 	};
 }
 
-#endif // _maxim_character_buffer_hpp_
+#endif

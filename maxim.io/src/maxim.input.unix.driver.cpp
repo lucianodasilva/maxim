@@ -16,7 +16,7 @@
 #include "maxim.input.unix.driver.hpp"
 #include "maxim.input.unix.termio_parser.hpp"
 
-namespace maxim::input::_unix {
+namespace maxim::input::unix {
 
     driver::driver() {
         // setup term io settings
@@ -29,14 +29,14 @@ namespace maxim::input::_unix {
         new_settings.c_cflag &= ~(OPOST);
         new_settings.c_cflag |= CS8;
         new_settings.c_cc[VMIN] = 0;
-        new_settings.c_cc[VTIME] = key_state_emulator::key_delay_ds;
+        new_settings.c_cc[VTIME] = key_state_emulator::KEY_DELAY_DS;
 
         tcsetattr(0, TCSANOW, &new_settings);
         fcntl(STDIN_FILENO, F_SETFL, FNDELAY);
     }
 
     driver::~driver() {
-        // restore term io settingss
+        // restore term io settings
         fcntl(STDIN_FILENO, 0, FNDELAY);
         tcsetattr(STDIN_FILENO, TCSANOW, &_initial_term_settings);
     }
@@ -50,16 +50,18 @@ namespace maxim::input::_unix {
 
         auto len = ::read(STDIN_FILENO, +buffer, buffer_size);
 
-        if (len < 0)
+        if (len < 0) {
             return;
+        }
 
-        span source { buffer, buffer + len };
+        auto source = std::string_view (buffer, len);
 
-        while (source) {
-            auto key = termio_parse(source);
+        while (!source.empty ()) {
+            auto parsed_key = termio_parse(source);
 
-            if (key)
-                _state_emulator.evaluate_and_dispatch (key, handler);
+            if (parsed_key) {
+                _state_emulator.evaluate_and_dispatch(parsed_key, handler);
+            }
         }
     }
 }

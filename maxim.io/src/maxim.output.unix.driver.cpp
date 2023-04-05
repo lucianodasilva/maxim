@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <iostream>
 
-namespace maxim::output::_unix {
+namespace maxim::output::unix {
 
     driver::driver () {
         struct stat stats {};
@@ -19,7 +19,7 @@ namespace maxim::output::_unix {
         setvbuf(stdout, nullptr, _IONBF, 0);
     }
 
-    size driver::get_size() const {
+    size driver::terminal_size() const {
         winsize w = {};
         ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 

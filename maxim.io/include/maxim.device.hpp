@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_device_hpp_
-#define _maxim_device_hpp_
+#ifndef MAXIM_DEVICE_HPP
+#define MAXIM_DEVICE_HPP
 
 #include <memory>
 #include <vector>
@@ -18,8 +18,8 @@ namespace maxim {
 
     class input_event_handler {
     public:
-        virtual void on_key_up (input::key_info const & key);
-        virtual void on_key_down (input::key_info const & key);
+        virtual void on_key_up (input::key_info info);
+        virtual void on_key_down (input::key_info info);
     };
 
     struct device {
@@ -29,24 +29,27 @@ namespace maxim {
         ~device();
 
         [[nodiscard]]
-        size const & get_size () const;
+        size const & terminal_size () const;
 
+        maxim::graphics graphics (point transform = {});
         character_buffer & backbuffer();
         maxim::encoder & encoder ();
 
-        void set_fullscreen(bool enable);
-        void set_cursor_enabled (bool enable);
-        void set_color_mode (color_mode mode);
+        [[nodiscard]] bool fullscreen() const;
+        void fullscreen(bool enable);
 
-        void clear_screen();
+        [[nodiscard]] bool cursor() const;
+        void cursor (bool enable);
+
+        [[nodiscard]] maxim::color_mode color_mode() const;
+        void color_mode (maxim::color_mode mode);
+
+        void clear();
         void present ();
 
         void dispatch_input_events (input_event_handler & handler) const;
 
     private:
-
-		static void encode_cursor (bool value, maxim::stream & stream);
-		static void encode_fullscreen (bool value, maxim::stream & stream);
 
 		void sync_display_settings ();
 
@@ -56,7 +59,7 @@ namespace maxim {
         std::unique_ptr < output::driver >
                             _output_driver = output::driver::create ();
 
-        size                _size { _output_driver->get_size() };
+        size                _size {_output_driver->terminal_size() };
         character_buffer    _back_buffer { _size };
         maxim::encoder      _encoder;
         bool                _alternate_buffer_enabled {false};

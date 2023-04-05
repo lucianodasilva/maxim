@@ -3,8 +3,8 @@
 
 namespace maxim {
 
-    void input_event_handler::on_key_up(const maxim::input::key_info &key) {}
-    void input_event_handler::on_key_down(const maxim::input::key_info &key) {}
+    void input_event_handler::on_key_up(maxim::input::key_info info) {}
+    void input_event_handler::on_key_down(maxim::input::key_info info) {}
 
     device::device () {
         _encoder.emmit_wrap (false);
@@ -32,8 +32,12 @@ namespace maxim {
         _encoder.send_out (_output_driver.get());
     }
 
-    size const & device::get_size () const {
+    size const & device::terminal_size () const {
         return _size;
+    }
+
+    maxim::graphics device::graphics (point transform) {
+        return maxim::graphics { _back_buffer, transform };
     }
 
     character_buffer & device::backbuffer() {
@@ -44,7 +48,11 @@ namespace maxim {
     	return _encoder;
     }
 
-    void device::set_fullscreen(bool enabled) {
+    bool device::fullscreen() const {
+        return _alternate_buffer_enabled;
+    }
+
+    void device::fullscreen(bool enabled) {
         maxim::encoder local_encoder;
 
         _alternate_buffer_enabled = enabled;
@@ -53,7 +61,11 @@ namespace maxim {
         local_encoder.send_out (_output_driver.get ());
     }
 
-    void device::set_cursor_enabled (bool enabled) {
+    bool device::cursor() const {
+        return _cursor_enabled;
+    }
+
+    void device::cursor (bool enabled) {
         maxim::encoder local_encoder;
 
         _cursor_enabled = enabled;
@@ -62,13 +74,17 @@ namespace maxim {
         local_encoder.send_out (_output_driver.get ());
     }
 
-    void device::set_color_mode (color_mode mode) {
-        _encoder.set_color_mode (mode);
+    maxim::color_mode device::color_mode() const {
+        return _encoder.color_mode ();
     }
 
-    void device::clear_screen() {
+    void device::color_mode (maxim::color_mode mode) {
+        _encoder.color_mode (mode);
+    }
+
+    void device::clear() {
         //TODO: check if sending the clear signal causes flickering and replace this with xterm code for clear_screen
-        graphics { _back_buffer }.clear();
+        maxim::graphics { _back_buffer }.clear();
 
         _encoder.reset ();
         _encoder.emmit_clear ();
@@ -76,13 +92,6 @@ namespace maxim {
     }
 
     void device::present () {
-		/*
-        encoding::encode_change_set(
-                _back_buffer,
-                _back_buffer.calculate_change_set (_front_buffer),
-                _stream
-        );*/
-
         _encoder.reset ();
         _encoder.encode_buffer(_back_buffer);
         _encoder.send_out (_output_driver.get ());
@@ -95,7 +104,7 @@ namespace maxim {
     }
 
     void device::sync_display_settings() {
-    	_size = _output_driver->get_size ();
+    	_size = _output_driver->terminal_size();
 
     	if (_back_buffer.size () != _size) {
 			_back_buffer.resize(_size);

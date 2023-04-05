@@ -3,7 +3,7 @@
 #ifdef __linux__
 #   include "maxim.input.unix.driver.hpp"
     std::unique_ptr < maxim::input::driver > maxim::input::driver::create() {
-        return std::make_unique < maxim::input::_unix::driver > ();
+        return std::make_unique < maxim::input::unix::driver > ();
     }
 #endif
 

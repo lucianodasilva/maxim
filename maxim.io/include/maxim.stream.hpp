@@ -98,16 +98,6 @@ namespace maxim {
             return *this;
         }
 
-
-        template<typename value_t>
-        inline stream &maybe_write(bool enabled, value_t && value) {
-            if (enabled) {
-                write(value);
-            }
-
-            return *this;
-        }
-
         inline void reset() {
             _buffer.resize(0);
 
