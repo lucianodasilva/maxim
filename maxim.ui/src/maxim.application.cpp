@@ -1,5 +1,7 @@
 #include "maxim.application.hpp"
-#include <iostream>
+#include "maxim.control.hpp"
+
+#include <thread>
 
 namespace maxim {
 
@@ -9,7 +11,7 @@ namespace maxim {
 		bool exp = false;
 
 		// call on_start event
-		on_start.invoke(*this);
+		started.invoke(*this);
 
 		do {
 			// check and set running
@@ -17,22 +19,23 @@ namespace maxim {
 				return; // TODO: possibly throw exception
 
 			while (_is_running) {
-			    _device.dispatch_input_events(_event_proxy);
+				_device.dispatch_input_events(*this);
 
 				auto g = maxim::graphics { _device.backbuffer() };
-				this->on_draw.invoke(*this, g);
+				this->on_paint(g, { {0, 0}, _device.get_size() });
 
 				_device.present();
 				std::this_thread::yield();
 			}
 
 			// call on_exit event
-			on_exit.invoke(*this, exit_cancel);
+			exit_cancel = false;
+			exiting.invoke(*this, exit_cancel);
 
 		} while (exit_cancel);
 	}
 
-	void application::exit() {
+	void application::stop() {
 		_is_running = false;
 	}
 
@@ -40,16 +43,93 @@ namespace maxim {
 		return _device;
 	}
 
-	application::io_event_proxy::io_event_proxy(maxim::application &app) :
-	    _application { app }
-	{}
+	void application::on_key_up (input::key_info const & key) {
+		key_handler<application>::on_key_up(key);
 
-	void application::io_event_proxy::on_key_up (input::key_info const & key) {
-        _application.on_key_up.invoke (_application, key);
+		if (current_focus() != nullptr) {
+			current_focus()->on_key_up(key);
+		}
 	}
 
-    void application::io_event_proxy::on_key_down (input::key_info const & key) {
-        _application.on_key_down.invoke(_application, key);
-    }
+	void application::on_key_down (input::key_info const & key) {
+		key_handler<application>::on_key_down(key);
+
+		if (current_focus() != nullptr) {
+			current_focus()->on_key_down(key);
+		}
+	}
+
+	void application::on_key_press (input::key_info const & key) {
+		key_handler<application>::on_key_press(key);
+
+		if (current_focus() != nullptr) {
+			current_focus()->on_key_press(key);
+		}
+
+	}
+
+	void application::on_paint(maxim::graphics &g, maxim::rect bounds) {
+
+		if (paint_order == application_paint_order::pre_controls) {
+			paintable < application >::on_paint(g, bounds);
+		}
+
+		if (active()) {
+			active()->on_paint(g, bounds);
+		}
+
+		if (paint_order == application_paint_order::post_controls) {
+			paintable < application >::on_paint(g, bounds);
+		}
+	}
+
+	void application::do_activate() {
+		auto * root_ptr = active();
+
+		if (root_ptr == nullptr) {
+			return;
+		}
+
+		// call page shown event
+		root_ptr->on_activate();
+
+		// set focus to first control
+		this->focus_next ();
+	}
+
+	void application::do_deactivate() {
+		auto * root_ptr = active();
+
+		if (root_ptr == nullptr) {
+			return;
+		}
+
+		// call page hidden event
+		root_ptr->on_deactivate();
+
+		// reset focus
+		this->focus_reset ();
+	}
+
+	void application::pop_active() {
+		if (_active_stack.empty()) {
+			return;
+		}
+
+		// call page hidden event
+		do_deactivate();
+
+		// remove root
+		_active_stack.pop_back();
+
+		// check if we need to stop
+		if (close_on_empty_active_queue && _active_stack.empty()) {
+			stop();
+			return;
+		}
+
+		// activate new root
+		do_activate();
+	}
 
 }

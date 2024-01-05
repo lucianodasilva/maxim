@@ -21,7 +21,7 @@ namespace maxim::input::_unix {
     driver::driver() {
         // setup term io settings
         _initial_term_settings = termios{};
-        tcgetattr(0, &_initial_term_settings);
+        tcgetattr(STDIN_FILENO, &_initial_term_settings);
         termios new_settings = _initial_term_settings;
 
         new_settings.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -38,46 +38,30 @@ namespace maxim::input::_unix {
     driver::~driver() {
         // restore term io settingss
         fcntl(STDIN_FILENO, 0, FNDELAY);
-        tcsetattr(0, TCSANOW, &_initial_term_settings);
+        tcsetattr(STDIN_FILENO, TCSANOW, &_initial_term_settings);
     }
 
     void driver::dispatch_events(maxim::input_event_handler & handler) const {
+
+        _state_emulator.timeout_and_dispatch(handler);
+
         constexpr std::size_t buffer_size { 16 };
         char buffer [buffer_size];
 
-        auto len = read(STDIN_FILENO, +buffer, buffer_size);
+        auto len = ::read(STDIN_FILENO, +buffer, buffer_size);
 
         if (len < 0)
             return;
 
-        // debug printing --------------
-        if (len > 0) {
-            for (int i = 0; i < len; ++i) {
-                    std::cout << "0x" << std::hex << std::setw(2) << std::setfill ('0') << (int)buffer [i] << " ";
-            }
-
-            std::cout << "'";
-
-            for (int i = 0; i < len; ++i) {
-                std::cout << (char)(std::isgraph(buffer [i]) ? buffer[i] : ' ');
-            }
-
-            std::cout << "'";
-
-            std::cout << std::endl;
-        }
-        // ----------------------------
-
         span source { buffer, buffer + len };
 
-        while (source) {
-            auto key = termio_parse(source);
+		if (source) {
+			auto key = termio_parse(source);
 
-            if (key)
-                _state_emulator.evaluate_and_dispatch (key, handler);
-        }
-
-        _state_emulator.timeout_and_dispatch(handler);
+			if (key) {
+				_state_emulator.evaluate_and_dispatch(key, handler);
+			}
+		}
     }
 }
 

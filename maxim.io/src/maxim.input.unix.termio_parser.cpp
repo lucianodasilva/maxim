@@ -1,129 +1,132 @@
 #include "maxim.input.unix.termio_parser.hpp"
-#include "maxim.encoding.hpp"
+#include "maxim.encoder.hpp"
+
+#include <map>
 
 namespace maxim::input::_unix {
 
-#   define match_to(sequence, key) \
-    if (source.match(sequence)) { \
-        source += sequence_len (sequence); \
-        return key; \
-    }
+	modifier_key map_modifiers(char ch) {
+		switch (ch) {
+			case '2': return modifier_key::shift;
+			case '3': return modifier_key::alt;
+			case '4': return modifier_key::alt | modifier_key::shift;
+			case '5': return modifier_key::control;
+			case '6': return modifier_key::control | modifier_key::shift;
+			case '7': return modifier_key::control | modifier_key::alt;
+			case '8': return modifier_key::control | modifier_key::alt | modifier_key::shift;
+			default:
+				return modifier_key::none;
+		}
+	}
 
+	key_info match_special_keys_csi (span source) {
+		static std::map < std::string, key_info > const csi_key_map {
+			// Function keys
+			{ "P", { 0, virtual_key::f1, modifier_key::none } },
+			{ "Q", { 0, virtual_key::f2, modifier_key::none } },
+			{ "R", { 0, virtual_key::f3, modifier_key::none } },
+			{ "S", { 0, virtual_key::f4, modifier_key::none } },
+			{ "15", { 0, virtual_key::f5, modifier_key::none } },
+			{ "17", { 0, virtual_key::f6, modifier_key::none } },
+			{ "18", { 0, virtual_key::f7, modifier_key::none } },
+			{ "19", { 0, virtual_key::f8, modifier_key::none } },
+			{ "20", { 0, virtual_key::f9, modifier_key::none } },
+			{ "21", { 0, virtual_key::f10, modifier_key::none } },
+			{ "23", { 0, virtual_key::f11, modifier_key::none } },
+			{ "24", { 0, virtual_key::f12, modifier_key::none } },
+			// cursor keys
+			{ "A", { 0, virtual_key::up, modifier_key::none } },
+			{ "B", { 0, virtual_key::down, modifier_key::none } },
+			{ "C", { 0, virtual_key::right, modifier_key::none } },
+			{ "D", { 0, virtual_key::left, modifier_key::none } },
+			// 6 key editing keyboard
+			{ "H", { 0, virtual_key::home, modifier_key::none } },
+			{ "1", { 0, virtual_key::home, modifier_key::none } },
 
-    template < std::size_t ... _len_v >
-    virtual_key match_special_keys_csi (span & source) {
+			{ "F", { 0, virtual_key::end, modifier_key::none } },
+			{ "4", { 0, virtual_key::end, modifier_key::none } },
 
-        // larger sequences must come first
+			{ "2", { 0, virtual_key::insert, modifier_key::none } },
+			{ "3", { 0, virtual_key::del, modifier_key::none } },
+			{ "5", { 0, virtual_key::page_up, modifier_key::none } },
+			{ "6", { 0, virtual_key::page_down, modifier_key::none } },
 
-        // function keys
-        match_to ("11", virtual_key::f1);
-        match_to ("12", virtual_key::f2);
-        match_to ("13", virtual_key::f3);
-        match_to ("14", virtual_key::f4);
-        match_to ("15", virtual_key::f5);
-        match_to ("17", virtual_key::f6);
-        match_to ("18", virtual_key::f7);
-        match_to ("19", virtual_key::f8);
-        match_to ("20", virtual_key::f9);
-        match_to ("21", virtual_key::f10);
-        match_to ("23", virtual_key::f11);
-        match_to ("24", virtual_key::f12);
+			// others
+			{ "Z", { 0, virtual_key::tab, modifier_key::shift } },
+		};
 
-        // directional keys
-        match_to ("A", virtual_key::up);
-        match_to ("B", virtual_key::down);
-        match_to ("C", virtual_key::right);
-        match_to ("D", virtual_key::left);
+		key_info        info {};
+		modifier_key    mod {};
 
-        // six-key editing keypad
-        match_to ("H", virtual_key::home);
-        match_to ("1", virtual_key::home);
+		// ignore control characters
+		source = source.advance(sizeof(ansi::csi) - 1);
 
-        match_to ("F", virtual_key::end);
-        match_to ("4", virtual_key::end);
+		// check for tilde
+		bool is_extended = source.find ('~') != source.end;
 
-        match_to ("2", virtual_key::insert);
-        match_to ("3", virtual_key::del);
-        match_to ("5", virtual_key::page_up);
-        match_to ("6", virtual_key::page_down);
+		// check for separator
+		auto sep_it = source.find (';');
+		std::string search_str;
 
-        return virtual_key::none;
-    }
+		// search for key
+		if (is_extended) {
+			if (sep_it != source.end) {
+				search_str = std::string { source.begin, sep_it };
+				mod = map_modifiers(*(sep_it + 1));
+			} else {
+				search_str = std::string { source.begin, source.end - 1 };
+			}
+		} else {
+			if (sep_it != source.end) {
+				search_str = std::string { sep_it + 2, source.end };
+				mod = map_modifiers(*(sep_it + 1));
+			} else {
+				search_str = std::string { source.begin, source.end };
+			}
+		}
 
-    template < std::size_t ... _len_v >
-    virtual_key match_special_keys_sse3 (span & source) {
+		auto it = csi_key_map.find(search_str);
 
-        // larger sequences must come first
+		if (it != csi_key_map.end()) {
+			info = it->second;
+		}
 
-        // function keys
-        match_to ("P", virtual_key::f1);
-        match_to ("Q", virtual_key::f2);
-        match_to ("R", virtual_key::f3);
-        match_to ("S", virtual_key::f4);
+		if (mod != modifier_key::none) {
+			info.modifiers = mod;
+		}
 
-        return virtual_key::none;
-    }
+		return info;
+	}
 
-    modifier_key map_modifiers(span & source) {
+	key_info match_special_keys_ss3 (span source) {
+		static std::map < std::string, key_info > const ss3_key_map {
+			// Function keys
+			{ "\033OP", { 0, virtual_key::f1, modifier_key::none } },
+			{ "\033OQ", { 0, virtual_key::f2, modifier_key::none } },
+			{ "\033OR", { 0, virtual_key::f3, modifier_key::none } },
+			{ "\033OS", { 0, virtual_key::f4, modifier_key::none } },
+		};
 
-        match_to ("2", modifier_key::shift);
-        match_to ("3", modifier_key::alt);
-        match_to ("4", modifier_key::alt | modifier_key::shift);
-        match_to ("5", modifier_key::control);
-        match_to ("6", modifier_key::control | modifier_key::shift);
-        match_to ("7", modifier_key::control | modifier_key::alt);
-        match_to ("8", modifier_key::control | modifier_key::alt | modifier_key::shift);
+		key_info info {};
 
-        return modifier_key::none;
-    }
+		auto it = ss3_key_map.find({source.begin, source.end});
 
-#   undef match_to
+		if (it != ss3_key_map.end()) {
+			info = it->second;
+		}
 
-    key_info termio_parse (span & source) {
+		return info;
+	}
+
+    key_info termio_parse (span source) {
 
         // check for special keys
-        if (source.match (encoding::ansi::csi)) {
-            auto next = source + sequence_len (encoding::ansi::csi);
-
-            virtual_key key = match_special_keys_csi(next);
-            modifier_key mod{modifier_key::none};
-
-            // recognized key
-            if (key != virtual_key::none) {
-
-                // check for modifiers
-                if (next.is(';')) {
-                    next.step();
-                    mod = map_modifiers(next);
-                }
-
-                next.ignore_until('~');
-                source = next;
-
-                return {
-                        0,
-                        key,
-                        mod
-                };
-            }
+        if (source.match (ansi::csi)) {
+            return match_special_keys_csi (source);
         }
 
-        if (source.match (encoding::ansi::sse3)) {
-            auto next = source + sequence_len (encoding::ansi::csi);
-
-            virtual_key key = match_special_keys_sse3 (next);
-            modifier_key mod{modifier_key::none};
-
-            // recognized key
-            if (key != virtual_key::none) {
-                source = next;
-
-                return {
-                    0,
-                    key,
-                    mod
-                };
-            }
+        if (source.match (ansi::ss3)) {
+			return match_special_keys_ss3(source);
         }
 
         { // remaining
@@ -140,6 +143,7 @@ namespace maxim::input::_unix {
                 source.step();
             } else {
                 key = key_map[key_char];
+	            key.char_value = key_char;
             }
 
             return key;

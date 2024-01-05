@@ -1,61 +1,95 @@
+#pragma once
 #ifndef _maxim_application_hpp_
 #define _maxim_application_hpp_
 
-#include "maxim.event.hpp"
 #include <maxim.io.hpp>
-#include <atomic>
+
+#include "maxim.event.hpp"
+#include "maxim.focus.hpp"
+#include "maxim.key_handler.hpp"
+#include "maxim.paintable.hpp"
+#include "maxim.style.hpp"
 
 namespace maxim {
 
-    template < class _sender_t >
-    using key_down_event = event < _sender_t, input::key_info >;
+	class control;
 
-    template < class _sender_t >
-    using key_up_event = event < _sender_t, input::key_info >;
+	using application_start_event = event < class application & >;
+	using application_close_event = event < class application &, bool & >;
 
-    class application {
+	enum struct application_paint_order {
+		pre_controls,
+		post_controls
+	};
+
+	class application :
+		public  paintable < application >,
+		public  key_handler < application >,
+	    public  focus_manager,
+		private maxim::input_event_handler
+	{
 	public:
+		application_start_event started;
+		application_close_event exiting;
 
-		using application_start_event = event < application >;
-		using application_close_event = event < application, bool & >;
+		property < maxim::style > style = style::default_style();
+		property < application_paint_order > paint_order = application_paint_order::pre_controls;
+		property < bool > close_on_empty_active_queue = true;
 
-		using application_draw_event = event < application, graphics & >;
-
-		application_start_event on_start;
-		application_close_event on_exit;
-
-		application_draw_event on_draw;
-
-		key_down_event < application >	on_key_down;
-		key_up_event < application >	on_key_up;
+		application () = default;
 
 		void run();
-
-		void exit();
+		void stop();
 
 		maxim::device & device();
 
+		template < typename control_type, typename ... args_tv, std::enable_if_t < std::is_base_of_v < maxim::control, control_type >, int > = 0 >
+		inline control_type * push_active (args_tv && ... args) {
+			auto uptr = std::make_unique < control_type > (
+				std::forward < args_tv > (args)...);
+
+			uptr->attach_to_tree (this, nullptr);
+
+			// set root focus index
+			uptr->focus_index (focus_index().append (0));
+
+			do_deactivate();
+			auto * ptr = uptr.get();
+			_active_stack.push_back(std::move(uptr));
+			do_activate();
+
+			return ptr;
+		}
+
+		void pop_active ();
+
+		inline class control * active () const {
+			if (_active_stack.empty()) {
+				return nullptr;
+			}
+
+			return _active_stack.back().get();
+		}
+
 	private:
+		void on_key_up (maxim::input::key_info const & key) override;
+		void on_key_down (maxim::input::key_info const & key) override;
 
-        class io_event_proxy : public maxim::input_event_handler {
-        public:
+		void on_key_press (maxim::input::key_info const & key) override;
 
-            explicit io_event_proxy (maxim::application & app);
+		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
 
-            void on_key_up (maxim::input::key_info const & key) override;
-            void on_key_down (maxim::input::key_info const & key) override;
+		static void on_style_changed (application & sender, maxim::style & new_style);
 
-        private:
-            maxim::application & _application;
-        };
+		void do_activate ();
+		void do_deactivate ();
 
-		maxim::device _device;
+		std::vector < std::unique_ptr < maxim::control > >
+							_active_stack;
 
-		std::atomic_bool _is_running { false };
-
-        io_event_proxy _event_proxy {*this};
+		maxim::device       _device;
+		std::atomic_bool    _is_running { false };
 	};
-
 }
 
 #endif

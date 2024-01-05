@@ -22,7 +22,7 @@ namespace maxim {
 
             virtual size get_size() const = 0;
 
-            virtual void send(maxim::stream &stream) const = 0;
+            virtual void send(span < char > data) const = 0;
 
             static std::unique_ptr < driver > create();
         };

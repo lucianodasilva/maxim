@@ -5,7 +5,7 @@ namespace maxim::input::_unix {
 
     void key_state_emulator::timeout_and_dispatch(maxim::input_event_handler & handler) {
         using namespace std::chrono;
-        auto now = high_resolution_clock::now();
+        auto now = system_clock::now();
 
         auto it = _key_states.begin();
 
@@ -27,7 +27,7 @@ namespace maxim::input::_unix {
 
     void key_state_emulator::evaluate_and_dispatch(maxim::input::key_info key, maxim::input_event_handler & handler) {
         using namespace std::chrono;
-        auto now = high_resolution_clock::now();
+        auto now = system_clock::now();
 
         // set or reset counter for key combination
         if (key.char_value != 0 || key.key != virtual_key::none) {
@@ -42,6 +42,9 @@ namespace maxim::input::_unix {
             } else {
                 key_it->second = now;
             }
+
+			// key repeat or key press, dispatch
+			handler.on_key_press (key);
         }
     }
 

@@ -1,130 +1,212 @@
-#ifndef _maxim_event_hpp_
-#define _maxim_event_hpp_
+#pragma once
+#ifndef _maxim_ui_event_h_
+#define _maxim_ui_event_h_
 
 #include <algorithm>
-#include <functional>
-#include <future>
+#include <atomic>
 #include <memory>
 #include <mutex>
-#include <thread>
+#include <vector>
 
-#include "maxim.event_dispatcher.hpp"
+#include "maxim.traits.hpp"
 
-namespace maxim{
-	namespace details {
+namespace maxim {
 
-		template < class _sender_t, class ... _args_tv >
-		struct event_traits {
-			using handler_t = std::function < void(_sender_t &, _args_tv && ...) >;
-		};
-
-		template < class _sender_t>
-		struct event_traits < _sender_t, void >{
-			using handler_t = std::function < void(_sender_t &) >;
-		};
-
-		template < class _sender_t, class ... _args_tv >
-		struct event_data {
-		public:
-			using handler_t = typename details::event_traits < _sender_t, _args_tv...>::handler_t;
-		protected:
-			mutable std::mutex
-				handler_mutex;
-
-			std::vector < std::shared_ptr <handler_t> >
-				handlers;
-		};
-
-		template < class _data_t, class _sender_t, class ... _args_tv >
-		struct event_invoke : public _data_t
-		{
-		public:
-			inline void invoke(_sender_t & sender, _args_tv ... argv) const {
-				std::remove_const_t < decltype (_data_t::handlers) > local_handlers;
-				{
-					std::lock_guard < std::mutex > lock(_data_t::handler_mutex);
-					// copy handlers to avoid dead locks
-					local_handlers = _data_t::handlers;
-				}
-
-				for (auto & h : local_handlers)
-					h->operator ()(sender, std::forward<_args_tv...>(argv ...));
-			}
-
-			template < class dispatcher_t = event_dispatcher <> >
-			inline void async_invoke(_sender_t & sender, _args_tv ... argv) {
-				dispatcher_t::dispatch([=, handlers = _data_t::handlers]() {
-					for (auto & h : handlers) {
-						h(sender, argv...);
-					}
-				});
-			}
-		};
-
-		template < class _data_t, class _sender_t >
-		struct event_invoke < _data_t, _sender_t > : public _data_t
-		{
-		public:
-			inline void invoke(_sender_t & sender ) const {
-				std::remove_const_t < decltype (_data_t::handlers) > local_handlers;
-				{
-					std::lock_guard < std::mutex > lock(_data_t::handler_mutex);
-					// copy handlers to avoid dead locks
-					local_handlers = _data_t::handlers;
-				}
-
-				for (auto & h : local_handlers)
-					h->operator ()(sender);
-			}
-
-			template < class dispatcher_t = event_dispatcher <> >
-			inline void async_invoke(_sender_t & sender) {
-				dispatcher_t::dispatch([sender, handlers = _data_t::handlers]() {
-					for (auto & h : handlers) {
-						h(sender);
-					}
-				});
-			}
-		};
-
-	}
-
-	template < class _sender_t, class ... _args_tv >
-	struct event : public details::event_invoke <
-		details::event_data < _sender_t, _args_tv...>,
-		_sender_t,
-		_args_tv...
-	>{
+	/// Represents the life cycle of an event observer.
+	struct event_guard  {
 	public:
-		using handler_t = typename details::event_traits < _sender_t, _args_tv... >::handler_t;
 
-		// force single instance / no copy
-		event(const event &) = delete;
-		event & operator = (const event &) = delete;
+		// erase copying and assignment
+		event_guard(event_guard const &) = delete;
+		event_guard & operator=(event_guard const &) = delete;
 
-		inline event() {}
+		class observer_guard_base;
 
-		inline void operator += (handler_t && handler) {
-			std::lock_guard < std::mutex > lock(this->handler_mutex);
-			this->handlers.emplace_back(
-				std::make_shared < handler_t >(std::forward < handler_t > (handler))
-			);
+		template<typename observer_t>
+		class observer_guard;
+
+		/** @brief Disable the scope guard
+		 *
+		 * Release the reference to the event observer without destroing it
+		 */
+		void dismiss();
+
+		/** @brief Release observer
+		 *
+		 * Release the reference to the event observer and destroy it
+		 */
+		void reset();
+
+		event_guard() = default;
+
+		event_guard(event_guard &&other) noexcept;
+
+		template<typename observer_t>
+		inline explicit event_guard(std::shared_ptr<observer_t> observer) :
+			_observer{std::make_unique<observer_guard<observer_t> >(observer)} {};
+
+		event_guard &operator=(event_guard &&other) noexcept;
+
+		class observer_guard_base {
+		public:
+			virtual void dismiss() = 0;
+
+			virtual ~observer_guard_base() = default;
+		};
+
+		template<typename observer_t>
+		class observer_guard : public observer_guard_base {
+		public:
+
+			void dismiss() override {
+				weak_observer.reset();
+			}
+
+			explicit observer_guard(std::shared_ptr<observer_t> observer) :
+				weak_observer{observer} {}
+
+			~observer_guard() override {
+				auto observer = weak_observer.lock();
+
+				if (observer) {
+					observer->release();
+					weak_observer.reset();
+				}
+			}
+
+			std::weak_ptr<observer_t> weak_observer;
+		};
+
+		inline void swap(event_guard &other) noexcept {
+			std::swap(_observer, other._observer);
 		}
 
-		inline void operator -= (handler_t && handler) {
-			std::lock_guard < std::mutex > lock(this->handler_mutex);
-
-			auto it = std::find(
-				this->handlers.begin(),
-				this->handlers.end(),
-				std::forward(handler)
-			);
-
-			if (it != this->handlers.end())
-				this->handlers.erase(it);
-		}
-
+	private:
+		std::unique_ptr<observer_guard_base> _observer;
 	};
+
+	template<typename ... args_t>
+	struct event {
+	public:
+
+		event () = default;
+
+		// disable copying and assignment
+		event(event const &) = delete;
+		event &operator=(event const &) = delete;
+
+		using observer_id_t = std::size_t;
+
+		class observer_base {
+		public:
+
+			inline explicit observer_base(event &owner_ref, observer_id_t id_v) :
+				owner{owner_ref},
+				ID{id_v} {};
+
+			virtual void invoke(args_t ...) = 0;
+
+			void release() {
+				owner.remove(ID); //WARNING: no guarantee this object exists after this line, do not add code after this
+				released = true;
+			}
+
+			event &owner;
+			observer_id_t const ID;
+			std::atomic_bool released{false};
+		};
+
+		template<typename callback_t>
+		class observer : public observer_base {
+		public:
+			inline explicit observer(callback_t callback, event &owner_ref, observer_id_t id) :
+				_callback(std::move(callback)),
+				observer_base(owner_ref, id) {}
+
+			void invoke(args_t ... args_v) override {
+				if (!this->released) {
+					_callback(std::forward<args_t>(args_v)...);
+				}
+			}
+
+		private:
+			callback_t _callback;
+		};
+
+		inline void invoke(args_t ... args) {
+			decltype(_observers) local_observers;
+
+			{
+				std::unique_lock<std::mutex> lock(_internal_mutex);
+
+				if (_observers.empty()) {
+					return;
+				}
+
+				local_observers = _observers;
+			}
+
+			for (auto &observer: local_observers) {
+				observer->invoke(args...);
+			}
+		}
+
+		template<typename callback_t>
+		[[nodiscard]]
+		inline event_guard append(callback_t && callback) {
+			std::unique_lock<std::mutex> lock(_internal_mutex);
+			return append_impl(std::forward<callback_t>(callback));
+		}
+
+		template<typename callback_t>
+		inline observer_id_t append_no_scope(callback_t && callback) {
+			std::unique_lock<std::mutex> lock(_internal_mutex);
+
+			auto guard{append_impl(std::forward<callback_t>(callback))};
+			guard.dismiss();
+
+			// return current id,
+			return _observer_tick;
+		}
+
+		inline bool remove(observer_id_t id) {
+			std::unique_lock<std::mutex> lock(_internal_mutex);
+
+			auto erase_it = std::remove_if(
+				_observers.begin(), _observers.end(),
+				[id](std::shared_ptr<observer_base> &item) {
+					return item->ID == id;
+				});
+
+			if (erase_it == _observers.end()) {
+				return false;
+			}
+
+			_observers.erase(erase_it);
+
+			return true;
+		}
+
+	private:
+
+		template<typename callback_t>
+		inline event_guard append_impl(callback_t &&callback) {
+			auto &obs_instance = _observers.emplace_back(
+				std::make_shared<observer<callback_t> >(
+					callback,
+					*this,
+					++_observer_tick));
+
+			return event_guard(obs_instance);
+		}
+
+		std::vector<std::shared_ptr<observer_base> >
+			_observers{};
+		observer_id_t _observer_tick{0};
+
+		std::mutex _internal_mutex;
+	};
+
 }
 
 #endif

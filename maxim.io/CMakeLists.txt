@@ -1,57 +1,44 @@
 
-dir_target_name (target_name)
+add_library (maxim_io STATIC
+        include/maxim.character.hpp
+        include/maxim.character_buffer.hpp
+        include/maxim.character_change_set.hpp
+        include/maxim.details.hpp
+        include/maxim.encoder.hpp
+        include/maxim.graphics.hpp
+        include/maxim.input.driver.hpp
+        include/maxim.input.hpp
+        include/maxim.input.unix.driver.hpp
+        include/maxim.input.unix.key_state_emulator.hpp
+        include/maxim.input.unix.termio_parser.hpp
+        include/maxim.input.win.driver.hpp
+        include/maxim.io.hpp
+        include/maxim.output.driver.hpp
+        include/maxim.output.unix.driver.hpp
+        include/maxim.output.win.driver.hpp
+        include/maxim.stream.hpp
+        src/maxim.character.cpp
+        src/maxim.character_buffer.cpp
+        src/maxim.device.cpp
+        src/maxim.encoder.cpp
+        src/maxim.graphics.cpp
+        src/maxim.input.driver.cpp
+        src/maxim.input.unix.driver.cpp
+        src/maxim.input.unix.key_state_emulator.cpp
+        src/maxim.input.unix.termio_parser.cpp
+        src/maxim.input.win.driver.cpp
+        src/maxim.output.driver.cpp
+        src/maxim.output.unix.driver.cpp
+        src/maxim.output.win.driver.cpp)
 
-target_compile_features(
-    ${target_name}
-    PUBLIC
-    cxx_std_17)
+target_include_directories(
+        maxim_io
+        PUBLIC include/
+        PRIVATE src/
+)
 
-if (MAXIM_BUILD_TEST_COVERAGE)
-    if (UNIX)
-        # enable code coverage flags
-        target_compile_options(
-                ${target_name} PUBLIC
-                -fprofile-arcs
-                -ftest-coverage
-                --coverage)
+target_compile_features (
+        maxim_io PUBLIC cxx_std_17
+)
 
-        target_link_libraries(
-                ${target_name} PUBLIC
-                gcov
-        )
-
-        find_program(lcov_path lcov)
-        find_program(genhtml_path genhtml)
-
-        if (NOT lcov_path OR NOT genhtml_path)
-            message (FATAL_ERROR "lcov or genhtml not found!")
-        endif()
-
-        # TODO: move to external script file
-        add_custom_target(${target_name}_coverage
-                WORKING_DIRECTORY $<TARGET_FILE_DIR:${target_name}>
-                # clean stuffs
-                COMMAND echo \"Cleaning coverage counters\"
-                COMMAND ${lcov_path} --directory . --zerocounters --quiet --rc lcov_branch_coverage=1
-                # get counters from compilation
-                COMMAND echo \"Gathering pre-execution coverage counters\"
-                COMMAND ${lcov_path} --directory . --initial --capture --output-file initial.cov --quiet
-                # execute tests to generate runtime counters
-                COMMAND echo \"Execute tests...\"
-                COMMAND $<TARGET_FILE:${target_name}_test>
-                # filter results
-                COMMAND echo \"Gathering pos-execution coverage counters\"
-                COMMAND ${lcov_path} --directory . --capture --output-file exec.cov --quiet --rc lcov_branch_coverage=1
-                COMMAND ${lcov_path} --add-tracefile initial.cov --add-tracefile exec.cov --output-file full.cov --quiet --rc lcov_branch_coverage=1
-
-                COMMAND echo \"Filtering...\"
-                COMMAND ${lcov_path} --extract full.cov '${CMAKE_CURRENT_LIST_DIR}/*' --output-file filtered.cov --quiet --rc lcov_branch_coverage=1
-                COMMAND ${lcov_path} --remove filtered.cov '${CMAKE_CURRENT_LIST_DIR}/test/*' --output-file filtered.cov --quiet --rc lcov_branch_coverage=1
-                # generate html report
-                COMMAND echo \"Generating html report\"
-                COMMAND ${genhtml_path} filtered.cov --output-directory ./cov_report --demangle-cpp --rc lcov_branch_coverage=1 --quiet
-                COMMAND echo \"Open 'file://$<TARGET_FILE_DIR:${target_name}_test>/cov_report/index.html' for the coverage report\"
-                COMMAND ${lcov_path} --summary filtered.cov --rc lcov_branch_coverage=1)
-
-    endif()
-endif()
+add_library (maxim::io ALIAS maxim_io)

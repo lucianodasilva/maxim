@@ -20,7 +20,7 @@ namespace maxim::input::_unix {
             { 0, virtual_key::J,         modifier_key::control}, // 0x0A
             { 0, virtual_key::K,         modifier_key::control}, // 0x0B
             { 0, virtual_key::L,         modifier_key::control}, // 0x0C
-            { 0, virtual_key::enter,     modifier_key::control}, // 0x0D
+            { 0, virtual_key::enter,     modifier_key::none}, // 0x0D
             { 0, virtual_key::N,         modifier_key::control}, // 0x0E
             { 0, virtual_key::O,         modifier_key::control}, // 0x0F
             { 0, virtual_key::P,         modifier_key::control}, // 0x10
@@ -218,10 +218,20 @@ namespace maxim::input::_unix {
             return *begin == c;
         }
 
+		inline const char * find (char c) const {
+			auto * cursor = begin;
+
+			while (cursor != end && *cursor != c) {
+				++cursor;
+			}
+
+			return cursor;
+		}
+
         const char * begin, * end;
     };
 
-    key_info termio_parse (span & source);
+    key_info termio_parse (span source);
 
 }
 

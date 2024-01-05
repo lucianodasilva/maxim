@@ -7,6 +7,7 @@
 
 #include "maxim.details.hpp"
 #include "maxim.character.hpp"
+#include "maxim.encoder.hpp"
 #include "maxim.input.hpp"
 #include "maxim.input.driver.hpp"
 #include "maxim.output.driver.hpp"
@@ -19,20 +20,25 @@ namespace maxim {
     public:
         virtual void on_key_up (input::key_info const & key);
         virtual void on_key_down (input::key_info const & key);
+
+		virtual void on_key_press (input::key_info const & key);
     };
 
     struct device {
     public:
 
+    	device ();
         ~device();
 
         [[nodiscard]]
         size const & get_size () const;
 
         character_buffer & backbuffer();
+        maxim::encoder & encoder ();
 
         void set_fullscreen(bool enable);
         void set_cursor_enabled (bool enable);
+        void set_color_mode (color_mode mode);
 
         void clear_screen();
         void present ();
@@ -41,21 +47,22 @@ namespace maxim {
 
     private:
 
+		static void encode_cursor (bool value, maxim::stream & stream);
+		static void encode_fullscreen (bool value, maxim::stream & stream);
+
+		void sync_display_settings ();
+
         std::unique_ptr < input::driver >
-            _input_driver = input::driver::create ();
+                            _input_driver = input::driver::create ();
 
         std::unique_ptr < output::driver >
-            _output_driver = output::driver::create ();
+                            _output_driver = output::driver::create ();
 
-        size       _size           { _output_driver->get_size() };
-
-        character_buffer
-                    _back_buffer    { _size },
-                    _front_buffer   { _size };
-
-        stream		_stream;
-        bool        _alternate_buffer_enabled {false};
-        bool        _cursor_enabled { true };
+        size                _size { _output_driver->get_size() };
+        character_buffer    _back_buffer { _size };
+        maxim::encoder      _encoder;
+        bool                _alternate_buffer_enabled {false};
+        bool                _cursor_enabled { true };
 
     };
 }

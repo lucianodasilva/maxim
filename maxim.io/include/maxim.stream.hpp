@@ -7,7 +7,34 @@
 #include <type_traits>
 #include <vector>
 
+#include "maxim.details.hpp"
+
 namespace maxim {
+
+    constexpr std::size_t stream_trim_threshold = 1024;
+
+    template < typename _t, typename _common_t = std::decay_t < _t > >
+    [[nodiscard]] inline std::enable_if_t <
+        std::is_integral_v < _common_t >,
+        size_t
+    > digit_count (_t v)
+    {
+        if (v == 0)
+            return 1;
+
+        size_t digits = 0;
+
+        if (v < 0)
+            digits = 1;
+
+        while (v) {
+            v /= 10;
+            ++digits;
+        }
+
+        return digits;
+    }
+
     struct stream {
     public:
 
@@ -16,15 +43,16 @@ namespace maxim {
             return *this;
         }
 
-        template < class _t >
+        template < typename _t, typename _common_t = std::decay_t<_t> >
         inline std::enable_if_t <
-                !(std::is_same<
-                    std::remove_all_extents_t <_t>,
-                    char
-                >::value) && std::numeric_limits<_t>::is_integer,
-                stream &
+            !std::is_same_v < _common_t , char > &&
+            std::is_integral_v < _common_t >,
+            stream &
         > write (_t v) {
             auto count = digit_count(v);
+
+            if (count == 0)
+                return *this;
 
             size_t index = _buffer.size();
             // resize for new string
@@ -42,19 +70,30 @@ namespace maxim {
             return *this;
         }
 
-        template < size_t n >
-        inline stream & write (char const (&str)[n]) {
+        template < size_t _n >
+        inline stream & write (char const (&str)[_n]) {
+            if constexpr (_n == 0) {
+                return *this;
+            }
+
             _buffer.insert(
                     std::end(_buffer),
                     std::begin(str),
-                    std::begin(str) + (n - 1)
+                    std::begin(str) + (_n - 1)
             );
 
             return *this;
         }
 
-        template < class _t >
-        inline stream & optional_write(bool enabled, _t && v) {
+        template < typename ... _tv >
+        inline stream & write_sequence (_tv && ... args) {
+            (write (args), ...);
+            return *this;
+        }
+
+
+        template < typename _t >
+        inline stream & maybe_write(bool enabled, _t && v) {
             if (enabled)
                 write(v);
 
@@ -63,37 +102,16 @@ namespace maxim {
 
         inline void reset() {
             _buffer.resize(0);
+
+            if (_buffer.capacity () > stream_trim_threshold)
+                _buffer.clear ();
         }
 
-        inline char * data() {
-            return _buffer.data();
-        }
-
-        inline size_t size() const {
-            return _buffer.size();
+        inline span < char > data() {
+            return  span {_buffer};
         }
 
     private:
-
-        template < class _t >
-        static inline std::enable_if_t <std::numeric_limits<_t>::is_integer, size_t >
-            digit_count (_t v)
-        {
-            if (v == 0)
-                return 1;
-
-            size_t digits = 0;
-
-            if (v < 0)
-                ++digits;
-
-            while (v) {
-                v /= 10;
-                ++digits;
-            }
-
-            return digits;
-        }
 
         std::vector < char > _buffer;
     };

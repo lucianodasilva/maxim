@@ -9,7 +9,7 @@
 
 #ifdef WIN32
 #	include "maxim.input.win.driver.hpp"
-	std::unique_ptr < maxim::input::driver > maxim::input::driver::create() {
-		return std::make_unique < maxim::input::win::driver >();
+	std::unique_ptr < maxim::input::sec_driver > maxim::input::sec_driver::create() {
+		return std::make_unique < maxim::input::win::sec_driver >();
 	}
 #endif

@@ -3,91 +3,135 @@
 #define _maxim_graphics_hpp_
 
 #include "maxim.character.hpp"
+#include "maxim.character_buffer.hpp"
 #include "maxim.details.hpp"
 
 #include <tuple>
 #include <string>
+#include <stack>
+
+#ifdef _WIN32
+#undef far
+#undef near
+#endif
 
 namespace maxim {
 
-    enum class alignment {
-        left,
-        centered,
-        right
+    enum class alignment : uint8_t {
+        near,
+        center,
+        far
+    };
+
+    inline int32_t align_to (alignment align, int dim, int range_near, int range_far) {
+        switch (align){
+            case alignment::center:
+                return ((range_far - range_near) / 2) - (dim / 2);
+            case alignment::far:
+                return range_far - dim;
+            default:
+                return range_near;
+        }
+    }
+
+    struct text_attributes {
+        alignment       h_align;
+        alignment       v_align;
+        attribute_flags flags;
+        bool            wrap;
     };
 
     struct graphics {
-    private:
-        character_buffer & _buffer;
     public:
-        rect view = {};
 
-        graphics(character_buffer & buffer);
+        explicit graphics(character_buffer & buffer);
         graphics(character_buffer & buffer, rect const & view);
 
-        void clear();
+        void clear(color clear_color = colors::black);
+
+        void draw_point (point const & position, struct color color);
+        void draw_char (point  const & position, struct color color, char c, attribute_flags flags = {}, bool is_graph = false);
+
+		character * get_char (point const & position);
 
         void draw_box(
             rect const & rct,
-            color_t color,
-            bool solid = true,
-            color_t backcolor = colors::black
+            maxim::color color,
+            bool solid = true
         );
 
         void draw_text(
             std::string const & text,
             point const & position,
-            color_t color = colors::white,
-            color_t back_color = colors::black,
-            character_flags const & flags = {}
+            struct color color
         );
 
         void draw_text(
-            std::string const & text,
-            point const & position,
-            int32_t width,
-            alignment align,
-            color_t color = colors::white,
-            color_t back_color = colors::black,
-            character_flags const & flags = {}
+			std::string const & text,
+			point const & position,
+			int32_t width,
+            struct color color,
+            text_attributes attributes
         );
+
+        void draw_text (
+        	std::string const & text,
+        	rect const & bounds,
+            struct color color,
+            text_attributes attributes);
 
         void draw_v_line(
             point const & position,
             int32_t length,
-            color_t color,
-            bool solid = true,
-            color_t backcolor = colors::black
+            maxim::color color,
+            bool solid = true
         );
 
         void draw_h_line(
             point const & position,
             int32_t length,
-            color_t color,
-            bool solid = true,
-            color_t backcolor = colors::black
+            maxim::color color,
+            bool solid = true
         );
 
-        void draw_buffer(
-            character_buffer const & buffer,
-            point const & position,
-            rect source = {},
-            bool null_mask = false
-        );
+		void    transform_push (point const & transform);
+		void    transform_pop ();
+
+		[[nodiscard]] point transform () const;
+
+		void    clip_window_push (rect const & clip);
+		void    clip_window_pop ();
+
+		rect    clip_window () const;
 
     private:
 
-        inline void set( point const & pos, character const & c ) {
-            // transform
-            auto tpos = view.position + pos;
+		[[nodiscard]]
+		inline rect transform_rect (rect const & src) const {
+			return rect { src.position + transform (), src.size };
+		}
 
-            // clip
-            if (!view.contains(tpos))
-                return;
+    	[[nodiscard]]
+    	inline rect clip_rect () const {
+			// intersect with buffer
+			rect buffer_rect {
+					{},
+					_buffer.size ()
+			};
 
-            _buffer.at(tpos) = c;
-        }
+			auto clipper = clip_window ();
 
+			if (clipper.is_zero ()) {
+				return buffer_rect;
+			} else {
+				return buffer_rect.intersection (clipper + transform());
+			}
+    	}
+
+		std::stack < point > _transform_stack;
+		std::stack < rect > _clip_stack;
+
+	    character_buffer & _buffer;
     };
 }
 

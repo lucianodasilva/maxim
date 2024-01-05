@@ -27,7 +27,7 @@ namespace maxim {
             // key press state
             std::unordered_map<
                 key_info,
-                std::chrono::high_resolution_clock::time_point
+                std::chrono::system_clock::time_point
             >
                 _key_states;
         };
