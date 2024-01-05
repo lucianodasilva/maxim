@@ -37,11 +37,11 @@ namespace maxim {
     }
 
     maxim::graphics device::graphics (point transform) {
-        return maxim::graphics { _back_buffer, transform };
+        return maxim::graphics {_backbuffer, transform };
     }
 
     character_buffer & device::backbuffer() {
-        return _back_buffer;
+        return _backbuffer;
     }
 
     maxim::encoder & device::encoder () {
@@ -84,7 +84,7 @@ namespace maxim {
 
     void device::clear() {
         //TODO: check if sending the clear signal causes flickering and replace this with xterm code for clear_screen
-        maxim::graphics { _back_buffer }.clear();
+        maxim::graphics {_backbuffer }.clear();
 
         _encoder.reset ();
         _encoder.emmit_clear ();
@@ -93,7 +93,7 @@ namespace maxim {
 
     void device::present () {
         _encoder.reset ();
-        _encoder.encode_buffer(_back_buffer);
+        _encoder.encode_buffer(_backbuffer);
         _encoder.send_out (_output_driver.get ());
 
         this->sync_display_settings();
@@ -106,8 +106,8 @@ namespace maxim {
     void device::sync_display_settings() {
     	_size = _output_driver->terminal_size();
 
-    	if (_back_buffer.size () != _size) {
-			_back_buffer.resize(_size);
+    	if (_backbuffer.size () != _size) {
+			_backbuffer.resize(_size);
 
 			_encoder.reset ();
             _encoder

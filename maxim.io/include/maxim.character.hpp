@@ -1,4 +1,5 @@
 #pragma once
+#include <limits>
 #ifndef MAXIM_CHARACTER_HPP
 #define MAXIM_CHARACTER_HPP
 
@@ -18,6 +19,30 @@ namespace maxim {
         [[nodiscard]] uint8_t to_ansi_256 () const;
         [[nodiscard]] uint8_t to_ansi_8 () const;
     };
+
+    /// Linearly interpolates between two values
+    /// \param LHV The left hand value
+    /// \param RHV The right hand value
+    /// \param THETA The interpolation factor
+    /// \return The interpolated value
+    [[nodiscard]]
+    inline float lerp (float const LHV, float const RHV, float const THETA) {
+        return LHV + (RHV - LHV) * THETA;
+    }
+
+    /// Linearly interpolates between two colors
+    /// \param LHV The left hand value
+    /// \param RHV The right hand value
+    /// \param THETA The interpolation factor
+    /// \return The interpolated value
+    [[nodiscard]]
+    inline color lerp (color const LHV, color const RHV, float const THETA) {
+        return {
+            static_cast<uint8_t>(lerp (LHV.r, RHV.r, THETA)),
+            static_cast<uint8_t>(lerp (LHV.g, RHV.g, THETA)),
+            static_cast<uint8_t>(lerp (LHV.b, RHV.b, THETA))
+        };
+    }
 
     [[nodiscard]] 
     inline bool operator == (color const LHV, color const RHV) {
@@ -66,6 +91,11 @@ namespace maxim {
     [[nodiscard]] 
     inline bool operator == (flags const lhv, flags const rhv) {
         return lhv.flags_as_int == rhv.flags_as_int;
+    }
+
+    [[nodiscard]]
+    inline bool operator != (flags const lhv, flags const rhv) {
+        return !operator==(lhv, rhv);
     }
 
     struct character {

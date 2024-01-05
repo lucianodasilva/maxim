@@ -60,7 +60,7 @@ namespace maxim {
                             _output_driver = output::driver::create ();
 
         size                _size {_output_driver->terminal_size() };
-        character_buffer    _back_buffer { _size };
+        character_buffer    _backbuffer {_size };
         maxim::encoder      _encoder;
         bool                _alternate_buffer_enabled {false};
         bool                _cursor_enabled { true };

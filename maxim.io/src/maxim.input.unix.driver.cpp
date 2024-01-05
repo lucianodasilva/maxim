@@ -56,12 +56,14 @@ namespace maxim::input::unix {
 
         auto source = std::string_view (buffer, len);
 
-        while (!source.empty ()) {
-            auto parsed_key = termio_parse(source);
+        if (source.empty()) {
+            return;
+        }
 
-            if (parsed_key) {
-                _state_emulator.evaluate_and_dispatch(parsed_key, handler);
-            }
+        auto parsed_key = termio_parse(source);
+
+        if (parsed_key) {
+            _state_emulator.evaluate_and_dispatch(parsed_key, handler);
         }
     }
 }
