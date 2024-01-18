@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_label_hpp_
-#define _maxim_label_hpp_
+#ifndef _maxim_ui_label_hpp_
+#define _maxim_ui_label_hpp_
 
 #include "maxim.control.hpp"
 

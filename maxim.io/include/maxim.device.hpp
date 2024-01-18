@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_device_hpp_
-#define _maxim_device_hpp_
+#ifndef _maxim_io_device_hpp_
+#define _maxim_io_device_hpp_
 
 #include <memory>
 #include <vector>

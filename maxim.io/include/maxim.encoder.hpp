@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_encoder_hpp_
-#define _maxim_encoder_hpp_
+#ifndef _maxim_io_encoder_hpp_
+#define _maxim_io_encoder_hpp_
 
 #include "maxim.character_buffer.hpp"
 #include "maxim.character_change_set.hpp"

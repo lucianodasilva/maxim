@@ -1,11 +1,12 @@
 #pragma once
-#ifndef MAXIM_UI_HPP
-#define MAXIM_UI_HPP
+#ifndef _maxim_ui_hpp_
+#define _maxim_ui_hpp_
 
 #include "maxim.application.hpp"
 #include "maxim.button.hpp"
 #include "maxim.checkbox.hpp"
 #include "maxim.control.hpp"
+#include "maxim.control_container.hpp"
 #include "maxim.details.hpp"
 #include "maxim.event.hpp"
 #include "maxim.focus.hpp"
@@ -14,7 +15,6 @@
 #include "maxim.label.hpp"
 #include "maxim.layout.hpp"
 #include "maxim.listbox.hpp"
-#include "maxim.locked_value.hpp"
 #include "maxim.numupdown.hpp"
 #include "maxim.paintable.hpp"
 #include "maxim.panel.hpp"

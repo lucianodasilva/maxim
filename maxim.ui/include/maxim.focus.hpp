@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_FOCUS_HPP
-#define MAXIM_FOCUS_HPP
+#ifndef _maxim_ui_focus_hpp_
+#define _maxim_ui_focus_hpp_
 
 #include "maxim.property.hpp"
 

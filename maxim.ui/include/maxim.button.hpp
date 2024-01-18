@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_BUTTON_HPP
-#define MAXIM_BUTTON_HPP
+#ifndef _maxim_ui_button_hpp_
+#define _maxim_ui_button_hpp_
 
 #include "maxim.label.hpp"
 

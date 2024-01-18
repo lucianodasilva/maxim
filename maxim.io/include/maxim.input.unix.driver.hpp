@@ -1,8 +1,8 @@
 #pragma once
 
 #ifdef __linux__
-#ifndef _maxim_input_unix_driver_hpp_
-#define _maxim_input_unix_driver_hpp_
+#ifndef _maxim_io_input_unix_driver_hpp_
+#define _maxim_io_input_unix_driver_hpp_
 
 #include <cinttypes>
 #include <termio.h>

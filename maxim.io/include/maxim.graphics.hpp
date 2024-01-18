@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_graphics_hpp_
-#define _maxim_graphics_hpp_
+#ifndef _maxim_io_graphics_hpp_
+#define _maxim_io_graphics_hpp_
 
 #include "maxim.character.hpp"
 #include "maxim.character_buffer.hpp"

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_traits_hpp_
-#define _maxim_traits_hpp_
+#ifndef _maxim_ui_traits_hpp_
+#define _maxim_ui_traits_hpp_
 
 #include <functional>
 #include <type_traits>

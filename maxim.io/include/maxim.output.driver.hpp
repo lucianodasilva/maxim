@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_output_driver_hpp_
-#define _maxim_output_driver_hpp_
+#ifndef _maxim_io_output_driver_hpp_
+#define _maxim_io_output_driver_hpp_
 
 #include "maxim.details.hpp"
 #include "maxim.input.hpp"

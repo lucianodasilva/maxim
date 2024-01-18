@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_STACK_HPP
-#define MAXIM_STACK_HPP
+#ifndef _maxim_ui_stack_hpp_
+#define _maxim_ui_stack_hpp_
 
 #include "maxim.control_container.hpp"
 #include "maxim.layout.hpp"

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_character_buffer_hpp_
-#define _maxim_character_buffer_hpp_
+#ifndef _maxim_io_character_buffer_hpp_
+#define _maxim_io_character_buffer_hpp_
 
 #include "maxim.character.hpp"
 
@@ -70,4 +70,4 @@ namespace maxim {
 	};
 }
 
-#endif // _maxim_character_buffer_hpp_
+#endif // _maxim_io_character_buffer_hpp_

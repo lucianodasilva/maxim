@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_PROGRESS_BAR_CPP_HPP
-#define MAXIM_PROGRESS_BAR_CPP_HPP
+#ifndef _maxim_ui_progress_bar_hpp_
+#define _maxim_ui_progress_bar_hpp_
 
 #include "maxim.control.hpp"
 

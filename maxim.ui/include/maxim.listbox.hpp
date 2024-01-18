@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_LISTBOX_HPP
-#define MAXIM_LISTBOX_HPP
+#ifndef _maxim_ui_listbox_hpp_
+#define _maxim_ui_listbox_hpp_
 
 #include "maxim.control.hpp"
 

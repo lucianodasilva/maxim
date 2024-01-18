@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_application_hpp_
-#define _maxim_application_hpp_
+#ifndef _maxim_ui_application_hpp_
+#define _maxim_ui_application_hpp_
 
 #include <maxim.io.hpp>
 

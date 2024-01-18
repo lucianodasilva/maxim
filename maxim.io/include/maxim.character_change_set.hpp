@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_character_change_set_hpp_
-#define _maxim_character_change_set_hpp_
+#ifndef _maxim_io_character_change_set_hpp_
+#define _maxim_io_character_change_set_hpp_
 
 #include <cinttypes>
 #include <vector>

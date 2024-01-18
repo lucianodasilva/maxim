@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_grid_hpp_
-#define _maxim_grid_hpp_
+#ifndef _maxim_ui_grid_hpp_
+#define _maxim_ui_grid_hpp_
 
 #include "maxim.control_container.hpp"
 #include "maxim.layout.hpp"

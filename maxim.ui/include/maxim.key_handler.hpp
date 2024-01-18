@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_key_handler_hpp_
-#define _maxim_key_handler_hpp_
+#ifndef _maxim_ui_key_handler_hpp_
+#define _maxim_ui_key_handler_hpp_
 
 #include <maxim.io.hpp>
 #include "maxim.event.hpp"

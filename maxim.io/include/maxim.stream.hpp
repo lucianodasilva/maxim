@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_stream_hpp_
-#define _maxim_stream_hpp_
+#ifndef _maxim_io_stream_hpp_
+#define _maxim_io_stream_hpp_
 
 #include <iterator>
 #include <limits>

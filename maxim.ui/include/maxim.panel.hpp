@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_PANEL_HPP
-#define MAXIM_PANEL_HPP
+#ifndef _maxim_ui_panel_hpp_
+#define _maxim_ui_panel_hpp_
 
 #include "maxim.control_container.hpp"
 

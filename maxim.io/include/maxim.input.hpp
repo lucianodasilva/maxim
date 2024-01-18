@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_input_hpp_
-#define _maxim_input_hpp_
+#ifndef _maxim_io_input_hpp_
+#define _maxim_io_input_hpp_
 
 #include <cinttypes>
 #include <type_traits>

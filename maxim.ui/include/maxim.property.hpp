@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_property_hpp_
-#define _maxim_property_hpp_
+#ifndef _maxim_ui_property_hpp_
+#define _maxim_ui_property_hpp_
 
 #include "maxim.event.hpp"
 

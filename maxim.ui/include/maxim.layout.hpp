@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_LAYOUT_HPP
-#define MAXIM_LAYOUT_HPP
+#ifndef _maxim_ui_layout_hpp_
+#define _maxim_ui_layout_hpp_
 
 #include <maxim.io.hpp>
 #include <vector>

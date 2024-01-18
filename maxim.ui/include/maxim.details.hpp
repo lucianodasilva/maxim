@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_DETAILS_HPP
-#define MAXIM_DETAILS_HPP
+#ifndef _maxim_ui_details_hpp_
+#define _maxim_ui_details_hpp_
 
 #include <cinttypes>
 #include <functional>

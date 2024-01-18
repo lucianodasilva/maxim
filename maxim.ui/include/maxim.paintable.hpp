@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_paintable_hpp_
-#define _maxim_paintable_hpp_
+#ifndef _maxim_ui_paintable_hpp_
+#define _maxim_ui_paintable_hpp_
 
 #include <maxim.io.hpp>
 #include "maxim.event.hpp"

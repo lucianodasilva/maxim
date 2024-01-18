@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_character_hpp_
-#define _maxim_character_hpp_
+#ifndef _maxim_io_character_hpp_
+#define _maxim_io_character_hpp_
 
 #include <cinttypes>
 #include <cmath>

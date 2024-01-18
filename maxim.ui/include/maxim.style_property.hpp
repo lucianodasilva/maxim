@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_STYLE_PROPERTY_HPP
-#define MAXIM_STYLE_PROPERTY_HPP
+#ifndef _maxim_ui_style_property_hpp_
+#define _maxim_ui_style_property_hpp_
 
 #include <any>
 #include <optional>

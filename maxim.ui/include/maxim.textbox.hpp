@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_TEXTBOX_HPP
-#define MAXIM_TEXTBOX_HPP
+#ifndef _maxim_ui_textbox_hpp_
+#define _maxim_ui_textbox_hpp_
 
 #include "maxim.control.hpp"
 

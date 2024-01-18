@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_CHECKBOX_HPP
-#define MAXIM_CHECKBOX_HPP
+#ifndef _maxim_ui_checkbox_hpp_
+#define _maxim_ui_checkbox_hpp_
 
 #include "maxim.label.hpp"
 

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MAXIM_UI_TAB_PANEL_HPP
-#define MAXIM_UI_TAB_PANEL_HPP
+#ifndef _maxim_ui_tab_panel_hpp_
+#define _maxim_ui_tab_panel_hpp_
 
 #include <maxim.control.hpp>
 #include <maxim.layout.hpp>

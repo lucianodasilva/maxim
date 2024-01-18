@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_input_unix_key_state_emulator_hpp_
-#define _maxim_input_unix_key_state_emulator_hpp_
+#ifndef _maxim_io_input_unix_key_state_emulator_hpp_
+#define _maxim_io_input_unix_key_state_emulator_hpp_
 
 #include "maxim.input.hpp"
 

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_style_hpp_
-#define _maxim_style_hpp_
+#ifndef _maxim_ui_style_hpp_
+#define _maxim_ui_style_hpp_
 
 #include <any>
 #include <stdexcept>

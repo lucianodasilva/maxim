@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_input_unix_termio_parser_hpp_
-#define _maxim_input_unix_termio_parser_hpp_
+#ifndef _maxim_io_io_input_unix_termio_parser_hpp_
+#define _maxim_io_input_unix_termio_parser_hpp_
 
 #include "maxim.input.hpp"
 

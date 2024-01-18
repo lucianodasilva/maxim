@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _maxim_details_hpp_
-#define _maxim_details_hpp_
+#ifndef _maxim_io_details_hpp_
+#define _maxim_io_details_hpp_
 
 #include <cinttypes>
 #include <algorithm>

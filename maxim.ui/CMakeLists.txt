@@ -14,7 +14,6 @@ add_library (maxim_ui STATIC
         include/maxim.layout.hpp
         include/maxim.listbox.hpp
         include/maxim.numupdown.hpp
-        include/maxim.locked_value.hpp
         include/maxim.paintable.hpp
         include/maxim.panel.hpp
         include/maxim.progress_bar.hpp
