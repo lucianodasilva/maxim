@@ -10,8 +10,12 @@ namespace maxim {
 
 	class button : public label {
 	public:
+		using builder = specialized_builder < button >;
+
 		constexpr static auto   DEFAULT_STYLE_CLASS_NAME = "button";
 		std::string_view default_style_class_name () const override;
+
+		button ();
 
 		std::string_view style_state () const override;
 
@@ -22,10 +26,12 @@ namespace maxim {
 		void on_key_up (maxim::input::key_info const & key) override;
 
 		inline bool is_pressed () const { return _pressed; }
-
 	private:
 		bool _pressed = false;
 	};
+
+	template < typename derived_type >
+	class builder < button, derived_type > : public builder < label, derived_type > {};
 }
 
 #endif

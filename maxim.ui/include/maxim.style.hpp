@@ -148,10 +148,10 @@ namespace maxim {
 		style_property_reader           style_reader();
 
 		virtual std::string_view        default_style_class_name () const = 0;
+
 		void                            style_class_name_reset ();
 		std::string_view                style_class_name ();
 		void                            style_class_name (std::string_view name);
-
 	private:
 		std::optional < std::string >   _style_class_name;
 	};
@@ -168,6 +168,7 @@ namespace maxim {
 		constexpr auto SCROLLBAR = "scrollbar";
 		constexpr auto PADDING = "padding";
 		constexpr auto MARGINS = "margins";
+		constexpr auto CONTENT_MARGINS = "content-margins";
 	};
 
 	/// Helper common state names

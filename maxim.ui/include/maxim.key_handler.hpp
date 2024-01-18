@@ -7,36 +7,36 @@
 
 namespace maxim {
 
-	class key_handler_base {
+	class key_handler {
 	public:
-		virtual ~key_handler_base () = default;
+		virtual ~key_handler () = default;
 
 		virtual void on_key_up (maxim::input::key_info const & key) = 0;
 		virtual void on_key_down (maxim::input::key_info const & key) = 0;
 		virtual void on_key_press (maxim::input::key_info const & key) = 0;
 	};
 
-	template < typename sender_type >
-	using key_event = event < sender_type & /* sender */, input::key_info const & /* key */ >;
+	template < typename derived_type >
+	using key_event = event < derived_type & /* sender */, input::key_info const & /* key */ >;
 
-	template < typename sender_type, typename base_type = key_handler_base /* work around virtual inheritance */ >
-	class key_handler : public base_type {
+	template < typename derived_type /* work around virtual inheritance */ >
+	class basic_key_handler : public key_handler {
 	public:
 
-		key_event < sender_type > key_up;
-		key_event < sender_type > key_down;
-		key_event < sender_type > key_press;
+		key_event < derived_type > key_up;
+		key_event < derived_type > key_down;
+		key_event < derived_type > key_press;
 
 		void on_key_up (maxim::input::key_info const & key) override {
-			key_up.invoke (*static_cast < sender_type * > (this), key);
+			key_up.invoke (*static_cast < derived_type * > (this), key);
 		}
 
 		void on_key_down (maxim::input::key_info const & key) override {
-			key_down.invoke(*static_cast < sender_type * > (this), key);
+			key_down.invoke(*static_cast < derived_type * > (this), key);
 		}
 
 		void on_key_press (maxim::input::key_info const & key) override {
-			key_press.invoke(*static_cast < sender_type * > (this), key);
+			key_press.invoke(*static_cast < derived_type * > (this), key);
 		}
 	};
 

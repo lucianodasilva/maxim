@@ -6,12 +6,16 @@ namespace maxim {
 		return button::DEFAULT_STYLE_CLASS_NAME;
 	}
 
+	button::button () {
+		this->tab_stop = true;
+	}
+
 	std::string_view button::style_state() const {
 		if (is_pressed()) {
 			return states::PRESSED;
 		}
 
-		return control::style_state();
+		return label::style_state();
 	}
 
 	void button::on_pressed() {

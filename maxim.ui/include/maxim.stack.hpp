@@ -2,7 +2,7 @@
 #ifndef MAXIM_STACK_HPP
 #define MAXIM_STACK_HPP
 
-#include "maxim.control.hpp"
+#include "maxim.control_container.hpp"
 #include "maxim.layout.hpp"
 
 namespace maxim {
@@ -12,35 +12,57 @@ namespace maxim {
 		vertical
 	};
 
-	class basic_stack_item {
+	class stack_item : public virtual control {
 	public:
+		using builder = specialized_builder < stack_item >;
+
 		property < layout::partition > length;
 
-		maxim::rect layout (class stack * parent, maxim::rect bounds) const;
+		static maxim::rect layout (class stack * parent, stack_item * item, maxim::rect bounds);
 	};
 
-	template < typename control_type,  typename std::enable_if_t < std::is_base_of_v < control, control_type >, int > = 0 >
-	class stack_item : public basic_stack_item, public virtual control_type {
+	class stack : public composite_control_container < stack_item > {
 	public:
-		using control_type::control_type;
+		using builder = specialized_builder < stack >;
 
-		inline void on_paint (maxim::graphics & g, maxim::rect bounds) override {
-			// HACK: dynamic_cast is a major code smell... but its what i got for now
-			control_type::on_paint (g, this->layout (dynamic_cast < class stack * > (this->parent()) , bounds));
-		}
-	};
-
-	class stack : public specialized_control_container < basic_stack_item, stack_item > {
-	public:
 		constexpr static auto   DEFAULT_STYLE_CLASS_NAME = "stack";
 		std::string_view        default_style_class_name () const override;
 
 		property < maxim::orientation > orientation { maxim::orientation::vertical };
 
 		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
-	protected:
-		void on_control_added(maxim::basic_stack_item *item) override;
-		std::vector < basic_stack_item * >  _partition_objects;
+	};
+
+	template < typename derived_type >
+	class builder < stack, derived_type > : public builder < control, derived_type > {
+	public:
+		using builder < control, derived_type >::builder;
+
+		inline derived_type & orientation (maxim::orientation value) {
+			this->get()->_orientation = value;
+			return this->derived();
+		}
+
+		inline derived_type & horizontal () {
+			this->get()->_orientation = maxim::orientation::horizontal;
+			return this->derived();
+		}
+
+		inline derived_type & vertical () {
+			this->get()->_orientation = maxim::orientation::vertical;
+			return this->derived();
+		}
+	};
+
+	template < typename derived_type >
+	class builder < stack_item, derived_type > {
+	public:
+		inline derived_type & length (layout::partition value) {
+			auto & inst = *static_cast < derived_type * > (this);
+			inst.get()->length = value;
+
+			return inst;
+		}
 	};
 
 }

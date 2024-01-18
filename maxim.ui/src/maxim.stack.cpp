@@ -3,19 +3,19 @@
 
 namespace maxim {
 
-	maxim::rect basic_stack_item::layout(class maxim::stack *parent, maxim::rect bounds) const {
-		if (parent == nullptr) {
-			return bounds;
+	maxim::rect stack_item::layout(maxim::stack *parent, stack_item * item, maxim::rect bounds) {
+		if (parent == nullptr || item == nullptr) {
+			return {};
 		}
 
 		return maxim::rect {
 			bounds.position + maxim::point {
-				parent->orientation.get() == maxim::orientation::horizontal ? length.get ().near : 0,
-				parent->orientation.get() == maxim::orientation::vertical ? length.get ().near : 0
+				parent->orientation.get() == maxim::orientation::horizontal ? item->length.get ().near : 0,
+				parent->orientation.get() == maxim::orientation::vertical ? item->length.get ().near : 0
 			},
 			maxim::size {
-				parent->orientation.get() == maxim::orientation::horizontal ? length.get ().far - length.get ().near : bounds.size.width,
-				parent->orientation.get() == maxim::orientation::vertical ? length.get ().far - length.get ().near : bounds.size.height
+				parent->orientation.get() == maxim::orientation::horizontal ? item->length.get ().far - item->length.get ().near : bounds.size.width,
+				parent->orientation.get() == maxim::orientation::vertical ? item->length.get ().far - item->length.get ().near : bounds.size.height
 			}
 		};
 	}
@@ -25,20 +25,28 @@ namespace maxim {
 	}
 
 	void stack::on_paint (maxim::graphics & g, maxim::rect bounds) {
+
+		int padding;
+
+		this->style_reader()
+			.get (properties::PADDING, padding);
+
 		// update partitions
 		layout::partition::refresh (
 			this->orientation.get () == maxim::orientation::horizontal ? bounds.size.width : bounds.size.height,
-			_partition_objects,
-			[](auto * stack_item_inst) -> maxim::layout::partition & {
+			padding,
+			this->controls(),
+			[](auto & stack_item_inst) -> maxim::layout::partition & {
 				return stack_item_inst->length.get();
 			});
 
-		// paint itself and paint children
-		control_container::on_paint (g, bounds);
-	}
+		// paint itself
+		basic_control_container::on_paint (g, bounds);
 
-	void stack::on_control_added(maxim::basic_stack_item *item) {
-		_partition_objects.push_back(item);
+		// paint children
+		for (auto & object : this->controls()) {
+			object->on_paint (g, stack_item::layout (this, object.get (), bounds));
+		}
 	}
 
 }

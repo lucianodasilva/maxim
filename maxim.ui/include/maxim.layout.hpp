@@ -23,17 +23,22 @@ namespace maxim {
 
 		struct partition {
 		public:
-			float length;
-			partition_kind kind;
-
-			int near;
-			int far;
+			partition () = default;
+			constexpr inline partition (float length) : length(length) {}
+			constexpr inline partition (int length) : length (static_cast < int > (length)) {}
+			constexpr inline partition (float length, partition_kind kind) : length{length}, kind{kind} {}
 
 			template<typename iterable_t, typename getter_t>
 			static inline float sum (partition_kind kind, iterable_t const & iterable, getter_t const & getter);
 
 			template<typename iterable_t, typename getter_t>
-			static inline void refresh(int size, iterable_t & iterable, getter_t const & getter);
+			static inline void refresh(int size, int padding, iterable_t & iterable, getter_t const & getter);
+
+			float length = .0F;
+			partition_kind kind = partition_kind::constant;
+
+			int near = 0;
+			int far = 0;
 		};
 
 		struct partition_range {
@@ -67,25 +72,27 @@ namespace maxim {
 		}
 
 		template<typename iterable_t, typename getter_t>
-		void partition::refresh (int size, iterable_t & iterable, getter_t const & getter) {
+		void partition::refresh (int size, int padding, iterable_t & iterable, getter_t const & getter) {
 			// if there are no partitions, return
 			if (iterable.empty ()) {
 				return;
 			}
+
+			auto count = std::distance (std::begin (iterable), std::end (iterable));
 
 			// get sum of all constant and variable partitions
 			auto dim_const = partition::sum(partition_kind::constant, iterable, getter);
 			auto dim_var = partition::sum(partition_kind::variable, iterable, getter);
 
 			// get remaining variable space
-			auto rem_var = static_cast < float > (size) - dim_const;
+			auto rem_var = static_cast < float > (size) - (dim_const + padding * (count - 1));
 
 			if (rem_var < .0F) {
 				rem_var = .0F;
 			}
 
 			// update partitions
-			float sum{.0F};
+			float sum {.0F};
 
 			// update layout begin
 			for (auto & item : iterable) {
@@ -101,6 +108,8 @@ namespace maxim {
 					// if the pattern is variable, add to the sum proportionally
 					sum += rem_var * (part.length / dim_var);
 				}
+
+				sum += padding;
 			}
 
 			// update layout end
@@ -109,12 +118,15 @@ namespace maxim {
 				auto next_it = std::next(it);
 
 				while (next_it != iterable.end()) {
-					getter (*it).far = getter(*next_it).near;
+					getter (*it).far = getter(*next_it).near - padding;
 					++it; ++next_it;
 				}
 
-				// set last partition to the size
-				getter(*it).far = size;
+				if (getter(*it).kind == partition_kind::constant){
+					getter(*it).far = getter(*it).near + getter(*it).length;
+				} else {
+					getter(*it).far = size;
+				}
 			}
 		}
 
@@ -122,11 +134,19 @@ namespace maxim {
 	}
 
 	constexpr layout::partition operator "" _fixed (long double value) {
-		return {static_cast < float > (value), layout::partition_kind::constant, 0, 0 };
+		return {static_cast < float > (value), layout::partition_kind::constant };
+	}
+
+	constexpr layout::partition operator "" _fixed (unsigned long long  value) {
+		return {static_cast < float > (value), layout::partition_kind::constant };
 	}
 
 	constexpr layout::partition operator "" _var (long double value) {
-		return {static_cast < float > (value), layout::partition_kind::variable, 0, 0 };
+		return {static_cast < float > (value), layout::partition_kind::variable };
+	}
+
+	constexpr layout::partition operator "" _var (unsigned long long value) {
+		return {static_cast < float > (value), layout::partition_kind::variable };
 	}
 
 }

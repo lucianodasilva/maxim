@@ -8,7 +8,7 @@ namespace maxim {
 	}
 
 	void label::on_paint (maxim::graphics & g, maxim::rect bounds) {
-		control::on_paint (g, bounds);
+		basic_control::on_paint (g, bounds);
 
 		maxim::color            text_color;
 		maxim::text_attributes  text_attributes;

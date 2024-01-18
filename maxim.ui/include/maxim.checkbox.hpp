@@ -12,13 +12,24 @@ namespace maxim {
 		constexpr static auto   DEFAULT_STYLE_CLASS_NAME = "checkbox";
 		std::string_view        default_style_class_name() const override;
 
+		checkbox();
+
 		void on_paint(maxim::graphics & g, maxim::rect bounds) override;
 
-		// botton related properties
-		property < bool >                   value;
-		property < std::string >            text;
+		property < bool > value;
 
 		void on_key_press (maxim::input::key_info const & key) override;
+	};
+
+	template < typename derived_type >
+	class builder < checkbox, derived_type > : public builder < label, derived_type > {
+	public:
+		using builder < label, derived_type >::builder;
+
+		inline auto & value (bool value) {
+			this->get ()->value = value;
+			return this->derived();
+		}
 	};
 }
 

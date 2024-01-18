@@ -1,7 +1,20 @@
 #include "maxim.listbox.hpp"
+#include "maxim.application.hpp"
 #include "maxim.layout.hpp"
 
 namespace maxim {
+
+	listbox::listbox() {
+		selected_index.changed.append_no_scope([this](auto & sender, int index) {
+			if (index == NO_SELECTION) {
+				on_selection_changed(std::nullopt);
+			} else {
+				on_selection_changed(items.get()[index]);
+			}
+		});
+
+		this->tab_stop = true;
+	}
 
 	std::string_view listbox::default_style_class_name() const {
 		return listbox::DEFAULT_STYLE_CLASS_NAME;
@@ -11,8 +24,21 @@ namespace maxim {
 		return states::DEFAULT;
 	}
 
+	void listbox::on_focus() {
+		// ( doesnt work backwards )
+		// if we have no data, focus next control
+		// if (items.get().empty()) {
+		// 	if (application()) {
+		// 		application()->focus_next();
+		// 		return;
+		// 	}
+		// }
+
+		basic_control::on_focus();
+	}
+
 	void listbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
-		control::on_paint(g, bounds);
+		basic_control::on_paint(g, bounds);
 
 		bool    	    border;
 		bool            scrollbar;
@@ -121,7 +147,7 @@ namespace maxim {
 	}
 
 	void listbox::on_key_press(maxim::input::key_info const &key) {
-		control::on_key_press(key);
+		basic_control::on_key_press(key);
 
 		// if there are no items to see, there is nothing to see :P
 		if (items.get().empty ()) {
@@ -147,12 +173,8 @@ namespace maxim {
 		}
 	}
 
-	void listbox::on_focus_lost() {
-		maxim::control::on_focus_lost();
-	}
-
-	void listbox::on_focus() {
-		maxim::control::on_focus();
+	void listbox::on_selection_changed (std::optional < listbox_item > item) {
+		selection_changed.invoke(*this, item);
 	}
 
 	void listbox::update_view (int height) {

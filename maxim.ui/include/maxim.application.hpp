@@ -23,8 +23,8 @@ namespace maxim {
 	};
 
 	class application :
-		public  paintable < application >,
-		public  key_handler < application >,
+		public  basic_paintable < application >,
+		public  basic_key_handler < application >,
 	    public  focus_manager,
 		private maxim::input_event_handler
 	{

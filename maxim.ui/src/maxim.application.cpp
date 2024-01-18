@@ -44,7 +44,7 @@ namespace maxim {
 	}
 
 	void application::on_key_up (input::key_info const & key) {
-		key_handler<application>::on_key_up(key);
+		basic_key_handler<application>::on_key_up(key);
 
 		if (current_focus() != nullptr) {
 			current_focus()->on_key_up(key);
@@ -52,7 +52,7 @@ namespace maxim {
 	}
 
 	void application::on_key_down (input::key_info const & key) {
-		key_handler<application>::on_key_down(key);
+		basic_key_handler<application>::on_key_down(key);
 
 		if (current_focus() != nullptr) {
 			current_focus()->on_key_down(key);
@@ -60,18 +60,17 @@ namespace maxim {
 	}
 
 	void application::on_key_press (input::key_info const & key) {
-		key_handler<application>::on_key_press(key);
+		basic_key_handler<application>::on_key_press(key);
 
 		if (current_focus() != nullptr) {
 			current_focus()->on_key_press(key);
 		}
-
 	}
 
 	void application::on_paint(maxim::graphics &g, maxim::rect bounds) {
 
 		if (paint_order == application_paint_order::pre_controls) {
-			paintable < application >::on_paint(g, bounds);
+			basic_paintable < application >::on_paint(g, bounds);
 		}
 
 		if (active()) {
@@ -79,7 +78,7 @@ namespace maxim {
 		}
 
 		if (paint_order == application_paint_order::post_controls) {
-			paintable < application >::on_paint(g, bounds);
+			basic_paintable < application >::on_paint(g, bounds);
 		}
 	}
 

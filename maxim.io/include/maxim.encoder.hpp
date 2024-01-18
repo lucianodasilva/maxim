@@ -18,7 +18,7 @@ namespace maxim {
     };
 
     namespace ansi {
-
+		// https://www.xfree86.org/current/ctlseqs.html
         constexpr char const
             csi[]                       = "\033[", // control sequence introducer
             ss3[]                       = "\033O", // single shift select of G3

@@ -12,9 +12,14 @@ namespace maxim {
 		std::any    tag;
 	};
 
+	using listbox_selection_changed_event = event < class listbox & /* sender */, std::optional < listbox_item > /* item */ >;
+
 	class listbox :
-		public control {
+		public basic_control {
 	public:
+		using builder = specialized_builder < listbox >;
+
+		listbox ();
 		static constexpr int NO_SELECTION = std::numeric_limits < int >::max();
 
 		constexpr static auto   DEFAULT_STYLE_CLASS_NAME = "listbox";
@@ -22,16 +27,18 @@ namespace maxim {
 
 		std::string_view        style_state () const override;
 
+		void on_focus () override;
+
 		void on_paint(maxim::graphics &g, maxim::rect bounds) override;
 
 		// functionality related properties
-		property<int>                       selected_index = NO_SELECTION;
+		property<int>  selected_index = NO_SELECTION;
 
 		// capture keyboard events
 		void on_key_press (maxim::input::key_info const & key) override;
 
-		void on_focus_lost () override;
-		void on_focus () override;
+		listbox_selection_changed_event selection_changed;
+		virtual void on_selection_changed (std::optional < listbox_item > item);
 
 		// TODO: perhaps hide this in the implementation?
 		property < std::vector < listbox_item > > items;
@@ -42,6 +49,12 @@ namespace maxim {
 		int _last_height = 0;
 		int _hovered_offset = 0;
 		int _scroll_offset = 0;
+	};
+
+	template < typename derived_type >
+	class builder < listbox, derived_type > : public builder < control, derived_type > {
+	public:
+		using builder < control, derived_type >::builder;
 	};
 }
 

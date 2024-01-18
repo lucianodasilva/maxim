@@ -1,4 +1,7 @@
 #include "maxim.focus.hpp"
+#include "maxim.control.hpp"
+
+#include <stdexcept>
 
 namespace maxim {
 
@@ -140,20 +143,20 @@ namespace maxim {
 		}
 	}
 
-	void focus_manager::focus (focusable_base * focusable) {
+	void focus_manager::focus (control * object) {
 		// if no object is passed, unfocus
-		if (focusable == nullptr) {
+		if (object == nullptr) {
 			this->unfocus ();
 			return;
 		}
 
 		// if nothing changes, do nothing
-		if (_current_focus == focusable) {
+		if (_current_focus == object) {
 			return;
 		}
 
-		// double check it bellongs to us
-		if (_focus_set.find (focusable) == _focus_set.end ()) {
+		// double check it belongs to us
+		if (_focus_set.find (object) == _focus_set.end ()) {
 			// TODO: rething if this should be an error or simply ignored
 			throw std::runtime_error ("focus_manager_base::focus: focusable object instance does not belong to this manager");
 		}
@@ -162,7 +165,7 @@ namespace maxim {
 		this->unfocus();
 
 		// focus new
-		_current_focus = focusable;
+		_current_focus = object;
 
 		// notify
 		if (_current_focus) {
@@ -170,7 +173,7 @@ namespace maxim {
 		}
 	}
 
-	void focus_manager::focus_register (maxim::focusable_base *object) {
+	void focus_manager::focus_register (maxim::control * object) {
 		if (object == nullptr) {
 			return;
 		}
@@ -180,6 +183,18 @@ namespace maxim {
 		}
 
 		_focus_set.insert (object);
+	}
+
+	void focus_manager::focus_unregister (maxim::control * object) {
+		if (object == nullptr) {
+			return;
+		}
+
+		_focus_set.erase (object);
+	}
+
+	bool focus_manager::focus_registered (maxim::control const * object) const {
+		return _focus_set.find (const_cast < maxim::control * > (object)) != _focus_set.end ();
 	}
 
 	void focus_manager::focus_reset () {
@@ -195,6 +210,10 @@ namespace maxim {
 			_current_focus->on_focus_lost ();
 			_current_focus = nullptr;
 		}
+	}
+
+	bool focus_manager::focusable_compare_less::operator () (control const * lhs, control const * rhs) const {
+		return lhs->focus_index() < rhs->focus_index();
 	}
 
 }

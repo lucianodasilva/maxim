@@ -2,32 +2,23 @@
 #ifndef _maxim_grid_hpp_
 #define _maxim_grid_hpp_
 
-#include "maxim.control.hpp"
+#include "maxim.control_container.hpp"
 #include "maxim.layout.hpp"
 
 namespace maxim {
 
-	class basic_grid_item {
+	class grid_item : public virtual control {
 	public:
 		property < layout::partition_range > columns;
 		property < layout::partition_range > rows;
 
-		maxim::rect layout (class grid * parent, maxim::rect bounds) const;
+		static maxim::rect layout (class grid * parent, grid_item * item, maxim::rect bounds);
 	};
 
-	template < typename control_type,  typename std::enable_if_t < std::is_base_of_v < control, control_type >, int > = 0 >
-	class grid_item : public basic_grid_item, public virtual control_type {
+	class grid : public composite_control_container < grid_item > {
 	public:
-		using control_type::control_type;
+		using builder = specialized_builder < grid >;
 
-		inline void on_paint (graphics & g, rect bounds) override {
-			// HACK: dynamic_cast is a major code smell... but its what i got for now
-			control_type::on_paint (g, this->layout (dynamic_cast < grid * > (this->parent()), bounds));
-		}
-	};
-
-	class grid : public specialized_control_container < basic_grid_item, grid_item > {
-	public:
 		constexpr static auto   DEFAULT_STYLE_CLASS_NAME = "grid";
 		std::string_view        default_style_class_name () const override;
 
@@ -37,6 +28,41 @@ namespace maxim {
 		void on_paint (graphics & g, rect bounds) override;
 	};
 
+	template < typename derived_type >
+	class builder < grid, derived_type > : public builder < control, derived_type > {
+	public:
+		using builder < control, derived_type >::builder;
+
+		inline auto & columns (std::vector < layout::partition > value) {
+			this->get()->columns = value;
+			return this->derived();
+		}
+
+		inline auto & rows (std::vector < layout::partition > value) {
+			this->get()->rows = value;
+			return this->derived();
+		}
+
+		inline auto & layout (std::vector < layout::partition > columns, std::vector < layout::partition > rows) {
+			this->get()->columns = columns;
+			this->get()->rows = rows;
+
+			return this->derived();
+		}
+	};
+
+	template < typename derived_type >
+	class builder < grid_item, derived_type > {
+	public:
+		inline derived_type & position (layout::partition_range column_range, layout::partition_range row_range) {
+			auto & inst = *static_cast < derived_type * > (this);
+
+			inst.get()->columns = column_range;
+			inst.get()->rows = row_range;
+
+			return inst;
+		}
+	};
 }
 
 #endif

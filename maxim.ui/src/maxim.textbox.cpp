@@ -7,6 +7,10 @@ namespace maxim {
 		return textbox::DEFAULT_STYLE_CLASS_NAME;
 	}
 
+	textbox::textbox() {
+		this->tab_stop = true;
+	}
+
 	void textbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
 
 		// calculate text window
@@ -153,7 +157,7 @@ namespace maxim {
 		}
 
 		// do remaining default key behaviour
-		maxim::control::on_key_press(key);
+		basic_control::on_key_press(key);
 	}
 
 	void textbox::on_validate (std::string_view value, bool & cancel) {

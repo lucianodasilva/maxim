@@ -7,23 +7,22 @@
 
 namespace maxim {
 
-	class paintable_base {
+	class paintable {
 	public:
-		virtual ~paintable_base () = default;
+		virtual ~paintable () = default;
 		virtual void on_paint (graphics & g, rect bounds) = 0;
 	};
 
-	template < typename sender_type >
-	using paint_event = event < sender_type &, graphics &, rect const & >;
+	template < typename derived_type >
+	using paint_event = event < derived_type & /* sender */, graphics & /* g */, rect /* bound */>;
 
-	template < typename sender_type >
-	class paintable : public paintable_base {
+	template < typename derived_type >
+	class basic_paintable : public paintable {
 	public:
-
-		paint_event < sender_type > paint;
+		paint_event < derived_type > paint;
 
 		void on_paint (graphics & g, rect bounds) override {
-			paint.invoke (*static_cast < sender_type * > (this), g, bounds);
+			paint.invoke (*static_cast < derived_type * > (this), g, bounds);
 		}
 	};
 

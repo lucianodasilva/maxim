@@ -2,12 +2,18 @@
 
 namespace maxim {
 
+
+
 	std::string_view checkbox::default_style_class_name() const {
 		return checkbox::DEFAULT_STYLE_CLASS_NAME;
 	}
 
+	checkbox::checkbox() {
+		this->tab_stop = true;
+	}
+
 	void checkbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
-		control::on_paint(g, bounds);
+		label::on_paint(g, bounds);
 
 		maxim::color            text_color;
 		maxim::text_attributes  text_attributes;
@@ -41,7 +47,7 @@ namespace maxim {
 			value = !value.get();
 		}
 
-		control::on_key_press (key);
+		label::on_key_press (key);
 	}
 
 }

@@ -151,6 +151,13 @@ namespace maxim {
 		_base_key (base_key)
 	{}
 
+	style_property_reader style_client::style_reader () {
+		return {
+			this->style(),
+			{ this->style_class_name(), this->style_state () },
+		};
+	}
+
 	void style_client::style_class_name_reset () {
 		this->_style_class_name = default_style_class_name();
 	}
@@ -165,12 +172,5 @@ namespace maxim {
 
 	void style_client::style_class_name(std::string_view class_name) {
 		_style_class_name = class_name;
-	}
-
-	style_property_reader style_client::style_reader () {
-		return {
-			this->style(),
-			{ this->style_class_name(), this->style_state () },
-		};
 	}
 }
