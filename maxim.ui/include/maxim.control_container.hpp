@@ -34,13 +34,29 @@ namespace maxim {
 		using control_type::control_type;
 	};
 
+	template <typename control_type, typename derived_type, typename = void>
+	struct builder_exists : public std::false_type {};
+
+	template <typename control_type, typename derived_type>
+	struct builder_exists<control_type, derived_type, std::void_t<decltype(new builder<control_type, derived_type>(nullptr))>>
+		: public std::true_type {};
+
+	template <typename control_type, typename derived_type>
+	constexpr bool builder_exists_v = builder_exists<control_type, derived_type, void>::value;
+
+	template <typename control_type, typename derived_type>
+	using composite_builder_base_t = std::conditional_t<
+		builder_exists_v<control_type, derived_type>,
+		builder<control_type, derived_type>,
+		builder_base<derived_type>>;
+
 	template < typename control_type, typename item_type, typename derived_type >
 	class builder < composite_item < control_type, item_type >, derived_type > :
-		public builder < control_type, derived_type >,
+		public composite_builder_base_t < control_type, derived_type >,
 		public builder < item_type, derived_type >
 	{
 	public:
-		using builder < control_type, derived_type >::builder;
+		using composite_builder_base_t < control_type, derived_type >::composite_builder_base_t;
 	};
 
 	template < typename item_type >

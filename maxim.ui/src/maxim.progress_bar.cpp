@@ -31,7 +31,7 @@ namespace maxim {
 
 		g.draw_box(bounds, back_color, true);
 
-		if (not text.get().empty()) {
+		if (!text.get().empty()) {
 			g.draw_text(text, bounds, highlight_text_color, highlight_text_attributes);
 		}
 

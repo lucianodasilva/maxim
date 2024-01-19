@@ -21,25 +21,6 @@ namespace maxim {
 	/// Map of style states
 	using style_state_desc_map = std::map < std::string_view, style_state_desc >;
 
-	/// Property definitions that compose a style class
-	struct style_class_desc {
-	public:
-		std::string_view        from;
-		style_state_desc_map    states;
-		style_state_desc        properties;
-	};
-
-	/// Map of style classes
-	using style_class_desc_map = std::map < std::string_view, style_class_desc >;
-
-	/// Property definitions that compose a style
-	struct style_desc {
-	public:
-		style_class_desc_map    classes;
-		style_state_desc_map    states;
-		style_state_desc        properties;
-	};
-
 	/// Map of style class links
 	using style_inheritance_map = std::unordered_map < std::string_view, std::string_view >;
 
@@ -47,22 +28,24 @@ namespace maxim {
 	public:
 
 		style () = default;
-		explicit style (style_desc const & desc);
 
 		/// add property(ies) to a class/state pair
 		/// @param class_name The class name
 		/// @param state_name The state name
 		/// @param properties The properties to add
-		style & set_properties (std::string_view class_name, std::string_view state_name, style_state_desc const & properties);
+		style & set_state (std::string_view class_name, std::string_view state_name, style_state_desc const & properties);
 
 		/// add state(s) to a class
 		/// @param class_name The class name
 		/// @param states The states to add
-		style & set_states (std::string_view class_name, style_state_desc_map const & states);
+		style & set_class (std::string_view class_name, style_state_desc_map const & states);
 
-		/// add class(es) to the style
-		/// @param classes The classes to add
-		style & set_classes (style_class_desc_map const & classes);
+		/// add state(s) to a class
+		/// @param class_name The class name
+		/// @param inherits The class to inherit from
+		/// @param states The states to add
+		style& set_class(std::string_view class_name, std::string_view inherits, style_state_desc_map const& states);
+
 
 		/// set a property
 		/// @param key The property key
@@ -80,7 +63,7 @@ namespace maxim {
 		inline std::optional < value_type > get (style_property_key key) const {
 			auto opt_any = this->get_any (key);
 
-			if (not opt_any.has_value()) {
+			if (!opt_any.has_value()) {
 				return std::nullopt;
 			}
 
@@ -183,7 +166,7 @@ namespace maxim {
 
 	/// Helper common property values
 	namespace defaults {
-		constexpr auto ACCENT = maxim::color { 0x6337ff };
+		constexpr auto ACCENT = maxim::color { 0x6337FF };
 		constexpr auto ACCENT_LIGHT = maxim::color { 0xAD85FF };
 		constexpr auto ACCENT_DARK = maxim::color { 0x150568 };
 		constexpr auto SEC = maxim::color { 0x273293 };
@@ -205,14 +188,13 @@ namespace maxim {
 		constexpr auto BORDER_COLOR = maxim::colors::black;
 
 		// default text attributes
-		constexpr auto TEXT_ATTRIBUTES = maxim::text_attributes {
-			.h_align = maxim::alignment::center,
-			.v_align = maxim::alignment::center,
-		};
+        constexpr auto TEXT_ATTRIBUTES = maxim::text_attributes {
+            maxim::alignment::center, // horizontal
+            maxim::alignment::center  // vertical
+        };
 	};
 
 	constexpr auto DEFAULT_CLASS_NAME = "";
-
 }
 
 #endif

@@ -4,18 +4,18 @@
 #ifndef _maxim_io_input_win_driver_hpp_
 #define _maxim_io_input_win_driver_hpp_
 
-#include "maxim.input.sec_driver.hpp"
+#include "maxim.input.driver.hpp"
 
 #include <Windows.h>
 
 namespace maxim::input::win {
 
-    class sec_driver : public maxim::input::sec_driver {
+    class driver : public maxim::input::driver {
     public:
                     
-		sec_driver();
+        driver();
 
-        virtual ~sec_driver();
+        virtual ~driver();
         virtual void dispatch_events(input_event_handler& handler) const override;
 
     private:

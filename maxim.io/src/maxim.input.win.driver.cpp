@@ -10,7 +10,7 @@
 
 namespace maxim::input::win {
 
-	sec_driver::sec_driver()
+	driver::driver()
 	{
 		// enable direct input
 		_stdin_handle = GetStdHandle(STD_INPUT_HANDLE);
@@ -33,7 +33,7 @@ namespace maxim::input::win {
 			throw std::runtime_error("Failed setting console input mode");
 	}
 
-	sec_driver::~sec_driver() {
+	driver::~driver() {
 		// restore original console input
 		if (_stdin_handle != INVALID_HANDLE_VALUE)
 			SetConsoleMode(
@@ -42,7 +42,7 @@ namespace maxim::input::win {
 			);
 	}
 
-	void sec_driver::dispatch_events(maxim::input_event_handler& handler) const {
+	void driver::dispatch_events(maxim::input_event_handler& handler) const {
 		if (_stdin_handle == INVALID_HANDLE_VALUE)
 			return;
 
@@ -59,8 +59,9 @@ namespace maxim::input::win {
 			native_input.data(),
 			len,
 			&len
-		))
+		)) {
 			throw std::runtime_error("Failed to read console input");
+		}
 
 		for (decltype(len) i = 0; i < len; ++i) {
 			auto & input = native_input[i];
@@ -74,7 +75,11 @@ namespace maxim::input::win {
 				};
 
 				if (input.Event.KeyEvent.bKeyDown == TRUE) {
-					handler.on_key_down(info);
+					if (input.Event.KeyEvent.wRepeatCount == 1) {
+						handler.on_key_down(info);
+					}
+						
+					handler.on_key_press(info);
 				}
 				else {
 					handler.on_key_up(info);
@@ -84,7 +89,7 @@ namespace maxim::input::win {
 		}
 	}
 
-	modifier_key sec_driver::cast_to_modifier(DWORD const & key_event) {
+	modifier_key driver::cast_to_modifier(DWORD const & key_event) {
 		modifier_key key = {};
 		auto mod = key_event;
 
@@ -92,22 +97,19 @@ namespace maxim::input::win {
 		key = key | (
 			((mod & 0x0001) == 0x0001 || (mod & 0x0002) == 0x0002) ? 
 			modifier_key::alt :
-			modifier_key::none
-		);
+			modifier_key::none );
 
 		// evaluate ctrl
 		key = key | (
 			(((mod & 0x0004) == 0x0004) || (mod & 0x0008) == 0x0008) ?
 			modifier_key::control :
-			modifier_key::none
-			);
+			modifier_key::none );
 
 		// evaluate shift
 		key = key | (
 			((mod & 0x0010) == 0x0010) ?
 			modifier_key::shift :
-			modifier_key::none
-			);
+			modifier_key::none );
 
 		return key;
 	}

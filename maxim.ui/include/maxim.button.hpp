@@ -31,7 +31,10 @@ namespace maxim {
 	};
 
 	template < typename derived_type >
-	class builder < button, derived_type > : public builder < label, derived_type > {};
+	class builder < button, derived_type > : public builder < label, derived_type > {
+	public:
+		using builder < label, derived_type >::builder;
+	};
 }
 
 #endif

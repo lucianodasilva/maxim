@@ -1,24 +1,18 @@
 #include "maxim.style.hpp"
 
 #include "maxim.button.hpp"
+#include "maxim.grid.hpp"
 #include "maxim.listbox.hpp"
+#include "maxim.stack.hpp"
 #include "maxim.textbox.hpp"
+#include "maxim.panel.hpp"
 
 #include <maxim.io.hpp>
 
 
 namespace maxim {
 
-	style::style (style_desc const & desc) {
-		// set all default properties
-		this->set_properties (DEFAULT_CLASS_NAME, states::DEFAULT, desc.properties);
-		// set all default states
-		this->set_states (DEFAULT_CLASS_NAME, desc.states);
-		// set all classes
-		this->set_classes (desc.classes);
-	}
-
-	style & style::set_properties (std::string_view class_name, std::string_view state_name, style_state_desc const & properties) {
+	style & style::set_state (std::string_view class_name, std::string_view state_name, style_state_desc const & properties) {
 		style_property_key key = { class_name, state_name };
 
 		for (auto const & [property_name, value] : properties) {
@@ -29,27 +23,17 @@ namespace maxim {
 		return *this;
 	}
 
-	style & style::set_states(std::string_view class_name, const maxim::style_state_desc_map &states) {
+	style & style::set_class(std::string_view class_name, const maxim::style_state_desc_map &states) {
 		for (auto const & [state_name, properties] : states) {
-			this->set_properties (class_name, state_name, properties);
+			this->set_state (class_name, state_name, properties);
 		}
 
 		return *this;
 	}
 
-	style & style::set_classes(const maxim::style_class_desc_map &classes) {
-		for (auto const & [class_name, class_instance] : classes) {
-			// set all default properties
-			this->set_properties (class_name, states::DEFAULT, class_instance.properties);
-
-			// set all state properties
-			this->set_states (class_name, class_instance.states);
-
-			// register class inheritance
-			_inheritance[class_name] = class_instance.from;
-		}
-
-		return *this;
+	style& style::set_class(std::string_view class_name, std::string_view inherits, const maxim::style_state_desc_map& states) {
+		_inheritance [class_name] = inherits;
+		return this->set_class (class_name, states);
 	}
 
 	std::optional < std::any > style::get_any (style_property_key const & key) const {
@@ -77,73 +61,105 @@ namespace maxim {
 	}
 
 	style const & style::default_style () {
-		static style const style_inst ({
-			.classes = {
-				{ listbox::DEFAULT_STYLE_CLASS_NAME, {
-					.states = {
-						{ states::FOCUSED, {
-							{ properties::BACKGROUND, defaults::ACCENT_DARK },
-							{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
-						}},
-						{ states::SELECTED, {
-							{ properties::BACKGROUND, defaults::ACCENT },
-							{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
-						}},
-					},
-					.properties = {
-						{ properties::SCROLLBAR, true },
-						{ properties::SCROLLBAR_COLOR, defaults::SEC_LIGHT },
-						{ properties::SCROLLBAR_BACKGROUND, defaults::SEC },
-					}
+		//static style const style_inst ({
+		//	{ // classes
+		//		{ listbox::DEFAULT_STYLE_CLASS_NAME, {
+		//			{ // states
+		//				{ states::FOCUSED, {
+		//					{ properties::BACKGROUND, defaults::ACCENT_DARK },
+		//					{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
+		//				}},
+		//				{ states::SELECTED, {
+		//					{ properties::BACKGROUND, defaults::ACCENT },
+		//					{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
+		//				}},
+		//			},
+		//			{ // properties
+		//				{ properties::SCROLLBAR, true },
+		//				{ properties::SCROLLBAR_COLOR, defaults::SEC_LIGHT },
+		//				{ properties::SCROLLBAR_BACKGROUND, defaults::SEC },
+		//			}
+		//		}},
+		//		{ button::DEFAULT_STYLE_CLASS_NAME, {
+		//			{ // states
+		//				{ states::FOCUSED, {
+		//					{ properties::BACKGROUND, defaults::ACCENT },
+		//					{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
+		//				}},
+		//				{ states::PRESSED, {
+	    //                    { properties::BACKGROUND, defaults::ACCENT_LIGHT },
+		//                    { properties::TEXT_COLOR, defaults::ACCENT_LIGHT.contrast_color() }
+	    //                }},
+		//			},
+		//			{ // properties
+		//				{ properties::BACKGROUND, defaults::ACCENT_DARK },
+		//				{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
+		//			}
+		//		}},
+		//		{ textbox::DEFAULT_STYLE_CLASS_NAME, {
+		//			{ // states
+		//				{ states::FOCUSED, {
+		//					{ properties::BACKGROUND, defaults::ACCENT },
+		//					{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
+		//				}},
+		//			},
+		//			{ // properties
+		//				{ properties::BACKGROUND, defaults::ACCENT_DARK },
+		//				{ properties::TEXT_COLOR, defaults::SEC_DARK.contrast_color() }
+		//			}
+		//		}},
+		//	},
+		//	{ // states
+		//		{ states::FOCUSED, {
+		//			{ properties::BACKGROUND, defaults::ACCENT_DARK },
+		//			{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
+		//		}},
+		//		{ states::SELECTED, {
+		//			{ properties::BACKGROUND, defaults::ACCENT },
+		//			{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
+		//		}},
+		//	},
+		//	{ // properties
+		//		{ properties::BACKGROUND, defaults::NEUTRAL },
+		//		{ properties::BORDER, false },
+		//		{ properties::TEXT_COLOR, defaults::NEUTRAL.contrast_color() },
+		//		{ properties::TEXT_ATTRIBUTES, defaults::TEXT_ATTRIBUTES },
+		//		}
+		//	});
+		//
+		//return style_inst;
+		static auto inst = maxim::style()
+			.set_class(DEFAULT_CLASS_NAME, {
+				{ states::DEFAULT, {
+					{ properties::BACKGROUND, defaults::SEC_DARK },
+					{ properties::BORDER, false },
+					{ properties::TEXT_COLOR, defaults::SEC_DARK.contrast_color() },
+					{ properties::TEXT_ATTRIBUTES, defaults::TEXT_ATTRIBUTES },
 				}},
-				{ button::DEFAULT_STYLE_CLASS_NAME, {
-					.states = {
-						{ states::FOCUSED, {
-							{ properties::BACKGROUND, defaults::ACCENT },
-							{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
-						}},
-						{ states::PRESSED, {
-	                        { properties::BACKGROUND, defaults::ACCENT_LIGHT },
-		                    { properties::TEXT_COLOR, defaults::ACCENT_LIGHT.contrast_color() }
-	                    }},
-					},
-					.properties = {
-						{ properties::BACKGROUND, defaults::ACCENT_DARK },
-						{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
-					}
-				}},
-				{ textbox::DEFAULT_STYLE_CLASS_NAME, {
-					.states = {
-						{ states::FOCUSED, {
-							{ properties::BACKGROUND, defaults::ACCENT },
-							{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
-						}},
-					},
-					.properties = {
-						{ properties::BACKGROUND, defaults::ACCENT_DARK },
-						{ properties::TEXT_COLOR, defaults::SEC_DARK.contrast_color() }
-					}
-				}},
-			},
-			.states = {
 				{ states::FOCUSED, {
-					{ properties::BACKGROUND, defaults::ACCENT_DARK },
-					{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
-				}},
-				{ states::SELECTED, {
 					{ properties::BACKGROUND, defaults::ACCENT },
 					{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
 				}},
-			},
-			.properties = {
-				{ properties::BACKGROUND, defaults::NEUTRAL },
-				{ properties::BORDER, false },
-				{ properties::TEXT_COLOR, defaults::NEUTRAL.contrast_color() },
-				{ properties::TEXT_ATTRIBUTES, defaults::TEXT_ATTRIBUTES },
-				}
-			});
+				{ states::SELECTED, {
+					{ properties::BACKGROUND, defaults::ACCENT_LIGHT },
+					{ properties::TEXT_COLOR, defaults::ACCENT_LIGHT.contrast_color() }
+				}},
+				{ states::SELECTED_FOCUSED, {
+					{ properties::BACKGROUND, defaults::ACCENT_LIGHT },
+					{ properties::TEXT_COLOR, defaults::ACCENT }
+				}},
+				{ states::PRESSED, {
+					{ properties::BACKGROUND, defaults::ACCENT_LIGHT },
+					{ properties::TEXT_COLOR, defaults::ACCENT_LIGHT.contrast_color() }
+				}},
+				})
+			.set({stack::DEFAULT_STYLE_CLASS_NAME, states::DEFAULT, properties::BACKGROUND }, defaults::NEUTRAL)
+			.set({grid::DEFAULT_STYLE_CLASS_NAME, states::DEFAULT, properties::BACKGROUND }, defaults::NEUTRAL)
+			.set({panel::DEFAULT_STYLE_CLASS_NAME, states::DEFAULT, properties::BACKGROUND }, defaults::NEUTRAL)
+			.set({ listbox::DEFAULT_STYLE_CLASS_NAME, states::DEFAULT, properties::BACKGROUND }, defaults::NEUTRAL)
+			;
 
-		return style_inst;
+		return inst;
 	}
 
 	style_property_reader::style_property_reader (style const & style, style_property_key const & base_key) :
@@ -163,7 +179,7 @@ namespace maxim {
 	}
 
 	std::string_view style_client::style_class_name() {
-		if (not _style_class_name.has_value()) {
+		if (!_style_class_name.has_value()) {
 			this->style_class_name_reset ();
 		}
 

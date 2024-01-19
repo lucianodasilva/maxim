@@ -39,17 +39,17 @@ namespace maxim {
 		using builder < control, derived_type >::builder;
 
 		inline derived_type & orientation (maxim::orientation value) {
-			this->get()->_orientation = value;
+			this->get()->orientation = value;
 			return this->derived();
 		}
 
 		inline derived_type & horizontal () {
-			this->get()->_orientation = maxim::orientation::horizontal;
+			this->get()->orientation = maxim::orientation::horizontal;
 			return this->derived();
 		}
 
 		inline derived_type & vertical () {
-			this->get()->_orientation = maxim::orientation::vertical;
+			this->get()->orientation = maxim::orientation::vertical;
 			return this->derived();
 		}
 	};

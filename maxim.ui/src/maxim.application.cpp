@@ -69,7 +69,7 @@ namespace maxim {
 
 	void application::on_paint(maxim::graphics &g, maxim::rect bounds) {
 
-		if (paint_order == application_paint_order::pre_controls) {
+		if (paint_order.get() == application_paint_order::pre_controls) {
 			basic_paintable < application >::on_paint(g, bounds);
 		}
 
@@ -77,7 +77,7 @@ namespace maxim {
 			active()->on_paint(g, bounds);
 		}
 
-		if (paint_order == application_paint_order::post_controls) {
+		if (paint_order.get() == application_paint_order::post_controls) {
 			basic_paintable < application >::on_paint(g, bounds);
 		}
 	}

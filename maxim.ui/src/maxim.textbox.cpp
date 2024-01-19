@@ -80,7 +80,7 @@ namespace maxim {
 
 		// if backspace, remove char before cursor
 		if (key.matches (maxim::input::virtual_key::backspace)) {
-			if (not text.get().empty()) {
+			if (!text.get().empty()) {
 				// remove last character
 				if (_view.cursor_at_end(text.get().size())) {
 					text.get().pop_back();
@@ -95,9 +95,9 @@ namespace maxim {
 
 		// if delete, remove char after cursor
 		if (key.matches (maxim::input::virtual_key::del)) {
-			if (not text.get().empty()) {
+			if (!text.get().empty()) {
 				// remove last character
-				if (not _view.cursor_at_end(text.get().size())) {
+				if (!_view.cursor_at_end(text.get().size())) {
 					text.get().erase (text.get().begin() + _view.cursor());
 				}
 			}
@@ -133,7 +133,7 @@ namespace maxim {
 			bool canceled = false;
 			on_validate (text.get(), canceled);
 
-			if (not canceled) {
+			if (!canceled) {
 				if (this->application()) {
 					this->application()->focus_next();
 				}
@@ -147,7 +147,7 @@ namespace maxim {
 			bool canceled = false;
 			on_validate (text.get(), canceled);
 
-			if (not canceled) {
+			if (!canceled) {
 				if (this->application()) {
 					this->application()->focus_prev();
 				}

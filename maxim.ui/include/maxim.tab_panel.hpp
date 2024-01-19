@@ -29,18 +29,12 @@ namespace maxim {
 		static maxim::rect layout (maxim::rect bounds, maxim::rect tab_bounds);
 	};
 
-	template < typename control_type >
-	class composite_tab_panel_item : public tab_panel_item, public virtual control_type {
-	public:
-		static_assert(std::is_base_of_v < control, control_type >, "control_type must be derived from maxim::control");
-
-		using builder = specialized_builder < composite_tab_panel_item < control_type > >;
-		using control_type::control_type;
-	};
-
 	class tab_panel : public virtual control_container, public basic_control {
 	public:
 		using builder = specialized_builder < tab_panel >;
+
+		template < typename control_type >
+		using composite_tab_panel_item = composite_item < control_type, tab_panel_item >;
 
 		constexpr static auto DEFAULT_STYLE_CLASS_NAME = "tab-panel";
 		std::string_view default_style_class_name () const override;
@@ -65,7 +59,7 @@ namespace maxim {
 		}
 
 		template < typename control_type, typename ... args_tv >
-		inline composite_tab_panel_item < control_type > * make_tab (args_tv && ... args) {
+		inline auto * make_tab (args_tv && ... args) {
 			auto inst_uptr = std::make_unique < composite_tab_panel_item < control_type > > (std::forward < args_tv > (args) ...);
 			auto * inst_ptr = inst_uptr.get ();
 
@@ -98,9 +92,9 @@ namespace maxim {
 		}
 
 		template < typename control_type, typename ... args_tv >
-		inline typename composite_tab_panel_item < control_type >::builder build_tab (args_tv && ... args) {
+		inline typename auto build_tab (args_tv && ... args) {
 			auto * inst_ptr = make_tab < control_type > (std::forward < args_tv > (args) ...);
-			return {inst_ptr};
+			return typename composite_tab_panel_item < control_type >::builder (inst_ptr);
 		}
 
 		void accept (control_visitor_t visitor) const override;
@@ -125,7 +119,7 @@ namespace maxim {
 
 		inline derived_type & tab_caption (std::string_view text) {
 			auto & inst = *static_cast < derived_type * > (this);
-			inst.get()->tab_caption = text;
+			inst.get()->tab_caption = std::string (text);
 
 			return inst;
 		}

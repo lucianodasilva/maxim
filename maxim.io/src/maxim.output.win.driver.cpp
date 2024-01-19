@@ -5,7 +5,7 @@
 
 namespace maxim::output::win {
 
-	sec_driver::sec_driver()
+	driver::driver()
 	{
 		// enable ansi terminal sequence processing
 		_stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -26,7 +26,7 @@ namespace maxim::output::win {
 			throw std::runtime_error("Failed setting console output mode");
 	}
 
-	sec_driver::~sec_driver() {
+	driver::~driver() {
 		// restore original console input and output modes
 		if (_stdout_handle != INVALID_HANDLE_VALUE)
 			SetConsoleMode(
@@ -35,7 +35,7 @@ namespace maxim::output::win {
 		);
 	}
 
-	size sec_driver::get_size() const {
+	size driver::get_size() const {
 		CONSOLE_SCREEN_BUFFER_INFO buffer_info;
 
 		GetConsoleScreenBufferInfo(
@@ -49,13 +49,14 @@ namespace maxim::output::win {
 		};
 	}
 
-	void sec_driver::send(maxim::stream & stream) const {
+	void driver::send(span < char > data) const {
 		DWORD writen_length = 0;
 
 		WriteConsole(
 			GetStdHandle(STD_OUTPUT_HANDLE),
-			reinterpret_cast <void *> (stream.data()),
-			stream.size(),
+			reinterpret_cast <void *> (
+				const_cast < char * > (data.data())),
+			data.size(),
 			&writen_length,
 			nullptr
 		);

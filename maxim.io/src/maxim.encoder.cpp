@@ -117,7 +117,7 @@ namespace maxim {
         this->emmit_attribute_reset();
         //this->emmit_color_reset ();
 
-		if (not buffer.size().is_zero()) {
+		if (!buffer.size().is_zero()) {
 			// always emmit first color...
 			this->emmit_color(buffer.ptr_at(0)->attributes.forecolor, buffer.ptr_at(0)->attributes.backcolor);
 		}

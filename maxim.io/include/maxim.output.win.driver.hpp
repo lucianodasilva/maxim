@@ -4,7 +4,7 @@
 #ifndef _maxim_io_output_win_driver_hpp_
 #define _maxim_io_output_win_driver_hpp_
 
-#include "maxim.output.sec_driver.hpp"
+#include "maxim.output.driver.hpp"
 
 #include <Windows.h>
 
@@ -13,15 +13,15 @@ namespace maxim {
 
 	namespace output::win {
 
-		class sec_driver : public maxim::output::sec_driver {
+		class driver : public maxim::output::driver {
         public:
-			sec_driver();
+			driver();
 
-            ~sec_driver() override;
+            ~driver() override;
 
             size get_size() const override;
 
-            void send(maxim::stream & stream) const override;
+            void send(span < char > data) const override;
 
 		private:
 
