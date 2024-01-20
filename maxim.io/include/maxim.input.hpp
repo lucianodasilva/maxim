@@ -3,10 +3,12 @@
 #define _maxim_io_input_hpp_
 
 #include <cinttypes>
+#include <functional>
 #include <type_traits>
 
 namespace maxim::input {
-    // virtual key codes
+
+    /// virtual key codes
     enum class virtual_key : uint8_t {
         none = 0x00,
         backspace = 0x08,
@@ -73,6 +75,7 @@ namespace maxim::input {
         f12 = 0x81
     };
 
+	/// virtual modifier keys
     enum class modifier_key : uint8_t {
         none    = 0b0000,
         shift   = 0b0001,
@@ -98,31 +101,46 @@ namespace maxim::input {
         );
     }
 
+	/// virtual key match policy
 	enum class key_match_policy {
-		match_all,
-		ignore_modifier,
+		match_all,          /// match to all keys
+		ignore_modifier,    /// match to virtual keys but ignore modifier keys
 	};
 
+	/// key info structure
     struct key_info {
-        char32_t		char_value;
-        virtual_key		key;
-        modifier_key	modifiers;
 
-        inline explicit operator bool () noexcept {
-            return char_value || key != virtual_key::none;
+		/// Returns true if the key info is set
+		[[nodiscard]] constexpr explicit operator bool () noexcept {
+            return char_value != 0 || key != virtual_key::none;
         }
 
-	    inline bool matches (virtual_key const KEY, modifier_key const MODIFIERS) const noexcept {
+		/// Check if the key info matches the given key and modifiers
+		/// \param KEY - Virtual Key
+		/// \param MODIFIERS - Modifier Keys
+		/// \return True if the key info matches the given key and modifiers
+	    [[nodiscard]] bool matches (virtual_key const KEY, modifier_key const MODIFIERS) const noexcept {
 		    return this->key == KEY && this->modifiers == MODIFIERS;
 	    }
 
-		inline bool matches (virtual_key KEY, key_match_policy const POLICY = key_match_policy::match_all) const noexcept {
+		/// Check if the key info matches the given key and modifiers
+		/// \param KEY - Virtual Key
+		/// \param POLICY - Key Match Policy
+		/// \return True if the key info matches the given key and modifiers
+		[[nodiscard]] bool matches (virtual_key const KEY, key_match_policy const POLICY = key_match_policy::match_all) const noexcept {
 			if (POLICY == key_match_policy::ignore_modifier) {
 				return this->key == KEY;
 			}
 
 			return matches (KEY, modifier_key::none);
 		}
+
+	    /// Keyboard Character Value
+	    char32_t		char_value;
+	    /// Virtual Key
+	    virtual_key		key;
+	    /// Modifier Keys
+	    modifier_key	modifiers;
     };
 
     inline bool operator==(key_info const &v1, key_info const &v2) noexcept {

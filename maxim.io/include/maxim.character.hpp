@@ -40,7 +40,7 @@ namespace maxim {
 	    }
 
         /// Calculate contrast color
-        [[nodiscard]] constexpr color contrast_color(color const& lower_bounds = {}, color const& upper_bounds = { 255, 255, 255 }) const {
+        [[nodiscard]] constexpr color contrast_color(color const& lower_bounds = { 0, 0, 0 }, color const& upper_bounds = { 255, 255, 255 }) const {
 		    return relative_luminance() > 0.4 ? color {0, 0, 0} : color {255, 255, 255};
 	    }
 

@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cinttypes>
+#include <cmath>
 
 namespace maxim {
 
@@ -84,7 +85,7 @@ namespace maxim {
 			[[nodiscard]]
 			constexpr bool is_zero() const { return width == 0 && height == 0; }
 
-			/// Converts size to \ref point "point"
+			/// Converts size to point
 			[[nodiscard]]
 			constexpr point as_point() const { return { width, height }; }
 
@@ -125,10 +126,10 @@ namespace maxim {
         /// Determines if rect is empty
         [[nodiscard]] constexpr bool is_zero() const { return x == 0 && y == 0 && width == 0 && height == 0; }
 
-        /// Coordinates of top left corner as \ref point "point"
+        /// Coordinates of top left corner as point
         [[nodiscard]] constexpr point position() const { return { x, y }; }
 
-        /// Size of rect as \ref size "size"
+        /// Size of rect as size
 		[[nodiscard]] constexpr maxim::size size() const { return { width, height }; }
 
         /// Left most x axis value 

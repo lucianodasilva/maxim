@@ -92,7 +92,7 @@ namespace maxim {
 		}
 
 		template < typename control_type, typename ... args_tv >
-		inline typename auto build_tab (args_tv && ... args) {
+		inline auto build_tab (args_tv && ... args) {
 			auto * inst_ptr = make_tab < control_type > (std::forward < args_tv > (args) ...);
 			return typename composite_tab_panel_item < control_type >::builder (inst_ptr);
 		}
