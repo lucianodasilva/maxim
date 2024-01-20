@@ -4,6 +4,7 @@
 
 #include "maxim.details.hpp"
 #include "maxim.input.hpp"
+#include "maxim.span.hpp"
 
 #include <iterator>
 #include <memory>

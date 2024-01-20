@@ -5,7 +5,7 @@ namespace maxim {
 	maxim::rect panel_item::layout (panel * parent, panel_item * item, maxim::rect bounds) {
 
 		auto item_near_margin = item->location.get ();
-		auto item_far_margin = parent->default_size.get().as_point () - (item->location.get () + item->size.get().as_point ());
+		auto item_far_margin = parent->default_size.get() - (item->location.get () + item->size.get());
 
 		auto item_bounds = rect { item_near_margin, item->size.get () };
 
@@ -16,49 +16,48 @@ namespace maxim {
 				case docking_kind::top:
 
 					if (enum_has(item->anchor.get(), anchor_kind::bottom)) {
-						item_bounds.size.height = (bounds.height() - item_far_margin.y);
+						item_bounds.height = (bounds.height - item_far_margin.y);
 					}
 
-					item_bounds.position.x = 0;
-					item_bounds.position.y = 0;
-					item_bounds.size.width = bounds.width();
+					item_bounds.x = 0;
+					item_bounds.y = 0;
+					item_bounds.width = bounds.width;
 					break;
 				case docking_kind::bottom:
 
 					if (enum_has(item->anchor.get(), anchor_kind::top)) {
-						item_bounds.size.height = (bounds.height() - item_bounds.position.y);
+						item_bounds.height = (bounds.height - item_bounds.y);
 					} else {
-						item_bounds.position.y = (bounds.height() - item->size.get().height);
+						item_bounds.y = (bounds.height - item->size.get().y);
 					}
 
-					item_bounds.position.x = 0;
-					item_bounds.size.width = bounds.width();
+					item_bounds.x = 0;
+					item_bounds.width = bounds.width;
 					break;
 				case docking_kind::left:
 
 					if (enum_has(item->anchor.get(), anchor_kind::right)) {
-						item_bounds.size.width = (bounds.width() - item_far_margin.x);
+						item_bounds.width = (bounds.width - item_far_margin.x);
 					}
 
-					item_bounds.position.x = 0;
-					item_bounds.position.y = 0;
-					item_bounds.size.height = bounds.height();
+					item_bounds.x = 0;
+					item_bounds.y = 0;
+					item_bounds.height = bounds.height;
 					break;
 				case docking_kind::right:
 
 					if (enum_has(item->anchor.get(), anchor_kind::left)) {
-						item_bounds.size.width = (bounds.width() - item_bounds.position.x);
+						item_bounds.width = (bounds.width - item_bounds.x);
 					} else {
-						item_bounds.position.x = (bounds.width() - item->size.get().width);
+						item_bounds.x = (bounds.width - item->size.get().x);
 					}
 
-					item_bounds.position.y = 0;
+					item_bounds.y = 0;
 
-					item_bounds.size.height = bounds.height();
+					item_bounds.height = bounds.height;
 					break;
 				case docking_kind::fill:
-					item_bounds.position = {0, 0};
-					item_bounds.size = bounds.size;
+					item_bounds = { 0, 0, bounds.width, bounds.height};
 					break;
 				case docking_kind::none:
 					[[fallthrough]];
@@ -69,19 +68,19 @@ namespace maxim {
 			// calculate anchoring
 			if (enum_has (item->anchor.get(), anchor_kind::bottom)) {
 				if (enum_has (item->anchor.get(), anchor_kind::top)) {
-					item_bounds.size.height = (bounds.height () - item_far_margin.y - item_near_margin.y);
+					item_bounds.height = (bounds.height - item_far_margin.y - item_near_margin.y);
 				}
 				else {
-					item_bounds.position.y = (bounds.height () - item_far_margin.y - item->size.get ().height);
+					item_bounds.y = (bounds.height  - item_far_margin.y - item->size.get ().y);
 				}
 			}
 
 			if (enum_has (item->anchor.get(), anchor_kind::right)) {
 				if (enum_has (item->anchor.get(), anchor_kind::left)) {
-					item_bounds.size.width = (bounds.width () - item_far_margin.x - item_near_margin.x);
+					item_bounds.width = (bounds.width - item_far_margin.x - item_near_margin.x);
 				}
 				else {
-					item_bounds.position.x = (bounds.width () - item_far_margin.x - item->size.get ().width);
+					item_bounds.x = (bounds.width - item_far_margin.x - item->size.get ().x);
 				}
 			}
 		}

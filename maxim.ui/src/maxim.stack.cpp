@@ -9,13 +9,13 @@ namespace maxim {
 		}
 
 		return maxim::rect {
-			bounds.position + maxim::point {
+			bounds.position () + maxim::point {
 				parent->orientation.get() == maxim::orientation::horizontal ? item->length.get ().near : 0,
 				parent->orientation.get() == maxim::orientation::vertical ? item->length.get ().near : 0
 			},
-			maxim::size {
-				parent->orientation.get() == maxim::orientation::horizontal ? item->length.get ().far - item->length.get ().near : bounds.size.width,
-				parent->orientation.get() == maxim::orientation::vertical ? item->length.get ().far - item->length.get ().near : bounds.size.height
+			{
+				parent->orientation.get() == maxim::orientation::horizontal ? item->length.get ().far - item->length.get ().near : bounds.width,
+				parent->orientation.get() == maxim::orientation::vertical ? item->length.get ().far - item->length.get ().near : bounds.height
 			}
 		};
 	}
@@ -33,7 +33,7 @@ namespace maxim {
 
 		// update partitions
 		layout::partition::refresh (
-			this->orientation.get () == maxim::orientation::horizontal ? bounds.size.width : bounds.size.height,
+			this->orientation.get () == maxim::orientation::horizontal ? bounds.width : bounds.height,
 			padding,
 			this->controls(),
 			[](auto & stack_item_inst) -> maxim::layout::partition & {

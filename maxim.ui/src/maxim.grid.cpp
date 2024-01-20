@@ -29,14 +29,10 @@ namespace maxim {
 			parent->rows.size() - 1);
 
 		return maxim::rect{
-			bounds.position + maxim::point{
-				parent->columns[col_from].near,
-				parent->rows[row_from].near
-			},
-			maxim::size{
-				parent->columns[col_to].far - parent->columns[col_from].near,
-				parent->rows[row_to].far - parent->rows[row_from].near
-			}
+			bounds.x + parent->columns[col_from].near,
+			bounds.y + parent->rows[row_from].near,
+			parent->columns[col_to].far - parent->columns[col_from].near,
+			parent->rows[row_to].far - parent->rows[row_from].near
 		};
 	}
 
@@ -56,8 +52,8 @@ namespace maxim {
 		bounds = maxim::layout::apply_margins(bounds, margins);
 
 		// update partitions
-		layout::partition::refresh(bounds.size.height, padding.y, rows, [](auto & row) -> decltype (row) & { return row; });
-		layout::partition::refresh(bounds.size.width, padding.x, columns, [](auto & column) -> decltype (column) & { return column; });
+		layout::partition::refresh(bounds.height, padding.y, rows, [](auto & row) -> decltype (row) & { return row; });
+		layout::partition::refresh(bounds.width, padding.x, columns, [](auto & column) -> decltype (column) & { return column; });
 
 		// paint itself
 		basic_control_container::on_paint(g, bounds);

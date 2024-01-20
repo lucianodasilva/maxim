@@ -60,7 +60,7 @@ namespace maxim {
 		basic_control::on_paint (g, bounds);
 
 		// render the tab buttons
-		_tab_button_stack.on_paint (g, { bounds.position.x, bounds.position.y, bounds.width(), 1 });
+		_tab_button_stack.on_paint (g, { bounds.x, bounds.y, bounds.width, 1 });
 
 		// if there is a selected tab
 		if (this->has_selected()) {
@@ -69,7 +69,7 @@ namespace maxim {
 			this->style_reader()
 				.get(properties::CONTENT_MARGINS, margins);
 
-			auto selected_bounds = maxim::rect { bounds.position.x, bounds.position.y + 1, bounds.width(), bounds.height () - 1 };
+			auto selected_bounds = maxim::rect { bounds.x, bounds.y + 1, bounds.width, bounds.height - 1 };
 			selected_bounds = layout::apply_margins(selected_bounds, margins);
 
 			// render the selected tab

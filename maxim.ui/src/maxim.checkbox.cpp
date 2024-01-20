@@ -27,7 +27,7 @@ namespace maxim {
 		constexpr auto SET_CHECK = "[X]";
 		constexpr auto CHECK_WIDTH = 3;
 
-		auto check_bounds = maxim::rect { bounds.left(), bounds.top(), CHECK_WIDTH, bounds.height() };
+		auto check_bounds = maxim::rect { bounds.left(), bounds.top(), CHECK_WIDTH, bounds.height };
 		check_bounds = bounds.intersection (check_bounds);
 
 		g.draw_text (value.get() ? SET_CHECK : UNSET_CHECK, check_bounds, text_color, text_attributes);
@@ -35,8 +35,8 @@ namespace maxim {
 		auto text_bounds = maxim::rect {
 			check_bounds.left() + CHECK_WIDTH + 1,
 			bounds.top(),
-			bounds.width() - CHECK_WIDTH - 1,
-			bounds.height() };
+			bounds.width - CHECK_WIDTH - 1,
+			bounds.height };
 
 		text_bounds = bounds.intersection (text_bounds);
 		g.draw_text(text.get(), bounds, text_color, text_attributes);

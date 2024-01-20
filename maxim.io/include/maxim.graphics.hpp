@@ -108,23 +108,22 @@ namespace maxim {
 
 		[[nodiscard]]
 		inline rect transform_rect (rect const & src) const {
-			return rect { src.position + transform (), src.size };
+            auto pos = src.position () + transform();
+			return rect { pos.x, pos.y, src.width, src.height };
 		}
 
     	[[nodiscard]]
-    	inline rect clip_rect () const {
-			// intersect with buffer
-			rect buffer_rect {
-					{},
-					_buffer.size ()
-			};
+        inline rect clip_rect() const {
+            // intersect with buffer
+            rect buffer_rect({}, _buffer.size());
 
 			auto clipper = clip_window ();
 
 			if (clipper.is_zero ()) {
 				return buffer_rect;
+
 			} else {
-				return buffer_rect.intersection (clipper + transform());
+				return buffer_rect.intersection (clipper.offset (transform()));
 			}
     	}
 

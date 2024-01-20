@@ -57,7 +57,7 @@ namespace maxim {
 		// calculate "final" bounds ==============================
 		// if we have border, "contract" bounds
 		if (border) {
-			bounds = { bounds.position + point { 1, 1 }, bounds.width () - 2, bounds.height () - 2 };
+			bounds = { bounds.position() + point {1, 1}, {bounds.width - 2, bounds.height - 2} };
 		}
 
 		// then add margins
@@ -65,11 +65,11 @@ namespace maxim {
 
 		// finally remove scrollbar
 		if (scrollbar) {
-			bounds = { bounds.position, bounds.width() - 1, bounds.height() };
+			bounds = { bounds.position(), {bounds.width - 1, bounds.height} };
 		}
 
 		// recalculate view ans cache height
-		this->update_view(bounds.height());
+		this->update_view(bounds.height);
 		// ========================================================
 
 		// render scrollbar ( one off out of bounds... )
@@ -77,15 +77,15 @@ namespace maxim {
 			// draw scrollbar
 			g.draw_v_line (
 				{ bounds.right() + 1, bounds.top() },
-				bounds.height(),
+				bounds.height,
 				scrollbar_background);
 
 			// draw scrollbar cursor
-			if (items.get().size () > bounds.height()) {
+			if (items.get().size () > bounds.height) {
 				// proportion of items visible
-				auto proportion = float (bounds.height ()) / items.get ().size ();
+				auto proportion = float (bounds.height ) / items.get ().size ();
 
-				auto scroll_length = (bounds.height () * proportion);
+				auto scroll_length = (bounds.height * proportion);
 				auto scroll_top = (_scroll_offset + 1) * proportion;
 
 				g.draw_v_line (
@@ -97,12 +97,12 @@ namespace maxim {
 
 		// draw items
 		{
-			auto item_max_count = std::min (bounds.height (), static_cast < int > (items.get ().size ()));
+			auto item_max_count = std::min (bounds.height, static_cast < int > (items.get ().size ()));
 
 			for (int i = 0; i < item_max_count; ++i) {
 
 				// calculate item bounds
-				auto item_bounds = rect { bounds.left (), bounds.top () + i, bounds.width (), 1 };
+				auto item_bounds = rect { bounds.left (), bounds.top () + i, bounds.width, 1 };
 
 				// find item index
 				auto item_index = i + _scroll_offset;

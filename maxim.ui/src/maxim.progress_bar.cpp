@@ -7,7 +7,7 @@ namespace maxim {
 	}
 
 	void progress_bar::on_paint(maxim::graphics &g, maxim::rect bounds) {
-		auto value_width = static_cast<int>(std::rint(bounds.width() * (value / static_cast<float>(max - min))));
+		auto value_width = static_cast<int>(std::rint(bounds.width * (value / static_cast<float>(max - min))));
 
 		maxim::color            back_color;
 		maxim::color            text_color;
@@ -37,7 +37,7 @@ namespace maxim {
 
 		// change clip view
 		g.clip_window_push(
-			{bounds.position + maxim::point{value_width, 0}, {bounds.width() - value_width, bounds.height()}});
+			{bounds.position() + maxim::point{value_width, 0}, {bounds.width - value_width, bounds.height}});
 		g.draw_text(text, bounds, text_color, text_attributes);
 		g.clip_window_pop();
 	}

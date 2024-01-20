@@ -81,25 +81,25 @@ namespace maxim {
 
 			for (int32_t y = clipped.top (); y <= clipped.bottom(); ++y) {
 				auto * ptr = _buffer.ptr_at ({clipped.left (), y});
-				std::fill(ptr, ptr + clipped.size.width, c);
+				std::fill(ptr, ptr + clipped.width, c);
 			}
 		} else {
 
 			point
-				top_left = rct.position,
+				top_left = rct.position(),
 				top_right = {rct.right(), rct.top()},
 				bottom_left = {rct.left(), rct.bottom()},
 				bottom_right = {rct.right(), rct.bottom()};
 
 			// draw lines
-            if (rct.size.width > 2) {
-                draw_h_line(top_left, rct.size.width, color, false);
-                draw_h_line(bottom_left, rct.size.width, color, false);
+            if (rct.width > 2) {
+                draw_h_line(top_left, rct.width, color, false);
+                draw_h_line(bottom_left, rct.width, color, false);
             }
 
-            if (rct.size.height > 2) {
-                draw_v_line(top_left, rct.size.height, color, false);
-                draw_v_line(top_right, rct.size.height, color, false);
+            if (rct.height > 2) {
+                draw_v_line(top_left, rct.height, color, false);
+                draw_v_line(top_right, rct.height, color, false);
             }
 
 			auto const & graphs = ansi::graph_chars;
@@ -150,10 +150,10 @@ namespace maxim {
 			text_attributes attributes
 	) {
 		this->draw_text (
-				text,
-				{ position, width, 1 },
-                color,
-				attributes);
+			text,
+			{ position, {width, 1} },
+            color,
+			attributes);
 	}
 
 	inline auto get_next_line(
@@ -196,11 +196,11 @@ namespace maxim {
 	inline point get_text_position (rect const & bounds, alignment line_alignment, int line_count) {
 		switch (line_alignment) {
 			case (alignment::near):
-				return bounds.position;
+				return bounds.position();
 			case (alignment::far):
-				return bounds.position + point{ 0, static_cast <int> (bounds.size.height - line_count) };
+				return bounds.position() + point{0, static_cast <int> (bounds.height - line_count)};
 			default:
-				return bounds.position + point{ 0, static_cast <int> (bounds.size.height / 2 - (line_count / 2)) };
+				return bounds.position() + point{0, static_cast <int> (bounds.height / 2 - (line_count / 2))};
 		}
 	}
 
@@ -209,17 +209,17 @@ namespace maxim {
 
 		switch (alignment) {
 			case (alignment::center):
-				x = bounds.size.width / 2 - line_width / 2;
+				x = bounds.width / 2 - line_width / 2;
 				break;
 			case(alignment::far):
-				x = bounds.size.width - line_width;
+				x = bounds.width - line_width;
 				break;
 			default:
 				x = 0;
 				break;
 		}
 
-		return bounds.position + point { x, line };
+		return bounds.position() + point{x, line};
 	}
 
 	void graphics::draw_text(
@@ -230,7 +230,7 @@ namespace maxim {
 	) {
 		// transform and clip
 		auto t_bounds = transform_rect (bounds);
-		auto text_position = t_bounds.position;
+		auto text_position = t_bounds.position();
 
 		auto clip = this->clip_rect ();
 
@@ -241,7 +241,7 @@ namespace maxim {
 
 		if (attributes.wrap) {
 			// calculate wrap rect
-			auto lines = get_line_count (text, t_bounds.size.width);
+			auto lines = get_line_count (text, t_bounds.width);
 
 			text_position = get_text_position(
 					t_bounds,
@@ -253,10 +253,10 @@ namespace maxim {
 				auto [ 
 					line_begin,
 					line_end
-				] = get_next_line(text, offset, t_bounds.size.width);
+				] = get_next_line(text, offset, t_bounds.width);
 
 				auto line_position = get_line_position (
-						{ text_position, t_bounds.size },
+						{ text_position, t_bounds.size() },
 						attributes.h_align,
 						line,
 						line_end - line_begin);
@@ -284,9 +284,9 @@ namespace maxim {
 			int left_pad = 0;
 
 			if (attributes.h_align == alignment::far) {
-				left_pad = t_bounds.size.width - text.size();
+				left_pad = t_bounds.width - text.size();
 			} else if (attributes.h_align == alignment::center) {
-				auto half_width = t_bounds.size.width / 2;
+				auto half_width = t_bounds.width / 2;
 				auto half_len = text.size() / 2;
 
 				left_pad = half_width - half_len;
@@ -361,8 +361,8 @@ namespace maxim {
 			c.attributes.forecolor = color;
 		}
 
-		auto * ptr = _buffer.ptr_at (clipped.position);
-		std::fill (ptr, ptr + clipped.size.width, c);
+		auto * ptr = _buffer.ptr_at (clipped.position());
+		std::fill (ptr, ptr + clipped.width, c);
 	}
 
 	void graphics::transform_push (point const & transform) {

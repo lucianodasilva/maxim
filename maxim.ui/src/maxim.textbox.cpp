@@ -14,7 +14,7 @@ namespace maxim {
 	void textbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
 
 		// calculate text window
-		_view.update_width(bounds.width(), text.get().size());
+		_view.update_width(bounds.width, text.get().size());
 
 		maxim::color back_color;
 		maxim::color text_color;
@@ -45,10 +45,10 @@ namespace maxim {
 				std::chrono::system_clock::now().time_since_epoch()).count();
 
 			if (epoch_ms % (BLINK_INTERVAL.count() * 2) < BLINK_INTERVAL.count()) {
-				auto calc_position = std::min (_view.cursor_offset(), bounds.width() - 1);
+				auto calc_position = std::min (_view.cursor_offset(), bounds.width - 1);
 
 				// direct manipulation of the buffer
-				auto * cursor_char = g.get_char (bounds.position + maxim::point{ calc_position, 0 });
+				auto * cursor_char = g.get_char (bounds.position() + maxim::point{calc_position, 0});
 
 				if (cursor_char != nullptr) {
 					cursor_char->attributes.flags.underlined = true;

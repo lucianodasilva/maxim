@@ -19,7 +19,7 @@ namespace maxim {
 
             ~driver() override;
 
-            size get_size() const override;
+            maxim::size get_size() const override;
 
             void send(span < char > data) const override;
 

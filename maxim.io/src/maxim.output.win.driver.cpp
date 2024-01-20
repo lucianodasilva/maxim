@@ -35,7 +35,7 @@ namespace maxim::output::win {
 		);
 	}
 
-	size driver::get_size() const {
+	maxim::size driver::get_size() const {
 		CONSOLE_SCREEN_BUFFER_INFO buffer_info;
 
 		GetConsoleScreenBufferInfo(

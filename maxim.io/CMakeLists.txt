@@ -16,6 +16,7 @@ add_library (maxim_io STATIC
         include/maxim.output.driver.hpp
         include/maxim.output.unix.driver.hpp
         include/maxim.output.win.driver.hpp
+        include/maxim.span.hpp
         include/maxim.stream.hpp
         src/maxim.character.cpp
         src/maxim.character_buffer.cpp

@@ -26,7 +26,7 @@ namespace maxim {
 	class panel_item : public virtual control {
 	public:
 		property < maxim::point >           location;
-		property < maxim::size >            size;
+		property < maxim::point >           size;
 		property < maxim::anchor_kind >     anchor { maxim::anchor_kind::none };
 		property < maxim::docking_kind >    docking { maxim::docking_kind::none };
 
@@ -40,7 +40,7 @@ namespace maxim {
 
 		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
 
-		property < size > default_size {{ 100, 100 }};
+		property < point > default_size {{ 100, 100 }};
 	};
 
 	template < typename derived_type >
@@ -53,7 +53,7 @@ namespace maxim {
 			return inst;
 		}
 
-		inline derived_type & size (maxim::size value) {
+		inline derived_type & size (maxim::point value) {
 			auto & inst = *static_cast < derived_type * > (this);
 			inst.get()->size = value;
 
@@ -80,7 +80,7 @@ namespace maxim {
 	public:
 		using builder < control, derived_type >::builder;
 
-		inline derived_type & default_size (maxim::size value) {
+		inline derived_type & default_size (maxim::point value) {
 			this->get()->default_size = value;
 			return this->derived();
 		}

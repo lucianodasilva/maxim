@@ -30,10 +30,10 @@ namespace maxim {
 		g.draw_box(bounds, back_color);
 
 		auto text_bounds = maxim::rect {
-			bounds.position + maxim::point{ 1, 0 },
+			bounds.position() + maxim::point{1, 0},
 			{
-				bounds.size.width - 1,
-				bounds.size.height
+				bounds.width - 1,
+				bounds.height
 			}
 		};
 
@@ -41,11 +41,11 @@ namespace maxim {
 
 		// draw +/- label
 		auto const LEFT_LABEL_BOUNDS = maxim::rect {
-			bounds.position,
-			{ 1, bounds.size.height }
+			bounds.position(),
+			{ 1, bounds.height }
 		};
 
-		g.draw_char (LEFT_LABEL_BOUNDS.position, text_color, 0x67,  text_attributes.flags, true);
+		g.draw_char (LEFT_LABEL_BOUNDS.position(), text_color, 0x67, text_attributes.flags, true);
 	}
 
 	void numupdown::on_key_press(const maxim::input::key_info &e) {
