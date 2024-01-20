@@ -1,11 +1,10 @@
 #include "maxim.device.hpp"
-#include "maxim.encoder.hpp"
+#include "maxim.graphics.hpp"
 
 namespace maxim {
 
     void input_event_handler::on_key_up(const maxim::input::key_info &key) {}
     void input_event_handler::on_key_down(const maxim::input::key_info &key) {}
-
 	void input_event_handler::on_key_press(const maxim::input::key_info &key) {}
 
     device::device () {

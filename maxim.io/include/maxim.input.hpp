@@ -4,7 +4,6 @@
 
 #include <cinttypes>
 #include <type_traits>
-#include <unordered_map>
 
 namespace maxim::input {
     // virtual key codes

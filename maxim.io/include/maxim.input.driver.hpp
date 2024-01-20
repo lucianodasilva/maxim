@@ -2,9 +2,7 @@
 #ifndef _maxim_io_input_driver_hpp_
 #define _maxim_io_input_driver_hpp_
 
-#include "maxim.input.hpp"
 #include <memory>
-#include <vector>
 
 namespace maxim {
 

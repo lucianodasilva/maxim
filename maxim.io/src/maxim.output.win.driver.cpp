@@ -3,6 +3,8 @@
 #include "maxim.output.win.driver.hpp"
 #include "maxim.stream.hpp"
 
+#include <stdexcept>
+
 namespace maxim::output::win {
 
 	driver::driver()

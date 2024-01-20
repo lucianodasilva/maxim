@@ -18,7 +18,7 @@ namespace maxim {
 	}
 
 	void graphics::clear(struct color clear_color) {
-		_buffer.reset(clear_color);
+		_buffer.clear(clear_color);
 	}
 
     void graphics::draw_point (maxim::point const & position, struct color color) {
@@ -102,8 +102,6 @@ namespace maxim {
                 draw_v_line(top_right, rct.height, color, false);
             }
 
-			auto const & graphs = ansi::graph_chars;
-
 			auto set_corner = [&] (point pos, char content) {
 				if (!clipped.contains (pos + transform ()))  {
 					return;
@@ -119,10 +117,10 @@ namespace maxim {
 				c->attributes.forecolor = color;
 			};
 
-			set_corner (top_left, graphs.corner_down_right);
-			set_corner (top_right, graphs.corner_down_left);
-			set_corner (bottom_left, graphs.corner_up_right);
-			set_corner (bottom_right, graphs.corner_up_left);
+			set_corner (top_left, ansi::graph::corner_down_right);
+			set_corner (top_right, ansi::graph::corner_down_left);
+			set_corner (bottom_left, ansi::graph::corner_up_right);
+			set_corner (bottom_right, ansi::graph::corner_up_left);
 		}
 	}
 
@@ -327,7 +325,7 @@ namespace maxim {
 		if (solid) {
 			c.attributes.backcolor = color;
 		} else {
-			c.content = ansi::graph_chars.line_vertical;
+			c.content = ansi::graph::line_vertical;
 			c.attributes.is_graph = true;
 			c.attributes.forecolor = color;
 		}
@@ -356,7 +354,7 @@ namespace maxim {
 		if (solid) {
 			c.attributes.backcolor = color;
 		} else {
-			c.content = ansi::graph_chars.line_horizontal;
+			c.content = ansi::graph::line_horizontal;
 			c.attributes.is_graph = true;
 			c.attributes.forecolor = color;
 		}

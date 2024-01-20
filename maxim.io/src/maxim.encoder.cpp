@@ -147,6 +147,16 @@ namespace maxim {
         return *this;
     }
 
+    void encoder::send_out(output::driver* driver) {
+        if (!driver) {
+            return;
+        }
+
+		driver->send (_stream.data ());
+
+		_stream.reset();
+	}
+
     encoder & encoder::attribute_diff(const attributes &before, const attributes &now) {
         if (now == before)
             return *this;

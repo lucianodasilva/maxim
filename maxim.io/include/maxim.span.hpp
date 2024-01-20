@@ -2,6 +2,8 @@
 #ifndef _maxim_io_span_hpp_
 #define _maxim_io_span_hpp_
 
+#include <vector>
+
 namespace maxim {
 
     template < typename type >

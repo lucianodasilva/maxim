@@ -2,6 +2,7 @@
 #include "maxim.encoder.hpp"
 
 #include <map>
+#include <string>
 
 namespace maxim::input::_unix {
 

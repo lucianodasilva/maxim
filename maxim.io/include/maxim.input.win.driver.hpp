@@ -5,6 +5,7 @@
 #define _maxim_io_input_win_driver_hpp_
 
 #include "maxim.input.driver.hpp"
+#include "maxim.input.hpp"
 
 #include <Windows.h>
 
