@@ -25,6 +25,8 @@ namespace maxim {
 		void on_key_down (maxim::input::key_info const & key) override;
 		void on_key_up (maxim::input::key_info const & key) override;
 
+		void on_focus_lost () override;
+
 		inline bool is_pressed () const { return _pressed; }
 	private:
 		bool _pressed = false;

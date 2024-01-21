@@ -35,4 +35,8 @@ namespace maxim {
 		}
 	}
 
+	void button::on_focus_lost() {
+		label::on_focus_lost ();
+		_pressed = false;
+	}
 }
