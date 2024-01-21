@@ -67,7 +67,7 @@ namespace maxim {
 		using composite_item_type = composite_item < control_type, item_type >;
 
 		template<typename control_type, typename ... args_tv>
-		inline composite_item_type < control_type > * make_control(args_tv &&... args) {
+		composite_item_type < control_type > * make_control(args_tv &&... args) {
 			// create instance and store pointer to use after move into container
 			auto inst_uptr = std::make_unique< composite_item_type < control_type > >(std::forward<args_tv>(args)...);
 			auto *ptr = inst_uptr.get();
@@ -81,12 +81,12 @@ namespace maxim {
 		}
 
 		template<typename control_type, typename ... args_tv>
-		inline auto build_control (args_tv &&... args) {
+		auto build_control (args_tv &&... args) {
 			auto * ctrl = make_control < control_type > (std::forward<args_tv>(args)...);
 			return typename composite_item_type < control_type >::builder (ctrl);
 		}
 
-		inline void accept(control_visitor_t visitor) const override {
+		void accept(control_visitor_t visitor) const override {
 			if (!visitor) {
 				return;
 			}
@@ -98,7 +98,7 @@ namespace maxim {
 			}
 		}
 
-		inline std::vector <std::unique_ptr<item_type>> const &controls() const {
+		std::vector <std::unique_ptr<item_type>> const &controls() const {
 			return _controls;
 		}
 

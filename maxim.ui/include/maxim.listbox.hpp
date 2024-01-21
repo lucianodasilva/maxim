@@ -3,6 +3,7 @@
 #define _maxim_ui_listbox_hpp_
 
 #include "maxim.control.hpp"
+#include "maxim.layout.hpp"
 
 namespace maxim {
 
@@ -29,6 +30,7 @@ namespace maxim {
 
 		void on_focus () override;
 
+		void on_initialize_controls () override;
 		void on_paint(maxim::graphics &g, maxim::rect bounds) override;
 
 		// functionality related properties
@@ -43,6 +45,11 @@ namespace maxim {
 		// TODO: perhaps hide this in the implementation?
 		property < std::vector < listbox_item > > items;
 
+		property < bool >           scrollbar;
+		property < maxim::color >   scrollbar_color;
+		property < maxim::color >   scrollbar_background;
+		property < maxim::margins > margins;
+
 	protected:
 		void update_view (int height);
 	private:
@@ -55,6 +62,26 @@ namespace maxim {
 	class builder < listbox, derived_type > : public builder < control, derived_type > {
 	public:
 		using builder < control, derived_type >::builder;
+
+		derived_type & scrollbar (bool value = true) {
+			this->get ()->scrollbar = value;
+			return this->derived ();
+		}
+
+		derived_type & scrollbar_color (maxim::color value) {
+			this->get ()->scrollbar_color = value;
+			return this->derived ();
+		}
+
+		derived_type & scrollbar_background (maxim::color value) {
+			this->get ()->scrollbar_background = value;
+			return this->derived ();
+		}
+
+		derived_type & margins (maxim::margins value) {
+			this->get ()->margins = value;
+			return this->derived ();
+		}
 	};
 }
 

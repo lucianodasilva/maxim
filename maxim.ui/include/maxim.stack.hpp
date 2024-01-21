@@ -30,6 +30,10 @@ namespace maxim {
 
 		property < maxim::orientation > orientation { maxim::orientation::vertical };
 
+		property < maxim::margins > margins;
+		property < int >            padding;
+
+		void on_initialize_controls () override;
 		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
 	};
 
@@ -38,18 +42,28 @@ namespace maxim {
 	public:
 		using builder < control, derived_type >::builder;
 
-		inline derived_type & orientation (maxim::orientation value) {
+		derived_type & orientation (maxim::orientation value) {
 			this->get()->orientation = value;
 			return this->derived();
 		}
 
-		inline derived_type & horizontal () {
+		derived_type & horizontal () {
 			this->get()->orientation = maxim::orientation::horizontal;
 			return this->derived();
 		}
 
-		inline derived_type & vertical () {
+		derived_type & vertical () {
 			this->get()->orientation = maxim::orientation::vertical;
+			return this->derived();
+		}
+
+		derived_type & margins (maxim::margins value) {
+			this->get()->margins = value;
+			return this->derived();
+		}
+
+		derived_type & padding (int value) {
+			this->get()->padding = value;
 			return this->derived();
 		}
 	};
@@ -57,7 +71,7 @@ namespace maxim {
 	template < typename derived_type >
 	class builder < stack_item, derived_type > {
 	public:
-		inline derived_type & length (layout::partition value) {
+		derived_type & length (layout::partition value) {
 			auto & inst = *static_cast < derived_type * > (this);
 			inst.get()->length = value;
 

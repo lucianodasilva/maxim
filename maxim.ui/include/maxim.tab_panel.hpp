@@ -54,12 +54,12 @@ namespace maxim {
 		int selected_index () const;
 		tab_panel_item * selected () const;
 
-		inline bool has_selected () const {
+		bool has_selected () const {
 			return _selected_index >= 0 && _selected_index < tabs ().size ();
 		}
 
 		template < typename control_type, typename ... args_tv >
-		inline auto * make_tab (args_tv && ... args) {
+		auto * make_tab (args_tv && ... args) {
 			auto inst_uptr = std::make_unique < composite_tab_panel_item < control_type > > (std::forward < args_tv > (args) ...);
 			auto * inst_ptr = inst_uptr.get ();
 
@@ -81,7 +81,7 @@ namespace maxim {
 			});
 
 			// share our style info
-			tab_button->style_class_name(this->style_class_name());
+			tab_button->style_class_name.bind (this->style_class_name);
 
 			// if is first panel, activate it
 			if (_tabs.size() == 1) {
@@ -92,7 +92,7 @@ namespace maxim {
 		}
 
 		template < typename control_type, typename ... args_tv >
-		inline auto build_tab (args_tv && ... args) {
+		auto build_tab (args_tv && ... args) {
 			auto * inst_ptr = make_tab < control_type > (std::forward < args_tv > (args) ...);
 			return typename composite_tab_panel_item < control_type >::builder (inst_ptr);
 		}
@@ -100,9 +100,11 @@ namespace maxim {
 		void accept (control_visitor_t visitor) const override;
 		std::vector < std::unique_ptr < tab_panel_item > > const & tabs () const;
 
+		property < maxim::margins > margins;
+
 	private:
 
-		inline std::size_t next_focus_index () const {
+		std::size_t next_focus_index () const {
 			// we do not remove one as usual since we reserved zero for the tab button stack
 			return _tabs.size();
 		}
@@ -117,14 +119,14 @@ namespace maxim {
 	class builder < tab_panel_item, derived_type > {
 	public:
 
-		inline derived_type & tab_caption (std::string_view text) {
+		derived_type & tab_caption (std::string_view text) {
 			auto & inst = *static_cast < derived_type * > (this);
 			inst.get()->tab_caption = std::string (text);
 
 			return inst;
 		}
 
-		inline derived_type & tab_length (layout::partition value) {
+		derived_type & tab_length (layout::partition value) {
 			auto & inst = *static_cast < derived_type * > (this);
 			inst.get()->tab_length = value;
 
@@ -136,6 +138,11 @@ namespace maxim {
 	class builder < tab_panel, derived_type > : public builder < control, derived_type > {
 	public:
 		using builder < control, derived_type >::builder;
+
+		derived_type & margins (maxim::margins value) {
+			this->get()->margins = value;
+			return this->derived();
+		}
 	};
 
 }

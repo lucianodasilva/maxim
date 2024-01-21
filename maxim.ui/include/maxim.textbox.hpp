@@ -19,10 +19,15 @@ namespace maxim {
 
 		textbox();
 
+		void on_initialize_controls() override;
 		void on_paint(maxim::graphics &g, maxim::rect bounds) override;
 		void on_key_press(maxim::input::key_info const &key) override;
 
+		// properties
 		property < std::string > text;
+
+		property < maxim::color > text_color;
+		property < maxim::text_attributes > text_attributes;
 
 		// events
 		validate_event validate;
@@ -33,36 +38,36 @@ namespace maxim {
 		struct box_view {
 		public:
 
-			inline void update_width (int box_width, int text_width) {
+			void update_width (int box_width, int text_width) {
 				_box_width = box_width;
 				track (text_width);
 			}
 
-			inline void cursor_home (int text_size) {
+			void cursor_home (int text_size) {
 				_cursor = 0;
 				track (text_size);
 			}
 
-			inline void cursor_end (int text_size) {
+			void cursor_end (int text_size) {
 				_cursor = text_size;
 				track (text_size);
 			}
 
-			inline void cursor_inc (int text_size) {
+			void cursor_inc (int text_size) {
 				if (_cursor < text_size) {
 					++_cursor;
 					track(text_size);
 				}
 			}
 
-			inline void cursor_dec (int text_size) {
+			void cursor_dec (int text_size) {
 				if (_cursor > 0) {
 					--_cursor;
 					track(text_size);
 				}
 			}
 
-			inline void track (int text_size) {
+			void track (int text_size) {
 				_text_width = std::min (_box_width, text_size);
 
 				if (text_size >= _box_width - 1 && cursor_at_end (text_size)) {
@@ -84,14 +89,14 @@ namespace maxim {
 				}
 			}
 
-			inline bool cursor_at_end (int text_size) const {
+			bool cursor_at_end (int text_size) const {
 				return _cursor == text_size;
 			}
 
-			inline int position () const { return _position; }
-			inline int width () const { return _text_width; }
-			inline int cursor () const { return _cursor; }
-			inline int cursor_offset () const { return _cursor - _position; }
+			int position () const { return _position; }
+			int width () const { return _text_width; }
+			int cursor () const { return _cursor; }
+			int cursor_offset () const { return _cursor - _position; }
 
 		private:
 			int _cursor = 0;
@@ -109,8 +114,18 @@ namespace maxim {
 	public:
 		using builder < control, derived_type >::builder;
 
-		inline derived_type & text (std::string value) {
+		derived_type & text (std::string_view value) {
 			this->get()->text = value;
+			return this->derived();
+		}
+
+		derived_type & text_color (maxim::color value) {
+			this->get()->text_color = value;
+			return this->derived();
+		}
+
+		derived_type & text_attributes (maxim::text_attributes value) {
+			this->get()->text_attributes = value;
 			return this->derived();
 		}
 	};

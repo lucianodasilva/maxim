@@ -24,17 +24,18 @@ namespace maxim {
 		return stack::DEFAULT_STYLE_CLASS_NAME;
 	}
 
+	void stack::on_initialize_controls() {
+		basic_control_container::on_initialize_controls();
+
+		this->bind_style_property(margins, properties::MARGINS);
+		this->bind_style_property(padding, properties::PADDING);
+	}
+
 	void stack::on_paint (maxim::graphics & g, maxim::rect bounds) {
-
-		int padding;
-
-		this->style_reader()
-			.get (properties::PADDING, padding);
-
 		// update partitions
 		layout::partition::refresh (
 			this->orientation.get () == maxim::orientation::horizontal ? bounds.width : bounds.height,
-			padding,
+			padding.get(),
 			this->controls(),
 			[](auto & stack_item_inst) -> maxim::layout::partition & {
 				return stack_item_inst->length.get();

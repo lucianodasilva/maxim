@@ -6,7 +6,7 @@
 
 namespace maxim {
 
-	enum struct anchor_kind {
+	enum struct anchor_kind : uint8_t {
 		none        = 0,
 		top	        = 1 << 0,
 		bottom      = 1 << 1,
@@ -14,7 +14,7 @@ namespace maxim {
 		right       = 1 << 3,
 	};
 
-	enum struct docking_kind {
+	enum struct docking_kind : uint8_t {
 		none        = 0,
 		top         = 1,
 		bottom      = 2,
@@ -46,28 +46,28 @@ namespace maxim {
 	template < typename derived_type >
 	class builder < panel_item, derived_type > {
 	public:
-		inline derived_type & location (maxim::point value) {
+		derived_type & location (maxim::point value) {
 			auto & inst = *static_cast < derived_type * > (this);
 			inst.get()->location = value;
 
 			return inst;
 		}
 
-		inline derived_type & size (maxim::point value) {
+		derived_type & size (maxim::point value) {
 			auto & inst = *static_cast < derived_type * > (this);
 			inst.get()->size = value;
 
 			return inst;
 		}
 
-		inline derived_type & anchor (maxim::anchor_kind value) {
+		derived_type & anchor (maxim::anchor_kind value) {
 			auto & inst = *static_cast < derived_type * > (this);
 			inst.get()->anchor = value;
 
 			return inst;
 		}
 
-		inline derived_type & docking (maxim::docking_kind value) {
+		derived_type & docking (maxim::docking_kind value) {
 			auto & inst = *static_cast < derived_type * > (this);
 			inst.get()->docking = value;
 
@@ -80,7 +80,7 @@ namespace maxim {
 	public:
 		using builder < control, derived_type >::builder;
 
-		inline derived_type & default_size (maxim::point value) {
+		derived_type & default_size (maxim::point value) {
 			this->get()->default_size = value;
 			return this->derived();
 		}

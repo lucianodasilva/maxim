@@ -101,25 +101,6 @@ namespace maxim {
 		style_inheritance_map  _inheritance;
 	};
 
-	/// Helper class to read style properties
-	struct style_property_reader {
-	public:
-		style_property_reader (style const & style, style_property_key const & base_key);
-
-		template < typename value_type >
-		inline style_property_reader const & get (std::string_view property, value_type & value, value_type default_value = {}) const {
-			style_property_key key = _base_key;
-			key.property = property;
-
-			_style.get (key, value, default_value);
-			return *this;
-		}
-
-	private:
-		style const &      _style;
-		style_property_key _base_key;
-	};
-
 	/// Interface for objects that can be styled
 	class style_client {
 	public:
@@ -128,15 +109,10 @@ namespace maxim {
 		virtual maxim::style const &    style () const = 0;
 		virtual std::string_view 	    style_state () const = 0;
 
-		style_property_reader           style_reader();
-
 		virtual std::string_view        default_style_class_name () const = 0;
 
+		property < std::string_view >   style_class_name;
 		void                            style_class_name_reset ();
-		std::string_view                style_class_name ();
-		void                            style_class_name (std::string_view name);
-	private:
-		std::optional < std::string >   _style_class_name;
 	};
 
 	/// Helper common property names
@@ -161,7 +137,6 @@ namespace maxim {
 		constexpr auto PRESSED = "pressed";
 		constexpr auto SELECTED = "selected";
 		constexpr auto SELECTED_FOCUSED = "selected-focused";
-		constexpr auto HIGHLIGHTED = "highlighted";
 	};
 
 	/// Helper common property values

@@ -61,73 +61,6 @@ namespace maxim {
 	}
 
 	style const & style::default_style () {
-		//static style const style_inst ({
-		//	{ // classes
-		//		{ listbox::DEFAULT_STYLE_CLASS_NAME, {
-		//			{ // states
-		//				{ states::FOCUSED, {
-		//					{ properties::BACKGROUND, defaults::ACCENT_DARK },
-		//					{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
-		//				}},
-		//				{ states::SELECTED, {
-		//					{ properties::BACKGROUND, defaults::ACCENT },
-		//					{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
-		//				}},
-		//			},
-		//			{ // properties
-		//				{ properties::SCROLLBAR, true },
-		//				{ properties::SCROLLBAR_COLOR, defaults::SEC_LIGHT },
-		//				{ properties::SCROLLBAR_BACKGROUND, defaults::SEC },
-		//			}
-		//		}},
-		//		{ button::DEFAULT_STYLE_CLASS_NAME, {
-		//			{ // states
-		//				{ states::FOCUSED, {
-		//					{ properties::BACKGROUND, defaults::ACCENT },
-		//					{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
-		//				}},
-		//				{ states::PRESSED, {
-	    //                    { properties::BACKGROUND, defaults::ACCENT_LIGHT },
-		//                    { properties::TEXT_COLOR, defaults::ACCENT_LIGHT.contrast_color() }
-	    //                }},
-		//			},
-		//			{ // properties
-		//				{ properties::BACKGROUND, defaults::ACCENT_DARK },
-		//				{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
-		//			}
-		//		}},
-		//		{ textbox::DEFAULT_STYLE_CLASS_NAME, {
-		//			{ // states
-		//				{ states::FOCUSED, {
-		//					{ properties::BACKGROUND, defaults::ACCENT },
-		//					{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
-		//				}},
-		//			},
-		//			{ // properties
-		//				{ properties::BACKGROUND, defaults::ACCENT_DARK },
-		//				{ properties::TEXT_COLOR, defaults::SEC_DARK.contrast_color() }
-		//			}
-		//		}},
-		//	},
-		//	{ // states
-		//		{ states::FOCUSED, {
-		//			{ properties::BACKGROUND, defaults::ACCENT_DARK },
-		//			{ properties::TEXT_COLOR, defaults::ACCENT_DARK.contrast_color() }
-		//		}},
-		//		{ states::SELECTED, {
-		//			{ properties::BACKGROUND, defaults::ACCENT },
-		//			{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
-		//		}},
-		//	},
-		//	{ // properties
-		//		{ properties::BACKGROUND, defaults::NEUTRAL },
-		//		{ properties::BORDER, false },
-		//		{ properties::TEXT_COLOR, defaults::NEUTRAL.contrast_color() },
-		//		{ properties::TEXT_ATTRIBUTES, defaults::TEXT_ATTRIBUTES },
-		//		}
-		//	});
-		//
-		//return style_inst;
 		static auto inst = maxim::style()
 			.set_class(DEFAULT_CLASS_NAME, {
 				{ states::DEFAULT, {
@@ -162,31 +95,7 @@ namespace maxim {
 		return inst;
 	}
 
-	style_property_reader::style_property_reader (style const & style, style_property_key const & base_key) :
-		_style (style),
-		_base_key (base_key)
-	{}
-
-	style_property_reader style_client::style_reader () {
-		return {
-			this->style(),
-			{ this->style_class_name(), this->style_state () },
-		};
-	}
-
 	void style_client::style_class_name_reset () {
-		this->_style_class_name = default_style_class_name();
-	}
-
-	std::string_view style_client::style_class_name() {
-		if (!_style_class_name.has_value()) {
-			this->style_class_name_reset ();
-		}
-
-		return _style_class_name.value();
-	}
-
-	void style_client::style_class_name(std::string_view class_name) {
-		_style_class_name = class_name;
+		this->style_class_name = this->default_style_class_name();
 	}
 }

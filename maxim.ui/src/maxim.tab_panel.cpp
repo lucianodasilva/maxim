@@ -25,6 +25,8 @@ namespace maxim {
 	}
 
 	void tab_panel::on_initialize_controls() {
+		basic_control::on_initialize_controls();
+
 		_tab_button_stack.orientation = orientation::horizontal;
 
 		// share tab focus index ( reserve 0 for tab buttons )
@@ -32,9 +34,11 @@ namespace maxim {
 		// share tree position
 		_tab_button_stack.attach_to_tree(this->application(), this->parent());
 		// set same style class
-		_tab_button_stack.style_class_name (style_class_name ());
+		_tab_button_stack.style_class_name.bind (this->style_class_name);
 
 		_tab_button_stack.on_initialize_controls();
+
+		this->bind_style_property(margins, properties::MARGINS);
 	}
 
 	void tab_panel::on_activate() {
@@ -64,11 +68,6 @@ namespace maxim {
 
 		// if there is a selected tab
 		if (this->has_selected()) {
-			maxim::margins margins;
-
-			this->style_reader()
-				.get(properties::CONTENT_MARGINS, margins);
-
 			auto selected_bounds = maxim::rect { bounds.x, bounds.y + 1, bounds.width, bounds.height - 1 };
 			selected_bounds = layout::apply_margins(selected_bounds, margins);
 

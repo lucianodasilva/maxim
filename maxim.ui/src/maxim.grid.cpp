@@ -40,20 +40,19 @@ namespace maxim {
 		return grid::DEFAULT_STYLE_CLASS_NAME;
 	}
 
+	void grid::on_initialize_controls() {
+		basic_control_container::on_initialize_controls();
+
+		this->bind_style_property(margins, properties::MARGINS);
+		this->bind_style_property(padding, properties::PADDING);
+	}
+
 	void grid::on_paint(maxim::graphics &g, maxim::rect bounds) {
-
-		maxim::margins margins;
-		maxim::point padding;
-
-		this->style_reader()
-			.get(properties::MARGINS, margins)
-			.get(properties::PADDING, padding);
-
 		bounds = maxim::layout::apply_margins(bounds, margins);
 
 		// update partitions
-		layout::partition::refresh(bounds.height, padding.y, rows, [](auto & row) -> decltype (row) & { return row; });
-		layout::partition::refresh(bounds.width, padding.x, columns, [](auto & column) -> decltype (column) & { return column; });
+		layout::partition::refresh(bounds.height, padding.get().y, rows, [](auto & row) -> decltype (row) & { return row; });
+		layout::partition::refresh(bounds.width, padding.get().x, columns, [](auto & column) -> decltype (column) & { return column; });
 
 		// paint itself
 		basic_control_container::on_paint(g, bounds);

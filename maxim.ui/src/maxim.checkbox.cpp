@@ -15,13 +15,6 @@ namespace maxim {
 	void checkbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
 		label::on_paint(g, bounds);
 
-		maxim::color            text_color;
-		maxim::text_attributes  text_attributes;
-
-		this->style_reader()
-			.get(properties::TEXT_COLOR, text_color)
-			.get(properties::TEXT_ATTRIBUTES, text_attributes);
-
 		// TODO: dude... this is so ugly
 		constexpr auto UNSET_CHECK = "[ ]";
 		constexpr auto SET_CHECK = "[X]";

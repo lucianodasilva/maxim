@@ -42,7 +42,7 @@ namespace maxim {
 		event_guard(event_guard &&other) noexcept;
 
 		template<typename observer_t>
-		inline explicit event_guard(std::shared_ptr<observer_t> observer) :
+		explicit event_guard(std::shared_ptr<observer_t> observer) :
 			_observer{std::make_unique<observer_guard<observer_t> >(observer)} {};
 
 		event_guard &operator=(event_guard &&other) noexcept;
@@ -77,7 +77,7 @@ namespace maxim {
 			std::weak_ptr<observer_t> weak_observer;
 		};
 
-		inline void swap(event_guard &other) noexcept {
+		void swap(event_guard &other) noexcept {
 			std::swap(_observer, other._observer);
 		}
 
@@ -100,7 +100,7 @@ namespace maxim {
 		class observer_base {
 		public:
 
-			inline explicit observer_base(event &owner_ref, observer_id_t id_v) :
+			explicit observer_base(event &owner_ref, observer_id_t id_v) :
 				owner{owner_ref},
 				ID{id_v} {};
 
@@ -119,7 +119,7 @@ namespace maxim {
 		template<typename callback_t>
 		class observer : public observer_base {
 		public:
-			inline explicit observer(callback_t callback, event &owner_ref, observer_id_t id) :
+			explicit observer(callback_t callback, event &owner_ref, observer_id_t id) :
 				_callback(std::move(callback)),
 				observer_base(owner_ref, id) {}
 
@@ -133,7 +133,7 @@ namespace maxim {
 			callback_t _callback;
 		};
 
-		inline void invoke(args_t ... args) {
+		void invoke(args_t ... args) {
 			decltype(_observers) local_observers;
 
 			{
@@ -153,13 +153,13 @@ namespace maxim {
 
 		template<typename callback_t>
 		[[nodiscard]]
-		inline event_guard append(callback_t && callback) {
+		event_guard append(callback_t && callback) {
 			std::unique_lock<std::mutex> lock(_internal_mutex);
 			return append_impl(std::forward<callback_t>(callback));
 		}
 
 		template<typename callback_t>
-		inline observer_id_t append_no_scope(callback_t && callback) {
+		observer_id_t append_no_scope(callback_t && callback) {
 			std::unique_lock<std::mutex> lock(_internal_mutex);
 
 			auto guard{append_impl(std::forward<callback_t>(callback))};
@@ -169,7 +169,7 @@ namespace maxim {
 			return _observer_tick;
 		}
 
-		inline bool remove(observer_id_t id) {
+		bool remove(observer_id_t id) {
 			std::unique_lock<std::mutex> lock(_internal_mutex);
 
 			auto erase_it = std::remove_if(
@@ -190,7 +190,7 @@ namespace maxim {
 	private:
 
 		template<typename callback_t>
-		inline event_guard append_impl(callback_t &&callback) {
+		event_guard append_impl(callback_t &&callback) {
 			auto &obs_instance = _observers.emplace_back(
 				std::make_shared<observer<callback_t> >(
 					callback,

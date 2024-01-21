@@ -44,7 +44,7 @@ namespace maxim {
 		maxim::device & device();
 
 		template < typename control_type, typename ... args_tv, std::enable_if_t < std::is_base_of_v < maxim::control, control_type >, int > = 0 >
-		inline control_type * push_active (args_tv && ... args) {
+		control_type * push_active (args_tv && ... args) {
 			auto uptr = std::make_unique < control_type > (
 				std::forward < args_tv > (args)...);
 
@@ -63,7 +63,7 @@ namespace maxim {
 
 		void pop_active ();
 
-		inline class control * active () const {
+		class control * active () const {
 			if (_active_stack.empty()) {
 				return nullptr;
 			}

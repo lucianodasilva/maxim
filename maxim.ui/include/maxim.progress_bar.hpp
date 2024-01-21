@@ -27,22 +27,22 @@ namespace maxim {
 	public:
 		using builder < basic_control, derived_type >::builder;
 
-		inline derived_type & min (int value) {
+		derived_type & min (int value) {
 			this->get()->value;
 			return this->derived();
 		}
 
-		inline derived_type & max (int value) {
+		derived_type & max (int value) {
 			this->get()->max = value;
 			return this->derived();
 		}
 
-		inline derived_type & value (int value) {
+		derived_type & value (int value) {
 			this->get()->value = value;
 			return this->derived();
 		}
 
-		inline derived_type & text (std::string value) {
+		derived_type & text (std::string_view value) {
 			this->get()->text = value;
 			return this->derived();
 		}

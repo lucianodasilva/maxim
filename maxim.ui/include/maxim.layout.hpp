@@ -16,7 +16,7 @@ namespace maxim {
 
 	namespace layout {
 
-		enum struct partition_kind {
+		enum struct partition_kind : uint8_t {
 			constant, /// fixed size
 			variable  /// variable size
 		};
@@ -24,15 +24,15 @@ namespace maxim {
 		struct partition {
 		public:
 			partition () = default;
-			constexpr inline partition (float length) : length(length) {}
-			constexpr inline partition (int length) : length (static_cast < int > (length)) {}
-			constexpr inline partition (float length, partition_kind kind) : length{length}, kind{kind} {}
+			constexpr partition (float length) : length(length) {}
+			constexpr partition (int length) : length (static_cast < int > (length)) {}
+			constexpr partition (float length, partition_kind kind) : length{length}, kind{kind} {}
 
 			template<typename iterable_t, typename getter_t>
-			static inline float sum (partition_kind kind, iterable_t const & iterable, getter_t const & getter);
+			static float sum (partition_kind kind, iterable_t const & iterable, getter_t const & getter);
 
 			template<typename iterable_t, typename getter_t>
-			static inline void refresh(int size, int padding, iterable_t & iterable, getter_t const & getter);
+			static void refresh(int size, int padding, iterable_t & iterable, getter_t const & getter);
 
 			float length = .0F;
 			partition_kind kind = partition_kind::constant;
@@ -45,11 +45,11 @@ namespace maxim {
 
 			partition_range() = default;
 
-			inline partition_range(int value) :
+			partition_range(int value) :
 				from{value},
 				to{value} {}
 
-			inline partition_range(int from_v, int to_v) :
+			partition_range(int from_v, int to_v) :
 				from{from_v},
 				to{to_v} {}
 

@@ -29,6 +29,10 @@ namespace maxim {
 		property (value_type const & value) : _variant (value) {}                  // NOLINT
 		property (value_type && value) noexcept : _variant (std::move (value)) {}  // NOLINT
 
+		explicit property (std::function < value_type () > && getter) {
+			this->bind (std::forward < std::function < value_type () > > (getter));
+		}
+
 		property (property const & other) : _variant (other._variant) {}
 
 		property & operator = (value_type const & value) {

@@ -1,8 +1,18 @@
 #include "maxim.control_container.hpp"
 #include "maxim.io.hpp"
 #include "maxim.application.hpp"
+#include "maxim.control.hpp"
+
 
 namespace maxim {
+
+	void control::focus_index (maxim::focus_index const & index) {
+		_focus_index = index;
+	}
+
+	maxim::focus_index const & control::focus_index() const {
+		return _focus_index;
+	}
 
 	control_container * control::parent () const {
 		return _parent;
@@ -13,31 +23,24 @@ namespace maxim {
 	}
 
 	control * control::root () {
-		return _parent ? _parent->root () : this;
+		return _parent != nullptr ? _parent->root () : this;
 	}
 
 	control const * control::root () const {
-		return _parent ? _parent->root () : this;
+		return _parent != nullptr ? _parent->root () : this;
 	}
 
 	bool control::is_active () const {
-		return this->application () && this->application ()->active () == this->root ();
+		return
+			this->application () != nullptr &&
+			this->application ()->active () == this->root ();
 	}
 
 	void control::attach_to_tree (class application * app, class control_container * parent) {
-		this->application (app);
-		this->parent (parent);
+		this->_application = app;
+		this->_parent = parent;
 
 		this->on_initialize_controls();
-	}
-
-	control_container * control::parent (control_container * parent) {
-		_parent = parent;
-		return _parent;
-	}
-
-	void control::application (class application * application) {
-		_application = application;
 	}
 
 	style & basic_control::style() {
@@ -58,7 +61,7 @@ namespace maxim {
 
 	void basic_control::on_key_press (maxim::input::key_info const & key) {
 		if (key.matches (input::virtual_key::tab, input::modifier_key::none)) {
-			if (application()) {
+			if (application() != nullptr) {
 				application()->focus_next();
 			}
 
@@ -66,7 +69,7 @@ namespace maxim {
 		}
 
 		if (key.matches (input::virtual_key::tab, input::modifier_key::shift)) {
-			if (application()) {
+			if (application() != nullptr) {
 				application()->focus_prev();
 			}
 
@@ -77,7 +80,7 @@ namespace maxim {
 	}
 
 	bool basic_control::has_focus () const {
-		if (this->application ()) {
+		if (this->application () != nullptr) {
 			return this->application ()->current_focus() == this;
 		}
 
@@ -85,7 +88,7 @@ namespace maxim {
 	}
 
 	void basic_control::focus() {
-		if (this->application()) {
+		if (this->application() != nullptr) {
 			this->application ()->focus (this);
 		}
 	}
@@ -98,36 +101,25 @@ namespace maxim {
 		focus_lost.invoke (*this);
 	}
 
-	maxim::focus_index const & control::focus_index() const {
-		return _focus_index;
-	}
-
-	void control::focus_index (maxim::focus_index const & index) {
-		_focus_index = index;
-	}
-
 	void basic_control::on_paint (maxim::graphics & g, maxim::rect bounds) {
-		maxim::color back_color;
-		maxim::color border_color;
-		bool border;
+		g.draw_box (bounds, background.get());
 
-		this->style_reader ()
-			.get (properties::BACKGROUND, back_color)
-			.get (properties::BORDER_COLOR, border_color)
-			.get (properties::BORDER, border);
-
-		g.draw_box (bounds, back_color);
-
-		if (border) {
-			g.draw_box (bounds, border_color, false);
+		if (border.get()) {
+			g.draw_box (bounds, border_color.get(), false);
 		}
 	}
 
-	void basic_control::on_initialize_controls() {}
+	void basic_control::on_initialize_controls() {
+		this->style_class_name_reset();
+
+		this->bind_style_property (background, properties::BACKGROUND);
+		this->bind_style_property (border_color, properties::BORDER_COLOR);
+		this->bind_style_property (border, properties::BORDER);
+	}
 
 	void basic_control::on_activate () {
 		// register control with focus manager
-		if (this->application ()) {
+		if (this->application () != nullptr) {
 			this->application ()->focus_register (this);
 		}
 
@@ -135,7 +127,7 @@ namespace maxim {
 	}
 
 	void basic_control::on_deactivate() {
-		if (this->application ()) {
+		if (this->application () != nullptr) {
 			this->application ()->focus_unregister (this);
 		}
 
@@ -143,7 +135,8 @@ namespace maxim {
 	}
 
 	bool basic_control::is_active () const {
-		return this->application () && this->application ()->focus_registered (this);
+		return
+			this->application () != nullptr &&
+			this->application ()->focus_registered (this);
 	}
-
 }

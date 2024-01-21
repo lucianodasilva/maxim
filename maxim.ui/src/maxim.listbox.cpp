@@ -37,22 +37,17 @@ namespace maxim {
 		basic_control::on_focus();
 	}
 
+	void listbox::on_initialize_controls() {
+		basic_control::on_initialize_controls();
+
+		this->bind_style_property(scrollbar, properties::SCROLLBAR);
+		this->bind_style_property(scrollbar_color, properties::SCROLLBAR_COLOR);
+		this->bind_style_property(scrollbar_background, properties::SCROLLBAR_BACKGROUND);
+		this->bind_style_property(margins, properties::MARGINS);
+	}
+
 	void listbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
 		basic_control::on_paint(g, bounds);
-
-		bool    	    border;
-		bool            scrollbar;
-		maxim::color    scrollbar_color;
-		maxim::color    scrollbar_background;
-		maxim::margins  margins;
-
-		this->style_reader()
-			.get(properties::SCROLLBAR, scrollbar)
-			.get(properties::SCROLLBAR_COLOR, scrollbar_color)
-			.get(properties::SCROLLBAR_BACKGROUND, scrollbar_background)
-			.get(properties::BORDER, border)
-			.get(properties::MARGINS, margins)
-			;
 
 		// calculate "final" bounds ==============================
 		// if we have border, "contract" bounds
@@ -129,13 +124,6 @@ namespace maxim {
 				} else if (is_hovered) {
 					item_state = states::FOCUSED;
 				}
-
-				auto sreader = style_property_reader (this->style (), style_property_key { this->style_class_name(), item_state });
-
-				sreader
-					.get (properties::BACKGROUND, back_color)
-					.get (properties::TEXT_COLOR, text_color)
-					.get (properties::TEXT_ATTRIBUTES, text_attributes);
 
 				// draw item background
 				g.draw_box (item_bounds, back_color);

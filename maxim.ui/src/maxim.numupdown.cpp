@@ -16,18 +16,8 @@ namespace maxim {
 
 	void numupdown::on_paint (maxim::graphics & g, maxim::rect bounds) {
 
-		maxim::color        back_color;
-		maxim::color        text_color;
-		maxim::attributes   text_attributes;
-
-		this->style_reader ()
-			.get (properties::BACKGROUND, back_color)
-			.get (properties::TEXT_COLOR, text_color)
-			.get (properties::TEXT_ATTRIBUTES, text_attributes);
-
-
 		// clear extended background
-		g.draw_box(bounds, back_color);
+		g.draw_box(bounds, background);
 
 		auto text_bounds = maxim::rect {
 			bounds.position() + maxim::point{1, 0},
@@ -45,7 +35,7 @@ namespace maxim {
 			{ 1, bounds.height }
 		};
 
-		g.draw_char (LEFT_LABEL_BOUNDS.position(), text_color, 0x67, text_attributes.flags, true);
+		g.draw_char (LEFT_LABEL_BOUNDS.position(), text_color, 0x67, text_attributes.get().flags, true);
 	}
 
 	void numupdown::on_key_press(const maxim::input::key_info &e) {

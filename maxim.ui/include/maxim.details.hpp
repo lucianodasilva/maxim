@@ -34,12 +34,12 @@ namespace maxim {
 		}
 
 		template < typename value_type >
-		inline void combine (std::size_t & seed, value_type const & value) {
+		void combine (std::size_t & seed, value_type const & value) {
 			seed = mix (seed + 0x9e3779b9 + std::hash < value_type >()(value));
 		}
 
 		template < typename ... args_t >
-		inline void combine (std::size_t & seed, args_t const & ... args) {
+		void combine (std::size_t & seed, args_t const & ... args) {
 			(combine (seed, args), ...);
 		}
 	}

@@ -11,23 +11,19 @@ namespace maxim {
 		this->tab_stop = true;
 	}
 
+	void textbox::on_initialize_controls() {
+		basic_control::on_initialize_controls();
+
+		this->bind_style_property(text_color, properties::TEXT_COLOR);
+	}
+
 	void textbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
 
 		// calculate text window
 		_view.update_width(bounds.width, text.get().size());
 
-		maxim::color back_color;
-		maxim::color text_color;
-		maxim::text_attributes text_attributes;
-
-		this->style_reader()
-			.get (properties::BACKGROUND, back_color)
-			.get (properties::TEXT_COLOR, text_color);
-		// TODO: make math for text attributes more robust and support other alignments
-		// .get (properties::TEXT_ATTRIBUTES, text_attributes);
-
 		// render background
-		g.draw_box(bounds, back_color, true);
+		g.draw_box(bounds, background, true);
 
 		// render cursor
 		if (this->has_focus()) {

@@ -25,6 +25,10 @@ namespace maxim {
 		std::vector < layout::partition > columns { 1.0_var };
 		std::vector < layout::partition > rows { 1.0_var };
 
+		property < maxim::margins > margins;
+		property < maxim::point >   padding;
+
+		void on_initialize_controls () override;
 		void on_paint (graphics & g, rect bounds) override;
 	};
 
@@ -33,28 +37,39 @@ namespace maxim {
 	public:
 		using builder < control, derived_type >::builder;
 
-		inline auto & columns (std::vector < layout::partition > value) {
+		auto & columns (std::vector < layout::partition > value) {
 			this->get()->columns = value;
 			return this->derived();
 		}
 
-		inline auto & rows (std::vector < layout::partition > value) {
+		auto & rows (std::vector < layout::partition > value) {
 			this->get()->rows = value;
 			return this->derived();
 		}
 
-		inline auto & layout (std::vector < layout::partition > columns, std::vector < layout::partition > rows) {
+		auto & layout (std::vector < layout::partition > columns, std::vector < layout::partition > rows) {
 			this->get()->columns = columns;
 			this->get()->rows = rows;
 
 			return this->derived();
 		}
+
+		auto & margins (maxim::margins value) {
+			this->get()->margins = value;
+			return this->derived();
+		}
+
+		auto & padding (maxim::point value) {
+			this->get()->padding = value;
+			return this->derived();
+		}
+
 	};
 
 	template < typename derived_type >
 	class builder < grid_item, derived_type > {
 	public:
-		inline derived_type & position (layout::partition_range column_range, layout::partition_range row_range) {
+		derived_type & position (layout::partition_range column_range, layout::partition_range row_range) {
 			auto & inst = *static_cast < derived_type * > (this);
 
 			inst.get()->columns = column_range;

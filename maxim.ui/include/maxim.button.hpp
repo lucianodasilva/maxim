@@ -27,7 +27,7 @@ namespace maxim {
 
 		void on_focus_lost () override;
 
-		inline bool is_pressed () const { return _pressed; }
+		bool is_pressed () const { return _pressed; }
 	private:
 		bool _pressed = false;
 	};

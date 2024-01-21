@@ -17,13 +17,13 @@ namespace maxim {
 
 		/// index chain
 		/// @return const reference to the index chain
-		inline std::vector < uint8_t > const & digits () const {
+		std::vector < uint8_t > const & digits () const {
 			return _digits;
 		}
 
 		/// check if the index is empty
 		/// @return true if the index is empty, false otherwise
-		[[nodiscard]] inline bool empty () const {
+		[[nodiscard]] bool empty () const {
 			return digits().empty();
 		}
 
@@ -83,7 +83,7 @@ namespace maxim {
 
 		/// get the current focused object
 		/// @return a pointer to the current focused object, or nullptr if no object is focused
-		[[nodiscard]] inline class control * current_focus () const {
+		[[nodiscard]] class control * current_focus () const {
 			return _current_focus;
 		}
 
