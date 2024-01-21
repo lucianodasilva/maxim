@@ -146,6 +146,7 @@ namespace demo {
 
 int main(int arg_c, char ** arg_v)
 {
+    // initialize the application
     maxim::application app;
 
     demo::configure_app(app);
