@@ -14,7 +14,7 @@ namespace maxim {
 	struct property;
 
 	template < typename value_type >
-	using property_changed_event = maxim::event < property < value_type > &, value_type const & >;
+	using property_changed_event = maxim::event < value_type const & /* new value */>;
 
 	template < typename value_type >
 	class property {
@@ -190,7 +190,7 @@ namespace maxim {
 		}
 
 		void on_change () {
-			changed.invoke (*this, this->load ());
+			changed.invoke (this->load ());
 		}
 
 		mutable variant_type    _variant = { value_type {} };

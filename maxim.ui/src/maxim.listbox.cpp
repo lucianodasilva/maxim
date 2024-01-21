@@ -5,7 +5,7 @@
 namespace maxim {
 
 	listbox::listbox() {
-		selected_index.changed.append_no_scope([this](auto & sender, int index) {
+		selected_index.changed.append_no_scope([this](int index) {
 			if (index == NO_SELECTION) {
 				on_selection_changed(std::nullopt);
 			} else {
