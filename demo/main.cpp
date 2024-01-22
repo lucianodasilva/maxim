@@ -4,7 +4,6 @@
 namespace demo {
 
     constexpr auto SEGMENT_CLASS_NAME = "segment";
-    constexpr auto PADDED_STACK_CLASS_NAME = "padded_stack";
 
     class stack_demo : public maxim::stack {
     public:
@@ -38,9 +37,9 @@ namespace demo {
                 .text("Dynamic Stack Segment ( width padding )");
 
             auto* dynamic_segment = this->build_control < stack >()
-                .style_class_name(PADDED_STACK_CLASS_NAME)
                 .horizontal()
 				.length(1_var)
+				.padding (1)
 				.get();
 
             dynamic_segment->build_control < button >().text("Button 1").length(1_var);
@@ -54,9 +53,9 @@ namespace demo {
 				.text("Padded Stack Elements");
 
 			auto* padded_segment = this->build_control < stack >()
-                .style_class_name(PADDED_STACK_CLASS_NAME)
 				.horizontal()
 				.length(3)
+				.padding (1)
 				.get();
 
             padded_segment->build_control < button >().text("Button 1").length(1_var);
@@ -118,17 +117,12 @@ namespace demo {
             if (e.matches(maxim::input::virtual_key::escape) || e.matches(maxim::input::virtual_key::Q)) {
                 app.stop();
             }
-            });
+		});
 
         app.style = maxim::style::default_style();
 
         // minor tweak to the default style
         app.style.get()
-            .set_class(PADDED_STACK_CLASS_NAME, stack::DEFAULT_STYLE_CLASS_NAME, {
-                { states::DEFAULT, {
-                    { properties::PADDING, 1}
-                }}})
-
             .set_class(SEGMENT_CLASS_NAME, {
                 { states::DEFAULT, {
                     { properties::BACKGROUND, defaults::SEC},
