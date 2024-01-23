@@ -65,8 +65,40 @@ namespace maxim {
     constexpr bool operator!=(vec2d<lhs_type> const& lhs, vec2d<rhs_type> const& rhs) {
         return !(lhs == rhs);
     }
-    
-    /// Integer 2D vector
+
+	/// Calculate linear interpolation between two values
+	/// \tparam value_type - Values type
+	/// \param a - First value
+	/// \param b - Second value
+	/// \param t - Interpolation factor
+	/// \return Interpolated value
+	template < typename value_type >
+	constexpr value_type lerp (value_type const& a, value_type const& b, float t) noexcept {
+		return a + (b - a) * t;
+	}
+
+	/// Calculate linear interpolation between two points
+	/// \tparam value_type - Type of point components
+	/// \param a - First point
+	/// \param b - Second point
+	/// \param t - Interpolation factor
+	/// \return Interpolated point
+	template < typename value_type >
+	constexpr float length (vec2d < value_type > const& value) noexcept {
+		return std::sqrt (value.x * value.x + value.y * value.y);
+	}
+
+	/// Calculate distance between two points
+	/// \tparam value_type - Type of components
+	/// \param a - First point
+	/// \param b - Second point
+	/// \return Distance between points
+	template < typename value_type >
+	constexpr float distance(vec2d < value_type > const& a, vec2d < value_type > const& b) noexcept {
+		return length(a - b);
+	}
+
+	/// Integer 2D vector
     using point     = vec2d < int32_t >;
     /// Floating point 2D vector
     using pointf    = vec2d < float >;
@@ -165,16 +197,19 @@ namespace maxim {
                 return {};
             }
 
-            point pos = {
-                    std::max(left(), r.left()),
-                    std::max(top(), r.top())
+            point near_point = {
+				std::max(left(), r.left()),
+				std::max(top(), r.top())
             };
 
+			point far_point = {
+				std::min (right (), r.right()),
+				std::min (bottom(), r.bottom())
+			};
+
             return { 
-                pos.x,
-                pos.y,
-                std::min (right() + 1, r.right()) - pos.x + 1,
-                std::min (bottom() + 1, r.bottom()) - pos.y + 1
+                near_point,
+				(far_point - near_point) + point {1, 1}
             };
         }
 
@@ -209,38 +244,6 @@ namespace maxim {
         /// Height component
         int32_t height{};
     };
-
-    /// Calculate linear interpolation between two values
-    /// \tparam value_type - Values type
-    /// \param a - First value
-    /// \param b - Second value
-    /// \param t - Interpolation factor
-    /// \return Interpolated value
-    template < typename value_type >
-    constexpr value_type lerp (value_type const& a, value_type const& b, float t) noexcept {
-		return a + (b - a) * t;
-	}
-
-    /// Calculate linear interpolation between two points
-    /// \tparam value_type - Type of point components
-    /// \param a - First point
-    /// \param b - Second point
-    /// \param t - Interpolation factor
-    /// \return Interpolated point
-    template < typename value_type >
-    constexpr vec2d < value_type > length (vec2d < value_type > const& value) noexcept {
-        return std::sqrt (value.x * value.x + value.y * value.y);
-	}
-
-    /// Calculate distance between two points
-    /// \tparam value_type - Type of components
-    /// \param a - First point
-    /// \param b - Second point
-    /// \return Distance between points
-    template < typename value_type >
-    constexpr float distance(vec2d < value_type > const& a, vec2d < value_type > const& b) noexcept {
-		return length(a - b);
-	}
 
     /// Check if enum flag value contains enum item
     /// \tparam _enum_t - Enum type

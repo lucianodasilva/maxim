@@ -346,8 +346,9 @@ namespace maxim {
 
 		auto clipped = clip.intersection (t_rect);
 
-		if (clipped.is_zero())
+		if (clipped.is_zero()) {
 			return;
+		}
 
 		character c = {};
 

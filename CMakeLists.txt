@@ -24,5 +24,6 @@ add_subdirectory(maxim.io)
 add_subdirectory(maxim.ui)
 
 if (MAXIM_BUILD_DEMO)
-    add_subdirectory(demo)
+    add_subdirectory(demo_io)
+    add_subdirectory(demo_ui)
 endif()
