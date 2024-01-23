@@ -82,6 +82,7 @@ namespace maxim {
 
 			// share our style info
 			tab_button->style_class_name.bind (this->style_class_name);
+			tab_button->margins.bind (this->tab_margins);
 
 			// if is first panel, activate it
 			if (_tabs.size() == 1) {
@@ -100,6 +101,7 @@ namespace maxim {
 		void accept (control_visitor_t visitor) const override;
 		std::vector < std::unique_ptr < tab_panel_item > > const & tabs () const;
 
+		property < maxim::margins > tab_margins;
 		property < maxim::margins > margins;
 
 	private:
@@ -141,6 +143,11 @@ namespace maxim {
 
 		derived_type & margins (maxim::margins value) {
 			this->get()->margins = value;
+			return this->derived();
+		}
+
+		derived_type & tab_margins (maxim::margins value) {
+			this->get()->tab_margins = value;
 			return this->derived();
 		}
 	};

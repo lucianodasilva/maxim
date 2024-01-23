@@ -108,14 +108,10 @@ namespace maxim {
 
 				auto item = items.get ()[item_index];
 
-				maxim::color back_color;
-				maxim::color text_color;
-				maxim::text_attributes text_attributes;
-
-				std::string_view item_state = states::DEFAULT;
-
 				bool is_selected = selected_index.get () == item_index;
 				bool is_hovered = _hovered_offset == item_index && this->has_focus ();
+
+				std::string_view item_state = states::DEFAULT;
 
 				if (is_selected && is_hovered) {
 					item_state = states::SELECTED_FOCUSED;
@@ -125,11 +121,25 @@ namespace maxim {
 					item_state = states::FOCUSED;
 				}
 
+				maxim::color item_background;
+				maxim::color item_text_color;
+				maxim::text_attributes item_text_attributes;
+
+				auto get_prop = [&](std::string_view prop_name, auto & prop) {
+					this->style().get (
+						{ this->style_class_name.get(), item_state, prop_name },
+						prop);
+				};
+
+				get_prop (properties::BACKGROUND, item_background);
+				get_prop (properties::TEXT_COLOR, item_text_color);
+				get_prop (properties::TEXT_ATTRIBUTES, item_text_attributes);
+
 				// draw item background
-				g.draw_box (item_bounds, back_color);
+				g.draw_box (item_bounds, item_background);
 
 				// draw text
-				g.draw_text (item.text, item_bounds, text_color, text_attributes);
+				g.draw_text (item.text, item_bounds, item_text_color, item_text_attributes);
 			}
 		}
 	}

@@ -39,6 +39,7 @@ namespace maxim {
 		_tab_button_stack.on_initialize_controls();
 
 		this->bind_style_property(margins, properties::MARGINS);
+		this->bind_style_property(tab_margins, properties::TAB_MARGINS);
 	}
 
 	void tab_panel::on_activate() {

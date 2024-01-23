@@ -127,7 +127,7 @@ namespace maxim {
 		constexpr auto SCROLLBAR = "scrollbar";
 		constexpr auto PADDING = "padding";
 		constexpr auto MARGINS = "margins";
-		constexpr auto CONTENT_MARGINS = "content-margins";
+		constexpr auto TAB_MARGINS = "tab-margins";
 	};
 
 	/// Helper common state names
