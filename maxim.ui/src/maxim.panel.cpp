@@ -1,4 +1,5 @@
 #include "maxim.panel.hpp"
+#include "maxim.layout.hpp"
 
 namespace maxim {
 
@@ -95,6 +96,9 @@ namespace maxim {
 	void panel::on_paint (maxim::graphics & g, maxim::rect bounds) {
 		// paint itself
 		basic_control_container::on_paint (g, bounds);
+
+		// apply margins
+		bounds = layout::apply_margins (bounds, margins);
 
 		// paint children
 		for (auto & object : controls ()) {

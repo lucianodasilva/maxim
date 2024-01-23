@@ -32,6 +32,13 @@ namespace maxim {
 	}
 
 	void stack::on_paint (maxim::graphics & g, maxim::rect bounds) {
+
+		// paint itself
+		basic_control_container::on_paint (g, bounds);
+
+		// apply margins
+		bounds = layout::apply_margins (bounds, margins);
+
 		// update partitions
 		layout::partition::refresh (
 			this->orientation.get () == maxim::orientation::horizontal ? bounds.width : bounds.height,
@@ -40,9 +47,6 @@ namespace maxim {
 			[](auto & stack_item_inst) -> maxim::layout::partition & {
 				return stack_item_inst->length.get();
 			});
-
-		// paint itself
-		basic_control_container::on_paint (g, bounds);
 
 		// paint children
 		for (auto & object : this->controls()) {

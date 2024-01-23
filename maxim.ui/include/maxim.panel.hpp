@@ -3,6 +3,7 @@
 #define _maxim_ui_panel_hpp_
 
 #include "maxim.control_container.hpp"
+#include "maxim.layout.hpp"
 
 namespace maxim {
 
@@ -40,7 +41,8 @@ namespace maxim {
 
 		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
 
-		property < point > default_size {{ 100, 100 }};
+		property < point >          default_size {{ 100, 100 }};
+		property < maxim::margins > margins;
 	};
 
 	template < typename derived_type >
@@ -83,6 +85,11 @@ namespace maxim {
 		derived_type & default_size (maxim::point value) {
 			this->get()->default_size = value;
 			return this->derived();
+		}
+
+		derived_type & margins (maxim::margins margins) {
+			this->get()->margins = margins;
+			return this->derived ();
 		}
 	};
 

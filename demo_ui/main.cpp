@@ -19,7 +19,7 @@ namespace demo {
             this->build_control < label >()
                 .style_class_name(SEGMENT_CLASS_NAME)
                 .length(1)
-                .text("Static Stack Segment ( without padding )");
+                .text("Static Stack Segment");
 
             auto* static_segment = this->build_control < stack >()
                 .horizontal()
@@ -34,7 +34,8 @@ namespace demo {
             this->build_control < label > ()
                 .style_class_name(SEGMENT_CLASS_NAME)
                 .length(1)
-                .text("Dynamic Stack Segment ( width padding )");
+	            .text_attributes({ maxim::alignment::center, maxim::alignment::center })
+                .text("Dynamic Stack Segment With Padding (Center Aligned Text)");
 
             auto* dynamic_segment = this->build_control < stack >()
                 .horizontal()
@@ -50,12 +51,15 @@ namespace demo {
 			this->build_control < label > ()
 				.style_class_name(SEGMENT_CLASS_NAME)
 				.length(1)
-				.text("Padded Stack Elements");
+				.margins ({ 0, 0, 1, 0})
+				.text_attributes ({ maxim::alignment::far, maxim::alignment::center })
+				.text("(Right Aligned Text) Padded Stack Elements With Padding And Margins");
 
 			auto* padded_segment = this->build_control < stack >()
 				.horizontal()
-				.length(3)
+				.length(5)
 				.padding (1)
+				.margins ({1, 1, 1, 1})
 				.get();
 
             padded_segment->build_control < button >().text("Button 1").length(1_var);
@@ -80,6 +84,24 @@ namespace demo {
         void on_initialize_controls() override {
             using namespace maxim;
             grid::on_initialize_controls();
+
+			this->columns = { 1_var, 1_var, 1_var };
+			this->rows = { 1_var, 1_var, 1_var };
+
+			this->padding = { 1, 1 };
+			this->margins = {1, 1, 1, 1};
+
+			this->build_control < button > ()
+			    .position(0, 0)
+				.text ("On Cell (0,0)");
+
+			this->build_control < button > ()
+			    .position({1, 2}, 0)
+				.text ("On Cells [1,0] to [2, 0]");
+
+			this->build_control < button > ()
+			    .position(2, {1, 2})
+				.text ("On Cells [2, 1] to [2, 2]");
         }
     };
 

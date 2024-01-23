@@ -48,14 +48,15 @@ namespace maxim {
 	}
 
 	void grid::on_paint(maxim::graphics &g, maxim::rect bounds) {
+		// paint itself
+		basic_control_container::on_paint(g, bounds);
+
+		// apply margins to content
 		bounds = maxim::layout::apply_margins(bounds, margins);
 
 		// update partitions
 		layout::partition::refresh(bounds.height, padding.get().y, rows, [](auto & row) -> decltype (row) & { return row; });
 		layout::partition::refresh(bounds.width, padding.get().x, columns, [](auto & column) -> decltype (column) & { return column; });
-
-		// paint itself
-		basic_control_container::on_paint(g, bounds);
 
 		// paint children
 		for (auto & object : controls ()) {
