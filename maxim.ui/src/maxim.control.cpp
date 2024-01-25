@@ -101,8 +101,10 @@ namespace maxim {
 		focus_lost.invoke (*this);
 	}
 
-	void basic_control::on_paint (maxim::graphics & g, maxim::rect bounds) {
-		g.draw_box (bounds, background.get());
+	void basic_control::on_paint (maxim::graphics & g, maxim::size size) {
+		auto bounds	= maxim::rect { {}, size };
+
+		g.draw_box(bounds, background.get());
 
 		if (border.get()) {
 			g.draw_box (bounds, border_color.get(), false);
@@ -114,7 +116,7 @@ namespace maxim {
 
 		this->bind_style_property (background, properties::BACKGROUND);
 		this->bind_style_property (border_color, properties::BORDER_COLOR);
-		this->bind_style_property (border, properties::BORDER);
+		this->bind_style_property (border, properties::BORDER, false);
 	}
 
 	void basic_control::on_activate () {

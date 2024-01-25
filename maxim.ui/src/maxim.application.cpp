@@ -22,7 +22,7 @@ namespace maxim {
 				_device.dispatch_input_events(*this);
 
 				auto g = maxim::graphics { _device.backbuffer() };
-				this->on_paint(g, { {0, 0}, _device.get_size() });
+				this->on_paint(g, _device.get_size());
 
 				_device.present();
 				std::this_thread::yield();
@@ -67,18 +67,18 @@ namespace maxim {
 		}
 	}
 
-	void application::on_paint(maxim::graphics &g, maxim::rect bounds) {
+	void application::on_paint(maxim::graphics &g, maxim::size size) {
 
 		if (paint_order.get() == application_paint_order::pre_controls) {
-			basic_paintable < application >::on_paint(g, bounds);
+			basic_paintable < application >::on_paint(g, size);
 		}
 
 		if (active()) {
-			active()->on_paint(g, bounds);
+			active()->on_paint(g, size);
 		}
 
 		if (paint_order.get() == application_paint_order::post_controls) {
-			basic_paintable < application >::on_paint(g, bounds);
+			basic_paintable < application >::on_paint(g, size);
 		}
 	}
 

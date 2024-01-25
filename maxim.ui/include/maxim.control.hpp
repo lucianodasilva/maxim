@@ -73,11 +73,12 @@ namespace maxim {
 		void attach_to_tree(class application *app, class control_container *parent);
 
 	protected:
-		template<typename value_type>
-		void bind_style_property (property < value_type > & prop, std::string_view name){
-			prop.bind ([this, name]() -> value_type {
+
+		template<typename value_type, typename default_value_t >
+		void bind_style_property(property < value_type >& prop, std::string_view name, default_value_t && default_value) {
+			prop.bind([this, name=std::string(name), default_value = std::forward < default_value_t >(default_value)]() -> value_type {
 				// build property key
-				auto property_key = style_property_key {
+				auto property_key = style_property_key{
 					this->style_class_name,
 					this->style_state(),
 					name
@@ -86,9 +87,14 @@ namespace maxim {
 				// get optional value
 				auto opt_val = this->style().get<value_type>(property_key);
 
-				// return value or default
-				return opt_val.value_or(value_type{});
+				// return value or default value
+				return opt_val.value_or(default_value);
 			});
+		}
+
+		template<typename value_type>
+		void bind_style_property(property < value_type >& prop, std::string_view name) {
+			this->bind_style_property(prop, name, value_type{});
 		}
 
 	private:
@@ -117,7 +123,7 @@ namespace maxim {
 		void on_focus_lost() override;
 
 		// Paintable related members
-		void on_paint(graphics &g, rect bounds) override;
+		void on_paint(maxim::graphics & g, maxim::size size) override;
 
 		// Control specific members
 		void on_initialize_controls() override;

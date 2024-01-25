@@ -17,10 +17,12 @@ namespace maxim {
 		this->bind_style_property(text_color, properties::TEXT_COLOR);
 	}
 
-	void textbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
+	void textbox::on_paint(maxim::graphics &g, maxim::size size) {
+
+		auto bounds = size.as_rect();
 
 		// calculate text window
-		_view.update_width(bounds.width, text.get().size());
+		_view.update_width(size.width, text.get().size());
 
 		// render background
 		g.draw_box(bounds, background, true);
@@ -41,7 +43,7 @@ namespace maxim {
 				std::chrono::system_clock::now().time_since_epoch()).count();
 
 			if (epoch_ms % (BLINK_INTERVAL.count() * 2) < BLINK_INTERVAL.count()) {
-				auto calc_position = std::min (_view.cursor_offset(), bounds.width - 1);
+				auto calc_position = std::min < int > (_view.cursor_offset(), bounds.width - 1);
 
 				// direct manipulation of the buffer
 				auto * cursor_char = g.get_char (bounds.position() + maxim::point{calc_position, 0});

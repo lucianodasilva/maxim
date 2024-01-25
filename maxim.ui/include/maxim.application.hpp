@@ -77,7 +77,7 @@ namespace maxim {
 
 		void on_key_press (maxim::input::key_info const & key) override;
 
-		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
+		void on_paint (maxim::graphics & g, maxim::size size) override;
 
 		static void on_style_changed (application & sender, maxim::style & new_style);
 

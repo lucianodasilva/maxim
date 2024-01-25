@@ -6,12 +6,17 @@ namespace maxim {
 		return progress_bar::DEFAULT_STYLE_CLASS_NAME;
 	}
 
-	void progress_bar::on_paint(maxim::graphics &g, maxim::rect bounds) {
-		auto value_width = static_cast<int>(std::rint(bounds.width * (value / static_cast<float>(max - min))));
+	void progress_bar::on_initialize_controls() {
+		basic_control::on_initialize_controls();
 
-		maxim::color            back_color;
-		maxim::color            text_color;
-		maxim::text_attributes  text_attributes;
+		this->bind_style_property(this->text_color, properties::TEXT_COLOR);
+		this->bind_style_property(this->text_attributes, properties::TEXT_ATTRIBUTES);
+	}
+
+	void progress_bar::on_paint(maxim::graphics &g, maxim::size size) {
+		auto bounds = rect{ {}, size};
+
+		auto value_width = static_cast<int>(std::rint(bounds.width * (value / static_cast<float>(max - min))));
 
 		maxim::color            highlight_color;
 		maxim::color            highlight_text_color;
@@ -22,16 +27,17 @@ namespace maxim {
 			.get < maxim::color > ({ this->style_class_name, states::SELECTED, properties::TEXT_COLOR }, highlight_text_color)
 			.get < maxim::text_attributes > ({ this->style_class_name, states::SELECTED, properties::TEXT_ATTRIBUTES }, highlight_text_attributes);
 
-		g.draw_box(bounds, back_color, true);
+		g.draw_box(bounds, this->background, true);
 
 		if (!text.get().empty()) {
 			g.draw_text(text, bounds, highlight_text_color, highlight_text_attributes);
 		}
 
 		// change clip view
-		g.clip_window_push(
-			{bounds.position() + maxim::point{value_width, 0}, {bounds.width - value_width, bounds.height}});
-		g.draw_text(text, bounds, text_color, text_attributes);
-		g.clip_window_pop();
+		{
+			graphics_transform_guard tnc_guard(g, { bounds.position() + point {value_width, 0}, { bounds.width - value_width, bounds.height }});
+			g.draw_text(text, {{}, {value_width, bounds.height}}, this->text_color, this->text_attributes);
+		}
+		
 	}
 }

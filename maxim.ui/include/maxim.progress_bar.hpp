@@ -13,13 +13,17 @@ namespace maxim {
 		constexpr static auto   DEFAULT_STYLE_CLASS_NAME = "progress-bar";
 		std::string_view        default_style_class_name() const override;
 
-		void on_paint(maxim::graphics &g, maxim::rect bounds) override;
+		void on_initialize_controls() override;
+		void on_paint(maxim::graphics &g, maxim::size size) override;
 
 		property < int >            min = 0;
 		property < int >            max = 0;
 		property < int >            value = 0;
 
 		property < std::string >    text;
+
+		property < maxim::color >			text_color;
+		property < maxim::text_attributes >	text_attributes;
 	};
 
 	template < typename derived_type >
@@ -44,6 +48,16 @@ namespace maxim {
 
 		derived_type & text (std::string_view value) {
 			this->get()->text = value;
+			return this->derived();
+		}
+
+	derived_type & text_color (maxim::color value) {
+			this->get()->text_color = value;
+			return this->derived();
+		}
+
+		derived_type & text_attributes (maxim::text_attributes value) {
+			this->get()->text_attributes = value;
 			return this->derived();
 		}
 	};

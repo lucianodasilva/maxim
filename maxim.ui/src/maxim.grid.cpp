@@ -47,12 +47,12 @@ namespace maxim {
 		this->bind_style_property(padding, properties::PADDING);
 	}
 
-	void grid::on_paint(maxim::graphics &g, maxim::rect bounds) {
+	void grid::on_paint(maxim::graphics &g, maxim::size size) {
 		// paint itself
-		basic_control_container::on_paint(g, bounds);
+		basic_control_container::on_paint(g, size);
 
 		// apply margins to content
-		bounds = maxim::layout::apply_margins(bounds, margins);
+		auto bounds = maxim::layout::apply_margins({{}, size}, margins);
 
 		// update partitions
 		layout::partition::refresh(bounds.height, padding.get().y, rows, [](auto & row) -> decltype (row) & { return row; });
@@ -60,7 +60,10 @@ namespace maxim {
 
 		// paint children
 		for (auto & object : controls ()) {
-			object->on_paint (g, grid_item::layout (this, object.get(), bounds));
+			auto ctrl_bounds = grid_item::layout(this, object.get(), bounds);
+
+			graphics_transform_guard tnc_guard(g, ctrl_bounds);
+			object->on_paint (g, ctrl_bounds.size());
 		}
 	}
 

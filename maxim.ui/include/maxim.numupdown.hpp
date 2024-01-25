@@ -21,7 +21,7 @@ namespace maxim {
 		property < int >        max = 0;
 		property < int >        step = 1;
 
-		void                    on_paint (maxim::graphics & g, maxim::rect bounds) override;
+		void                    on_paint (maxim::graphics & g, maxim::size size) override;
 		void                    on_key_press (maxim::input::key_info const & e) override;
 
 	};

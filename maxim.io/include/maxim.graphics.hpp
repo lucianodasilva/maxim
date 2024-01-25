@@ -60,12 +60,12 @@ namespace maxim {
 
 		/// Default constructor
 		/// \param buffer - Character buffer
-		explicit graphics(character_buffer &buffer);
+		explicit graphics(character_buffer & buffer);
 
 		/// Constructor
 		/// \param buffer - Character buffer
-		/// \param view - View rect
-		graphics(character_buffer &buffer, rect const &view);
+		/// \param clip - Clip window
+		graphics(character_buffer & buffer, rect clip);
 
 		/// Clear buffer with color
 		/// \param clear_color - Color to clear buffer with
@@ -134,54 +134,52 @@ namespace maxim {
 		/// \param solid - Solid or line
 		void draw_h_line(point const &position, int32_t length, maxim::color color, bool solid = true);
 
-		/// Push transform offset to transform stack
-		/// \param transform - Transform offset
-		void transform_push(point const &transform);
-
-		/// Pop transform offset from transform stack
-		void transform_pop();
+		/// set transform offset
+		void transform(point const & transform) { _transform = transform; }
 
 		/// Get current transform offset
-		[[nodiscard]] point transform() const;
+		[[nodiscard]] point transform() const { return _transform; }
 
-		/// Push clip window to clip stack
-		/// \param clip - Clip window
-		void clip_window_push(rect const &clip);
-
-		/// Pop clip window from clip stack
-		void clip_window_pop();
+		/// Set clip window
+		void clip_window(rect const& clip) { _clip_window = maxim::rect({}, _buffer.size()).intersection (clip); }
 
 		/// Get current clip window
-		[[nodiscard]] rect clip_window() const;
+		[[nodiscard]] rect clip_window() const { return _clip_window; }
 
 	private:
 
 		[[nodiscard]]
-		inline rect transform_rect(rect const &src) const {
-			auto pos = src.position() + transform();
-			return rect{pos.x, pos.y, src.width, src.height};
+		rect transform_rect (rect val) const {
+			return { val.position () + transform(), val.size () };
 		}
 
-		[[nodiscard]]
-		inline rect clip_rect() const {
-			// intersect with buffer
-			rect buffer_rect({}, _buffer.size());
-
-			auto clipper = clip_window();
-
-			if (clipper.is_zero()) {
-				return buffer_rect;
-
-			} else {
-				return buffer_rect.intersection(clipper.offset(transform()));
-			}
-		}
-
-		std::stack<point> _transform_stack;
-		std::stack<rect> _clip_stack;
-
-		character_buffer &_buffer;
+		character_buffer &	_buffer;
+		point				_transform{};
+		rect				_clip_window{};
 	};
+
+	struct graphics_transform_guard {
+	public:
+
+		graphics_transform_guard(graphics& g, rect clip_in_local) :
+			_g(g),
+			_stacked_transform(g.transform()),
+			_stacked_clip(g.clip_window())
+		{
+			_g.clip_window({ clip_in_local.position() + _g.transform(), clip_in_local.size() });
+			_g.transform(_g.transform() + clip_in_local.position());
+		}
+
+		~graphics_transform_guard() {
+			_g.transform(_stacked_transform);
+			_g.clip_window(_stacked_clip);
+		}
+	private:
+		graphics& _g;
+		point		_stacked_transform;
+		rect		_stacked_clip;
+	};
+
 }
 
 #endif

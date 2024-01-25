@@ -30,8 +30,6 @@ namespace maxim {
 		property < maxim::point >           size;
 		property < maxim::anchor_kind >     anchor { maxim::anchor_kind::none };
 		property < maxim::docking_kind >    docking { maxim::docking_kind::none };
-
-		static maxim::rect layout (class panel * parent, panel_item * item, maxim::rect bounds);
 	};
 
 	class panel : public composite_control_container < panel_item > {
@@ -39,10 +37,13 @@ namespace maxim {
 		constexpr static auto   DEFAULT_STYLE_CLASS_NAME = "panel";
 		std::string_view        default_style_class_name () const override;
 
-		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
+		void on_paint (maxim::graphics & g, maxim::size size) override;
 
 		property < point >          default_size {{ 100, 100 }};
 		property < maxim::margins > margins;
+
+	private:
+		maxim::rect item_layout(panel_item * item, maxim::size size);
 	};
 
 	template < typename derived_type >

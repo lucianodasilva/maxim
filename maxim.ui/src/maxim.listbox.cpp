@@ -46,13 +46,15 @@ namespace maxim {
 		this->bind_style_property(margins, properties::MARGINS);
 	}
 
-	void listbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
-		basic_control::on_paint(g, bounds);
+	void listbox::on_paint(maxim::graphics &g, maxim::size size) {
+		basic_control::on_paint(g, size);
+
+		auto bounds = rect { {0, 0}, size };
 
 		// calculate "final" bounds ==============================
 		// if we have border, "contract" bounds
 		if (border) {
-			bounds = { bounds.position() + point {1, 1}, {bounds.width - 2, bounds.height - 2} };
+			bounds = bounds.offset ({1, 1}).expand({-2, -2});
 		}
 
 		// then add margins

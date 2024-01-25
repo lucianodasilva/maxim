@@ -11,9 +11,8 @@ public:
 		_device.set_fullscreen(true);
 		_device.set_cursor_enabled (false);
 
-		auto g = maxim::graphics(_device.backbuffer());
-
 		while (_running) {
+			auto g = maxim::graphics(_device.backbuffer());
 			g.clear ();
 
 			g.draw_h_line({0, 0}, 65, colors::red);
@@ -45,6 +44,16 @@ public:
 			test_text ("Bottom Left With Wrapping", {2, 33, 20, 5}, alignment::near, alignment::far, true);
 			test_text ("Bottom Center With Wrapping", {23, 33, 20, 5}, alignment::center, alignment::far, true);
 			test_text ("Bottom Right With Wrapping", {44, 33, 20, 5}, alignment::far, alignment::far, true);
+
+			// transform test
+			{
+				graphics_transform_guard tnc_guard (g, { 80, 5, 60, 20 });
+
+				g.draw_h_line({ 0, 0 }, 65, colors::red);
+				g.draw_v_line({ 0, 0 }, 25, colors::green);
+
+				g.draw_text("1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", { 1, 1 }, colors::white);
+			}
 
 			_device.present ();
 			_device.dispatch_input_events(*this);

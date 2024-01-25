@@ -34,7 +34,7 @@ namespace maxim {
 		property < int >            padding;
 
 		void on_initialize_controls () override;
-		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
+		void on_paint (maxim::graphics & g, maxim::size size) override;
 	};
 
 	template < typename derived_type >

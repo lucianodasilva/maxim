@@ -6,16 +6,14 @@
 namespace maxim {
 
 	graphics::graphics(character_buffer &buffer) :
-		_buffer{buffer}
-	{
-		clip_window_push({ {}, _buffer.size() });
-	}
+		_buffer {buffer},
+		_clip_window { {}, _buffer.size () }
+	{}
 
-	graphics::graphics(character_buffer &buffer, rect const & clip_window)
-		: _buffer{buffer}
-	{
-		clip_window_push(clip_window);
-	}
+	graphics::graphics(character_buffer &buffer, rect clip_window) :
+		_buffer {buffer},
+		_clip_window {clip_window}
+	{}
 
 	void graphics::clear(struct color clear_color) {
 		_buffer.clear(clear_color);
@@ -24,9 +22,8 @@ namespace maxim {
     void graphics::draw_point (maxim::point const & position, struct color color) {
         // transform
         auto dest = position + transform();
-		auto clip = this->clip_rect ();
 
-        if (clip.contains (dest)) {
+        if (this->clip_window().contains(dest)) {
             character c;
             c.attributes.backcolor = color;
 
@@ -37,9 +34,8 @@ namespace maxim {
     void graphics::draw_char (maxim::point const & position, struct color color, char c, attribute_flags flags, bool is_graph) {
         // transform
 	    auto dest = position + transform();
-	    auto clip = this->clip_rect ();
 
-	    if (clip.contains (dest)) {
+	    if (this->clip_window().contains(dest)) {
             auto * cref = _buffer.ptr_at (dest);
 
             cref->attributes.forecolor = color;
@@ -52,9 +48,8 @@ namespace maxim {
 	character * graphics::get_char (point const & position) {
 		// transform
 		auto dest = position + transform();
-		auto clip = this->clip_rect();
 
-		if (clip.contains(dest)) {
+		if (this->clip_window().contains(dest)) {
 			return _buffer.ptr_at(dest);
 		} else {
 			return nullptr;
@@ -67,9 +62,7 @@ namespace maxim {
 		bool solid
 	) {
 		auto t_rect = transform_rect (rct);
-		auto clip = this->clip_rect ();
-
-		auto clipped = clip.intersection (t_rect);
+		auto clipped = this->clip_window().intersection(t_rect);
 
 		if (solid) {
 			if (clipped.is_zero ()) {
@@ -230,9 +223,7 @@ namespace maxim {
 		auto t_bounds = transform_rect (bounds);
 		auto text_position = t_bounds.position();
 
-		auto clip = this->clip_rect ();
-
-		auto clipped = clip.intersection (t_bounds);
+		auto clipped = this->clip_window().intersection(t_bounds);
 
 		if (clipped.is_zero())
 			return;
@@ -313,9 +304,7 @@ namespace maxim {
 		bool solid
 	) {
 		auto t_rect = transform_rect ({ position, { 1, length }});
-		auto clip = this->clip_rect ();
-
-		auto clipped = clip.intersection (t_rect);
+		auto clipped = this->clip_window().intersection(t_rect);
 
 		if (clipped.is_zero())
 			return;
@@ -342,9 +331,7 @@ namespace maxim {
 		bool solid
 	) {
 		auto t_rect = transform_rect ({ position, {  length, 1 }});
-		auto clip = this->clip_rect ();
-
-		auto clipped = clip.intersection (t_rect);
+		auto clipped = this->clip_window().intersection(t_rect);
 
 		if (clipped.is_zero()) {
 			return;
@@ -362,42 +349,6 @@ namespace maxim {
 
 		auto * ptr = _buffer.ptr_at (clipped.position());
 		std::fill (ptr, ptr + clipped.width, c);
-	}
-
-	void graphics::transform_push (point const & transform) {
-		_transform_stack.push (this->transform () + transform);
-	}
-
-	void graphics::transform_pop() {
-		if (!_transform_stack.empty ()) {
-			_transform_stack.pop ();
-		}
-	}
-
-	point graphics::transform () const{
-		if (!_transform_stack.empty ()) {
-			return _transform_stack.top ();
-		} else {
-			return {};
-		}
-	}
-
-	void graphics::clip_window_push(const maxim::rect &clip) {
-		_clip_stack.push (clip);
-	}
-
-	void graphics::clip_window_pop () {
-		if (!_clip_stack.empty ()) {
-			_clip_stack.pop ();
-		}
-	}
-
-	rect graphics::clip_window () const {
-		if (!_clip_stack.empty ()) {
-			return _clip_stack.top ();
-		} else {
-			return { {}, _buffer.size () };
-		}
 	}
 
 }

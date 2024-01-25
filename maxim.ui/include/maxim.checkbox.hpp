@@ -14,7 +14,7 @@ namespace maxim {
 
 		checkbox();
 
-		void on_paint(maxim::graphics & g, maxim::rect bounds) override;
+		void on_paint(maxim::graphics & g, maxim::size size) override;
 
 		property < bool > value;
 

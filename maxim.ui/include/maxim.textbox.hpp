@@ -20,7 +20,7 @@ namespace maxim {
 		textbox();
 
 		void on_initialize_controls() override;
-		void on_paint(maxim::graphics &g, maxim::rect bounds) override;
+		void on_paint(maxim::graphics &g, maxim::size size) override;
 		void on_key_press(maxim::input::key_info const &key) override;
 
 		// properties

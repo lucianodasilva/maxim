@@ -31,7 +31,7 @@ namespace maxim {
 		void on_focus () override;
 
 		void on_initialize_controls () override;
-		void on_paint(maxim::graphics &g, maxim::rect bounds) override;
+		void on_paint(maxim::graphics &g, maxim::size size) override;
 
 		// functionality related properties
 		property<int>  selected_index = NO_SELECTION;

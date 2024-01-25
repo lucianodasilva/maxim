@@ -128,6 +128,7 @@ namespace maxim {
 		constexpr auto PADDING = "padding";
 		constexpr auto MARGINS = "margins";
 		constexpr auto TAB_MARGINS = "tab-margins";
+		constexpr auto TAB_HEIGHT = "tab-height";
 	};
 
 	/// Helper common state names

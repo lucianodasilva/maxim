@@ -12,15 +12,17 @@ namespace maxim {
 		this->tab_stop = true;
 	}
 
-	void checkbox::on_paint(maxim::graphics &g, maxim::rect bounds) {
-		label::on_paint(g, bounds);
+	void checkbox::on_paint(maxim::graphics &g, maxim::size size) {
+		label::on_paint(g, size);
 
 		// TODO: dude... this is so ugly
 		constexpr auto UNSET_CHECK = "[ ]";
 		constexpr auto SET_CHECK = "[X]";
 		constexpr auto CHECK_WIDTH = 3;
 
-		auto check_bounds = maxim::rect { bounds.left(), bounds.top(), CHECK_WIDTH, bounds.height };
+		auto bounds = maxim::rect{ 0, 0, size.width, size.height };
+
+		auto check_bounds = maxim::rect{ 0, 0, CHECK_WIDTH, size.height };
 		check_bounds = bounds.intersection (check_bounds);
 
 		g.draw_text (value.get() ? SET_CHECK : UNSET_CHECK, check_bounds, text_color, text_attributes);

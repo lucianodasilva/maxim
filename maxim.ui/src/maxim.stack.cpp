@@ -31,13 +31,12 @@ namespace maxim {
 		this->bind_style_property(padding, properties::PADDING);
 	}
 
-	void stack::on_paint (maxim::graphics & g, maxim::rect bounds) {
-
+	void stack::on_paint (maxim::graphics & g, maxim::size size) {
 		// paint itself
-		basic_control_container::on_paint (g, bounds);
+		basic_control_container::on_paint (g, size);
 
 		// apply margins
-		bounds = layout::apply_margins (bounds, margins);
+		auto bounds = layout::apply_margins ({{}, size }, margins);
 
 		// update partitions
 		layout::partition::refresh (
@@ -50,7 +49,10 @@ namespace maxim {
 
 		// paint children
 		for (auto & object : this->controls()) {
-			object->on_paint (g, stack_item::layout (this, object.get (), bounds));
+			auto item_bounds = stack_item::layout(this, object.get(), bounds);
+			graphics_transform_guard tnc_guard (g, item_bounds);
+
+			object->on_paint (g, item_bounds.size());
 		}
 	}
 

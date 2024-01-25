@@ -121,6 +121,10 @@ namespace maxim {
 			[[nodiscard]]
 			constexpr point as_point() const { return { width, height }; }
 
+            /// Converts size to rect
+            [[nodiscard]]
+            constexpr struct rect as_rect(point pos = {}) const;
+
             constexpr bool operator==(size const& rhs) const {
 				return width == rhs.width && height == rhs.height;
 			}
@@ -244,6 +248,8 @@ namespace maxim {
         /// Height component
         int32_t height{};
     };
+
+    constexpr rect size::as_rect(point pos) const { return { pos, *this }; }
 
     /// Check if enum flag value contains enum item
     /// \tparam _enum_t - Enum type

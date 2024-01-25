@@ -14,7 +14,8 @@ namespace maxim {
 		return DEFAULT_STYLE_CLASS_NAME;
 	}
 
-	void numupdown::on_paint (maxim::graphics & g, maxim::rect bounds) {
+	void numupdown::on_paint (maxim::graphics & g, maxim::size size) {
+		auto bounds = maxim::rect { { 0, 0 }, size };
 
 		// clear extended background
 		g.draw_box(bounds, background);
@@ -27,7 +28,7 @@ namespace maxim {
 			}
 		};
 
-		maxim::label::on_paint (g, text_bounds);
+		maxim::label::on_paint (g, size);
 
 		// draw +/- label
 		auto const LEFT_LABEL_BOUNDS = maxim::rect {

@@ -46,7 +46,7 @@ namespace maxim {
 		void on_activate () override;
 		void on_deactivate () override;
 
-		void on_paint (maxim::graphics & g, maxim::rect bounds) override;
+		void on_paint (maxim::graphics & g, maxim::size size) override;
 
 		void select (int index);
 		void select (tab_panel_item * item);
@@ -101,6 +101,7 @@ namespace maxim {
 		void accept (control_visitor_t visitor) const override;
 		std::vector < std::unique_ptr < tab_panel_item > > const & tabs () const;
 
+		property < int >			tab_height;
 		property < maxim::margins > tab_margins;
 		property < maxim::margins > margins;
 
@@ -150,6 +151,12 @@ namespace maxim {
 			this->get()->tab_margins = value;
 			return this->derived();
 		}
+
+		derived_type & tab_height (int value) {
+			this->get()->tab_height = value;
+			return this->derived();
+		}
+
 	};
 
 }
