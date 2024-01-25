@@ -60,7 +60,7 @@ namespace maxim {
 		return std::nullopt;
 	}
 
-	style const & style::default_style () {
+	style const& style::default_style() {
 		static auto inst = maxim::style()
 			.set_class(DEFAULT_CLASS_NAME, {
 				{ states::DEFAULT, {
@@ -86,10 +86,40 @@ namespace maxim {
 					{ properties::TEXT_COLOR, defaults::ACCENT_LIGHT.contrast_color() }
 				}},
 				})
+			.set_class(listbox::DEFAULT_STYLE_CLASS_NAME, {
+				{ states::DEFAULT, {
+					{ properties::BACKGROUND, defaults::NEUTRAL },
+					{ properties::BORDER, false },
+					{ properties::TEXT_COLOR, defaults::NEUTRAL.contrast_color() },
+					{ properties::TEXT_ATTRIBUTES, maxim::text_attributes {
+						maxim::alignment::near,
+						maxim::alignment::center
+					}},
+					{ properties::MARGINS, maxim::margins { 1, 0, 0, 0 }},
+					{ properties::SCROLLBAR, true},
+					{ properties::SCROLLBAR_BACKGROUND, defaults::SEC_DARK },
+					{ properties::SCROLLBAR_COLOR, defaults::SEC }
+				}},
+				{ states::FOCUSED, {
+					{ properties::BACKGROUND, defaults::ACCENT },
+					{ properties::TEXT_COLOR, defaults::ACCENT.contrast_color() }
+				}},
+				{ states::SELECTED, {
+					{ properties::BACKGROUND, defaults::ACCENT_LIGHT },
+					{ properties::TEXT_COLOR, defaults::ACCENT_LIGHT.contrast_color() }
+				}},
+				{ states::SELECTED_FOCUSED, {
+					{ properties::BACKGROUND, defaults::ACCENT_LIGHT },
+					{ properties::TEXT_COLOR, defaults::ACCENT }
+				}},
+				{ states::PRESSED, {
+					{ properties::BACKGROUND, defaults::ACCENT_LIGHT },
+					{ properties::TEXT_COLOR, defaults::ACCENT_LIGHT.contrast_color() }
+				}},
+			})
 			.set({stack::DEFAULT_STYLE_CLASS_NAME, states::DEFAULT, properties::BACKGROUND }, defaults::NEUTRAL)
 			.set({grid::DEFAULT_STYLE_CLASS_NAME, states::DEFAULT, properties::BACKGROUND }, defaults::NEUTRAL)
 			.set({panel::DEFAULT_STYLE_CLASS_NAME, states::DEFAULT, properties::BACKGROUND }, defaults::NEUTRAL)
-			.set({ listbox::DEFAULT_STYLE_CLASS_NAME, states::DEFAULT, properties::BACKGROUND }, defaults::NEUTRAL)
 			;
 
 		return inst;

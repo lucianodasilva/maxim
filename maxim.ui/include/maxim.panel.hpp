@@ -26,7 +26,7 @@ namespace maxim {
 
 	class panel_item : public virtual control {
 	public:
-		property < maxim::point >           location;
+		property < maxim::point >           position;
 		property < maxim::point >           size;
 		property < maxim::anchor_kind >     anchor { maxim::anchor_kind::none };
 		property < maxim::docking_kind >    docking { maxim::docking_kind::none };
@@ -48,9 +48,9 @@ namespace maxim {
 	template < typename derived_type >
 	class builder < panel_item, derived_type > {
 	public:
-		derived_type & location (maxim::point value) {
+		derived_type & position (maxim::point value) {
 			auto & inst = *static_cast < derived_type * > (this);
-			inst.get()->location = value;
+			inst.get()->position = value;
 
 			return inst;
 		}

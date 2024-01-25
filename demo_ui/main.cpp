@@ -73,9 +73,33 @@ namespace demo {
     public:
 
         void on_initialize_controls() override {
-			using namespace maxim;
-			panel::on_initialize_controls();
-		}
+            using namespace maxim;
+            panel::on_initialize_controls();
+
+            this->default_size = { 100, 100 };
+
+            //this->build_control < label >()
+            //    .text("Listbox (Anchored Up/Down")
+            //    .position({ 2, 1 })
+            //    .size({ 30, 1 });
+
+            auto* list = this->build_control < listbox >()
+                .position({ 2, 2 })
+                .size({ 30, 96 })
+                .anchor(enum_cat(maxim::anchor_kind::top, maxim::anchor_kind::bottom))
+                .get();
+
+            for (int i = 1; i <= 30; i++) {
+                list->items.get().push_back({ "Item " + std::to_string(i) });
+            }
+
+            this->build_control < label >()
+                .position({ 0, 0 })
+                .size({ 100, 1 })
+                .docking(maxim::docking_kind::bottom)
+                .text ("Docked Label (Bottom)");
+        }
+
     };
 
     class grid_demo : public maxim::grid {
@@ -124,7 +148,6 @@ namespace demo {
             this->build_tab < grid_demo >()
 				.tab_caption("Grid Demo")
                 .tab_length(12);
-		
 		}
 
 	};;

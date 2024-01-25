@@ -5,13 +5,12 @@ namespace maxim {
 
 	maxim::rect panel_item::layout (panel * parent, panel_item * item, maxim::rect bounds) {
 
-		auto item_near_margin = item->location.get ();
-		auto item_far_margin = parent->default_size.get() - (item->location.get () + item->size.get());
+		auto item_near_margin = item->position.get ();
+		auto item_far_margin = parent->default_size.get() - (item->position.get () + item->size.get());
 
-		auto item_bounds = rect { item_near_margin, item->size.get () };
+		auto item_bounds = rect { bounds.position() + item_near_margin, item->size.get () };
 
-
-		if (item->docking.get () == docking_kind::none) {
+		if (item->docking.get () != docking_kind::none) {
 			// calculate docking
 			switch (item->docking.get()) {
 				case docking_kind::top:
