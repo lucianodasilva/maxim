@@ -13,6 +13,19 @@ namespace maxim {
 		std::any    tag;
 	};
 
+	class listbox_item_renderer {
+	public:
+		listbox_item_renderer(class listbox& host);
+
+		virtual void render(listbox_item const& item, maxim::graphics & g, bool hovered, bool selected, maxim::size size);
+		virtual int get_height(listbox_item const& item, int width);
+
+		property < bool > wrap_text = false;
+
+	private:
+		class listbox & _host;
+	};
+
 	using listbox_selection_changed_event = event < class listbox & /* sender */, std::optional < listbox_item > /* item */ >;
 
 	class listbox :
@@ -50,12 +63,22 @@ namespace maxim {
 		property < maxim::color >   scrollbar_background;
 		property < maxim::margins > margins;
 
+		std::unique_ptr < listbox_item_renderer > item_renderer = std::make_unique < listbox_item_renderer > (*this);
+
+		void track_item (int index);
+
 	protected:
-		void update_view (int height);
+		void update_bounds (maxim::rect bounds);
+
+		[[nodiscard]] maxim::rect local_item_bounds (int index);
+		[[nodiscard]] maxim::rect local_total_item_bounds();
+
+		void accept_local_item_bounds(std::function < bool (int /* index */, maxim::rect /* bounds */) > const& callback);
+
 	private:
-		int _last_height = 0;
-		int _hovered_offset = 0;
-		int _scroll_offset = 0;
+		maxim::rect	_cached_bounds = {};
+		int			_hovered_item = 0;
+		int			_scroll_offset = 0;
 	};
 
 	template < typename derived_type >

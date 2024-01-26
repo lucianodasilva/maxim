@@ -78,10 +78,11 @@ namespace demo {
 
             this->default_size = { 100, 100 };
 
-            //this->build_control < label >()
-            //    .text("Listbox (Anchored Up/Down")
-            //    .position({ 2, 1 })
-            //    .size({ 30, 1 });
+            // simple anchored list box ==================================================
+            this->build_control < label >()
+                .text("Listbox (Anchored Up/Down)")
+                .position({ 2, 1 })
+                .size({ 30, 1 });
 
             auto* list = this->build_control < listbox >()
                 .position({ 2, 2 })
@@ -93,6 +94,43 @@ namespace demo {
                 list->items.get().push_back({ "Item " + std::to_string(i) });
             }
 
+            // variable rendering list box =================================================
+            this->build_control < label >()
+                .text("Listbox (Anchored All Around)")
+                .position({ 34, 1 })
+                .anchor (enum_cat (maxim::anchor_kind::left, maxim::anchor_kind::right))
+                .size({ 30, 1 });
+
+            // variable rendering list box renderer
+            auto* list2 = this->build_control < listbox >()
+                .position({ 34, 2 })
+                .size({ 30, 96 })
+                .anchor(enum_cat(maxim::anchor_kind::left, maxim::anchor_kind::right, maxim::anchor_kind::top, maxim::anchor_kind::bottom))
+                .get();
+
+            list2->item_renderer->wrap_text = true;
+
+            list2->items.get().push_back({ "Lorem ipsum dolor sit amet" });
+            list2->items.get().push_back({ "consectetur adipiscing elit" });
+            list2->items.get().push_back({ "In eget leo eget dolor cursus condimentum a id urna" });
+            list2->items.get().push_back({ "Aenean sed interdum purus" });
+            list2->items.get().push_back({ "vitae malesuada nibh" });
+            list2->items.get().push_back({ "Ut porttitor lacus eget massa pellentesque lobortis quis ut mi" });
+            list2->items.get().push_back({ "Donec bibendum mattis feugiat" });
+            list2->items.get().push_back({ "Suspendisse tincidunt egestas nunc" });
+            list2->items.get().push_back({ "Nulla cursus enim augue" });
+            list2->items.get().push_back({ "sed venenatis lorem auctor vel" });
+            list2->items.get().push_back({ "Donec et dapibus quam" });
+            list2->items.get().push_back({ "eget auctor est" });
+            list2->items.get().push_back({ "Proin feugiat orci vitae odio ultrices" });
+            list2->items.get().push_back({ "Nulla imperdiet venenatis nunc, sed cursus tellus bibendum lobortis" });
+            list2->items.get().push_back({ "Curabitur bibendum diam quis est sollicitudin auctor" });
+            list2->items.get().push_back({ "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas" });
+            list2->items.get().push_back({ "Nunc erat risus" });
+            list2->items.get().push_back({ "sodales sagittis ipsum et" });
+            list2->items.get().push_back({ "aliquam cursus tortor" });
+ 
+            // docked label ==================================================
             this->build_control < label >()
                 .position({ 0, 0 })
                 .size({ 100, 1 })

@@ -147,7 +147,7 @@ namespace maxim {
 			attributes);
 	}
 
-	inline auto get_next_line(
+	auto get_next_line(
 			std::string const& text,
 			int begin,
 			int line_width)
@@ -168,7 +168,11 @@ namespace maxim {
 		}
 	}
 
-	inline int get_line_count (std::string const & text, int line_width) {
+	int text_height (std::string const & text, int width) {
+		if (width == 0) {
+			return 0;
+		}
+
 		int offset {0};
 		int line_count {0};
 
@@ -176,7 +180,7 @@ namespace maxim {
 		int end {0};
 
 		while (end < text.size ()) {
-			std::tie (begin, end) = get_next_line(text, offset, line_width);
+			std::tie (begin, end) = get_next_line(text, offset, width);
 			offset = end;
 			++line_count;
 		}
@@ -184,7 +188,7 @@ namespace maxim {
 		return line_count;
 	}
 
-	inline point get_text_position (rect const & bounds, alignment line_alignment, int line_count) {
+	point get_text_position (rect const & bounds, alignment line_alignment, int line_count) {
 		switch (line_alignment) {
 			case (alignment::near):
 				return bounds.position();
@@ -195,12 +199,12 @@ namespace maxim {
 		}
 	}
 
-	inline point get_line_position (rect const & bounds, alignment alignment, int line, int line_width) {
+	point get_line_position (rect const & bounds, alignment alignment, int line, int line_width) {
 		int x = 0;
 
 		switch (alignment) {
 			case (alignment::center):
-				x = bounds.width / 2 - line_width / 2;
+				x = bounds.width / 2 - ( line_width + 1 ) / 2;
 				break;
 			case(alignment::far):
 				x = bounds.width - line_width;
@@ -230,7 +234,7 @@ namespace maxim {
 
 		if (attributes.wrap) {
 			// calculate wrap rect
-			auto lines = get_line_count (text, t_bounds.width);
+			auto lines = text_height (text, t_bounds.width);
 
 			text_position = get_text_position(
 					t_bounds,

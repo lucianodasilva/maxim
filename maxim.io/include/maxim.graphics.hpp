@@ -6,9 +6,7 @@
 #include "maxim.character_buffer.hpp"
 #include "maxim.details.hpp"
 
-#include <tuple>
 #include <string>
-#include <stack>
 
 #ifdef _WIN32
 #undef far
@@ -53,6 +51,8 @@ namespace maxim {
 		/// Wrap Text
 		bool wrap{};
 	};
+
+	int text_height (std::string const &text, int width);
 
 	/// Graphics structure
 	struct graphics {
@@ -162,12 +162,17 @@ namespace maxim {
 	public:
 
 		graphics_transform_guard(graphics& g, rect clip_in_local) :
-			_g(g),
-			_stacked_transform(g.transform()),
-			_stacked_clip(g.clip_window())
+			_g(g)
 		{
 			_g.clip_window({ clip_in_local.position() + _g.transform(), clip_in_local.size() });
 			_g.transform(_g.transform() + clip_in_local.position());
+		}
+
+		graphics_transform_guard(graphics& g, point transform, rect clip_in_global) :
+			_g(g)
+		{
+			_g.clip_window(clip_in_global);
+			_g.transform(_g.transform() + transform);
 		}
 
 		~graphics_transform_guard() {
@@ -175,9 +180,9 @@ namespace maxim {
 			_g.clip_window(_stacked_clip);
 		}
 	private:
-		graphics& _g;
-		point		_stacked_transform;
-		rect		_stacked_clip;
+		graphics&	_g;
+		point		_stacked_transform = _g.transform();
+		rect		_stacked_clip = _g.clip_window();
 	};
 
 }

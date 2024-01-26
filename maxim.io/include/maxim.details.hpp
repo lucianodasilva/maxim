@@ -249,6 +249,14 @@ namespace maxim {
         int32_t height{};
     };
 
+    constexpr bool operator==(rect const& lhs, rect const& rhs) {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height;
+    }
+
+    constexpr bool operator!=(rect const& lhs, rect const& rhs) {
+		return !(lhs == rhs);
+	}
+
     constexpr rect size::as_rect(point pos) const { return { pos, *this }; }
 
     /// Check if enum flag value contains enum item
