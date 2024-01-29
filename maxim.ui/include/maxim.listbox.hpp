@@ -22,6 +22,8 @@ namespace maxim {
 
 		property < bool > wrap_text = false;
 
+		class listbox & host () const { return _host; }
+
 	private:
 		class listbox & _host;
 	};
