@@ -56,7 +56,10 @@ namespace maxim {
 		}
 
 		/// Buffer 2d size
-		maxim::size const &size() const { return _size; }
+		maxim::size const & size2d() const { return _size; }
+
+		/// Buffer unidimentional length
+		std::size_t size () const { return _buffer.size(); }
 
 		/// Resize buffer
 		/// \param size - New size

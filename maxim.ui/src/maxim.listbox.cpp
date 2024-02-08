@@ -36,7 +36,7 @@ namespace maxim {
 		get_prop(properties::TEXT_ATTRIBUTES, item_text_attributes);
 
 		// draw item background
-		g.draw_box(bounds, item_background);
+		g.draw_rect(bounds, item_background);
 
 		if (this->wrap_text) {
 			item_text_attributes.wrap = true;

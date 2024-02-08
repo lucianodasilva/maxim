@@ -193,9 +193,6 @@ namespace demo {
     void configure_app(maxim::application& app) {
         using namespace maxim;
 
-        app.device().set_fullscreen(true);
-        app.device().set_cursor_enabled(false);
-
         app.key_down.append_no_scope([](auto& app, maxim::input::key_info const& e) {
             if (e.matches(maxim::input::virtual_key::escape) || e.matches(maxim::input::virtual_key::Q)) {
                 app.stop();

@@ -10,14 +10,7 @@
 
 namespace maxim::output::_unix {
 
-    driver::driver () {
-        struct stat stats {};
-        if (fstat (STDOUT_FILENO, &stats) == -1) {
-            throw std::runtime_error ("FStat Failure");
-        }
-
-        //setvbuf(stdout, nullptr, _IONBF, 0);
-    }
+    driver::driver () {}
 
     size driver::get_size() const {
         winsize w = {};
@@ -30,30 +23,15 @@ namespace maxim::output::_unix {
     }
 
     void driver::send(span < char > data) const {
-        // TODO: figure this one out better
-		// std::cout << std::string (data.data (), data.size());
-		// std::cout.flush();
+        flockfile (stdout);
 
-		for (auto const c : data) {
-			putchar_unlocked (c);
-		}
-
-//        auto rem = data.size ();
-//
-//        do {
-//            // tcflush(STDOUT_FILENO, TCOFLUSH);
-//            // fflush(stdout);
-//            auto ret_code = fwrite(data.begin () + (data.size () - rem), 1, rem, stdout);
-//            //auto ret_code = ::write(STDOUT_FILENO, data.begin() + (data.size () - rem), rem);
-//
-//            if (ret_code > 0) {
-//                rem -= ret_code;
-//            } else {
-//                // error;
-//                break;
-//            }
-//        } while (rem > 0);
+        for (auto const c : data) {
+            putchar_unlocked (c);
         }
+
+        funlockfile(stdout);
+        fflush (stdout);
+    }
 
 }
 

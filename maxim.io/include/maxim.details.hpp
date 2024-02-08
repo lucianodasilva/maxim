@@ -160,7 +160,7 @@ namespace maxim {
 			x(position.x), y(position.y), width(size.width), height(size.height) {}
 
         /// Determines if rect is empty
-        [[nodiscard]] constexpr bool is_zero() const { return x == 0 && y == 0 && width == 0 && height == 0; }
+        [[nodiscard]] constexpr bool is_zero() const { return width == 0 || height == 0; }
 
         /// Coordinates of top left corner as point
         [[nodiscard]] constexpr point position() const { return { x, y }; }

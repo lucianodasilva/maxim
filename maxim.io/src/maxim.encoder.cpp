@@ -18,6 +18,24 @@ namespace maxim {
         return *this;
     }
 
+    encoder& encoder::emmit_goto_prev(int line_count) {
+        _stream.write_sequence(
+            ansi::move_prefix,
+            line_count,
+            ansi::move_prev_nline_suffix);
+
+        return *this;
+    }
+
+    encoder& encoder::emmit_goto_next(int line_count) {
+        _stream.write_sequence(
+            ansi::move_prefix,
+            line_count,
+            ansi::move_next_nline_suffix);
+
+        return *this;
+    }
+
     encoder & encoder::emmit_home() {
         return emmit_position ({0, 0});
     }
@@ -111,13 +129,32 @@ namespace maxim {
         return *this;
     }
 
+    encoder& encoder::emmit_new_line(int line_count) {
+        _stream.write_sequence(
+            ansi::csi,
+            line_count,
+            ansi::insert_line_suffix);
+
+        return *this;
+    }
+
+    encoder& encoder::emmit_delete_line(int line_count) {
+        _stream.write_sequence(
+            ansi::csi,
+            line_count,
+            ansi::delete_line_suffix);
+
+        return *this;
+    }
+
+
     encoder & encoder::encode_buffer (character_buffer const & buffer) {
-        auto size = buffer.size ();
+        auto size = buffer.size2d ();
 
         this->emmit_attribute_reset();
         //this->emmit_color_reset ();
 
-		if (!buffer.size().is_zero()) {
+		if (!buffer.size2d().is_zero()) {
 			// always emmit first color...
 			this->emmit_color(buffer.ptr_at(0)->attributes.forecolor, buffer.ptr_at(0)->attributes.backcolor);
 		}
@@ -148,7 +185,7 @@ namespace maxim {
     }
 
     void encoder::send_out(output::driver* driver) {
-        if (!driver) {
+        if (driver == nullptr) {
             return;
         }
 

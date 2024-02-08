@@ -36,6 +36,10 @@ namespace maxim {
             wrap_disable[] = "\033[?7l",
             move_prefix[] = "\033[",
             move_suffix[] = "H",
+            move_next_nline_suffix[] = "E",
+            move_prev_nline_suffix[] = "F",
+            insert_line_suffix[] = "L",
+            delete_line_suffix[] = "M",
             attr_prefix[] = "\033[",
             attr_suffix[] = "m",
             attr_reset[] = "\033[0m",
@@ -79,12 +83,23 @@ namespace maxim {
     struct encoder {
     public:
 
+        /// Get stream instance
+        maxim::stream & stream () { return _stream; }
+
         /// Emmit clear screen
         encoder & emmit_clear ();
 
         /// Emmit move cursor to position
         /// \param p position
         encoder & emmit_position (point const & p);
+
+        /// Emmit move cursor to prev line
+        /// \param line_count number of lines to move
+        encoder & emmit_goto_prev (int line_count);
+
+        /// Emmit move cursor to next line
+        /// \param line_count number of lines to move
+        encoder & emmit_goto_next (int line_count);
 
         /// Emmit move cursor to home position
         encoder & emmit_home ();
@@ -135,6 +150,14 @@ namespace maxim {
 
         /// Emmit color reset
         encoder & emmit_color_reset ();
+
+        /// Add new line
+        /// \param line_count - number of lines to insert
+        encoder & emmit_new_line (int line_count);
+
+        /// delete lines
+        /// \param line_count - number of lines to delete
+        encoder & emmit_delete_line (int line_count);
 
         /// Iterate through character buffer and emmit the visual data as ansi escape sequences
         /// \param buffer character buffer

@@ -7,7 +7,7 @@ namespace maxim {
 
 	graphics::graphics(character_buffer &buffer) :
 		_buffer {buffer},
-		_clip_window { {}, _buffer.size () }
+		_clip_window { {}, _buffer.size2d () }
 	{}
 
 	graphics::graphics(character_buffer &buffer, rect clip_window) :
@@ -56,7 +56,7 @@ namespace maxim {
 		}
 	}
 
-	void graphics::draw_box(
+	void graphics::draw_rect(
 		rect const & rct,
 		struct color color,
 		bool solid

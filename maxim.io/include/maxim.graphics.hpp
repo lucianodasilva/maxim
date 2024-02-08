@@ -96,7 +96,7 @@ namespace maxim {
 		/// \param rct - Rectangle
 		/// \param color - Color
 		/// \param solid - Solid or outline
-		void draw_box(rect const &rct, maxim::color color, bool solid = true);
+		void draw_rect(rect const &rct, maxim::color color, bool solid = true);
 
 		/// Draw text
 		/// \param text - Text
@@ -141,7 +141,7 @@ namespace maxim {
 		[[nodiscard]] point transform() const { return _transform; }
 
 		/// Set clip window
-		void clip_window(rect const& clip) { _clip_window = maxim::rect({}, _buffer.size()).intersection (clip); }
+		void clip_window(rect const& clip) { _clip_window = maxim::rect({}, _buffer.size2d()).intersection (clip); }
 
 		/// Get current clip window
 		[[nodiscard]] rect clip_window() const { return _clip_window; }

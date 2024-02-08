@@ -8,9 +8,6 @@ public:
 		using namespace maxim;
 		_running = true;
 
-		_device.set_fullscreen(true);
-		_device.set_cursor_enabled (false);
-
 		while (_running) {
 			auto g = maxim::graphics(_device.backbuffer());
 			g.clear ();
@@ -21,7 +18,7 @@ public:
 			g.draw_text("1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", {1, 1}, colors::white);
 
 			auto test_text = [&](std::string const & text, maxim::rect bounds, alignment h_align, alignment v_align, bool wrap = false) {
-				g.draw_box (bounds, colors::gray);
+				g.draw_rect (bounds, colors::gray);
 				g.draw_text(text, bounds, colors::black, {h_align, v_align, {}, wrap});
 			};
 

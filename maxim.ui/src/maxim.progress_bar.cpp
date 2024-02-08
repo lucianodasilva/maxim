@@ -27,7 +27,7 @@ namespace maxim {
 			.get < maxim::color > ({ this->style_class_name, states::SELECTED, properties::TEXT_COLOR }, highlight_text_color)
 			.get < maxim::text_attributes > ({ this->style_class_name, states::SELECTED, properties::TEXT_ATTRIBUTES }, highlight_text_attributes);
 
-		g.draw_box(bounds, this->background, true);
+		g.draw_rect(bounds, this->background, true);
 
 		if (!text.get().empty()) {
 			g.draw_text(text, bounds, highlight_text_color, highlight_text_attributes);

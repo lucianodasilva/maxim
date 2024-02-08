@@ -104,10 +104,10 @@ namespace maxim {
 	void basic_control::on_paint (maxim::graphics & g, maxim::size size) {
 		auto bounds	= maxim::rect { {}, size };
 
-		g.draw_box(bounds, background.get());
+		g.draw_rect(bounds, background.get());
 
 		if (border.get()) {
-			g.draw_box (bounds, border_color.get(), false);
+			g.draw_rect (bounds, border_color.get(), false);
 		}
 	}
 

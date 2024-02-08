@@ -18,7 +18,7 @@ namespace maxim {
 		auto bounds = maxim::rect { { 0, 0 }, size };
 
 		// clear extended background
-		g.draw_box(bounds, background);
+		g.draw_rect(bounds, background);
 
 		auto text_bounds = maxim::rect {
 			bounds.position() + maxim::point{1, 0},

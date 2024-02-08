@@ -46,14 +46,6 @@ namespace maxim {
         /// Get a reference to the encoder
         maxim::encoder & encoder ();
 
-        /// Set the terminal to fullscreen mode
-        /// \param enable - True to enable fullscreen mode
-        void set_fullscreen(bool enable);
-
-        /// Set the cursor visibility
-        /// \param enable - True to enable cursor
-        void set_cursor_enabled (bool enable);
-
         /// Set the color mode
         /// \param mode - Color mode
         void set_color_mode (color_mode mode);
@@ -80,8 +72,6 @@ namespace maxim {
         size                _size { _output_driver->get_size() };
         character_buffer    _back_buffer { _size };
         maxim::encoder      _encoder;
-        bool                _alternate_buffer_enabled {false};
-        bool                _cursor_enabled { true };
 
     };
 }

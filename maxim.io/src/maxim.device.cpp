@@ -8,23 +8,22 @@ namespace maxim {
 	void input_event_handler::on_key_press(const maxim::input::key_info &key) {}
 
     device::device () {
-        _encoder.emmit_wrap (false);
-        _encoder.emmit_scrolling(false);
-        _encoder.send_out (_output_driver.get ());
+        _encoder
+            .emmit_wrap (false)
+            .emmit_scrolling(false)
+            .emmit_alternate_buffer(true)
+            .emmit_cursor(false)
+            .send_out (_output_driver.get ());
     }
 
     device::~device() {
         // restore default terminal configuration
 		_encoder.reset ();
 
-		if (_alternate_buffer_enabled)
-            _encoder.emmit_alternate_buffer(false);
-
-		if (!_cursor_enabled)
-            _encoder.emmit_cursor (true);
-
         _encoder
             .emmit_wrap (true)
+            .emmit_alternate_buffer(false)
+            .emmit_cursor (true)
             .emmit_scrolling(true)
             .emmit_color_reset ()
             .emmit_attribute_reset()
@@ -43,24 +42,6 @@ namespace maxim {
 
     maxim::encoder & device::encoder () {
     	return _encoder;
-    }
-
-    void device::set_fullscreen(bool enabled) {
-        maxim::encoder local_encoder;
-
-        _alternate_buffer_enabled = enabled;
-        local_encoder.emmit_alternate_buffer(enabled);
-
-        local_encoder.send_out (_output_driver.get ());
-    }
-
-    void device::set_cursor_enabled (bool enabled) {
-        maxim::encoder local_encoder;
-
-        _cursor_enabled = enabled;
-        local_encoder.emmit_cursor(enabled);
-
-        local_encoder.send_out (_output_driver.get ());
     }
 
     void device::set_color_mode (color_mode mode) {
@@ -98,14 +79,14 @@ namespace maxim {
     void device::sync_display_settings() {
     	_size = _output_driver->get_size ();
 
-    	if (_back_buffer.size () != _size) {
+    	if (_back_buffer.size2d () != _size) {
 			_back_buffer.resize(_size);
 
 			_encoder.reset ();
             _encoder
                 .emmit_wrap (false)
                 .emmit_scrolling(false)
-                .emmit_cursor (_cursor_enabled);
+                .emmit_cursor (false);
 
             _encoder.send_out (_output_driver.get ());
 		}

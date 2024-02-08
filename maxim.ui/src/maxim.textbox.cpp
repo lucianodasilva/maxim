@@ -25,7 +25,7 @@ namespace maxim {
 		_view.update_width(size.width, text.get().size());
 
 		// render background
-		g.draw_box(bounds, background, true);
+		g.draw_rect(bounds, background, true);
 
 		// render cursor
 		if (this->has_focus()) {
