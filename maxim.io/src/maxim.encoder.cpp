@@ -162,10 +162,11 @@ namespace maxim {
 	    character dummy {};
         character const * last = &dummy;
 
+        this->emmit_position (point { 0, 0 });
+
         for (int y = 0; y < size.height; ++y) {
             auto location = point { 0, y };
 
-            this->emmit_position (location);
             auto * ptr = buffer.ptr_at (location);
 
             for (int x = 0; x < size.width; ++x) {
@@ -178,6 +179,10 @@ namespace maxim {
 
                 last = ptr;
                 ++ptr;
+            }
+
+            if (y != size.height - 1) {
+                _stream.write ("\r\n");
             }
         }
 

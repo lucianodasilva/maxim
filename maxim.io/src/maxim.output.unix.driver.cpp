@@ -5,7 +5,6 @@
 
 #include <termio.h>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <iostream>
 
 namespace maxim::output::_unix {
@@ -23,14 +22,7 @@ namespace maxim::output::_unix {
     }
 
     void driver::send(span < char > data) const {
-        flockfile (stdout);
-
-        for (auto const c : data) {
-            putchar_unlocked (c);
-        }
-
-        funlockfile(stdout);
-        fflush (stdout);
+        ::write (STDOUT_FILENO, data.data (), data.size ());
     }
 
 }
